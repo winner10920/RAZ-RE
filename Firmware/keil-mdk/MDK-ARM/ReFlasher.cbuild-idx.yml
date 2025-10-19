@@ -1,0 +1,21 @@
+build-idx:
+  generated-by: csolution version 2.11.0
+  csolution: ReFlasher.csolution.yml
+  tmpdir: tmp
+  cprojects:
+    - cproject: ReFlasher.cproject.yml
+  cbuilds:
+    - cbuild: out/ReFlasher/RAZ/ReFlasher+RAZ.cbuild.yml
+      project: ReFlasher
+      configuration: +RAZ
+      errors: true
+      messages:
+        errors:
+          - "required pack: Nationstech::N32G031_DFP@^1.0.4 not installed"
+          - "specified device 'N32G031K8' not found in the installed packs. Use:\n  cpackget add Vendor::PackName"
+          - processing context 'ReFlasher+RAZ' failed
+        info:
+          - ReFlasher.cbuild-pack.yml - file skipped
+          - ReFlasher+RAZ.cbuild.yml - file generated successfully
+      packs-missing:
+        - pack: Nationstech::N32G031_DFP@^1.0.4

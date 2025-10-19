@@ -1,0 +1,84 @@
+project:
+  packs:
+    - pack: Nationstech::N32G031_DFP@^1.0.4
+  setups:
+    - setup: Options for RAZ
+      add-path:
+        - ../inc
+        - ../src
+        - ../firmware/CMSIS/core
+        - ../firmware/CMSIS/device
+        - ../firmware/CMSIS/device/startup
+        - ../firmware/n32g031_std_periph_driver/inc
+        - ../firmware/n32g031_std_periph_driver/src
+      debug: "on"
+      define:
+        - N32G031
+        - USE_STDPERIPH_DRIVER
+        - USE_FULL_ASSERT
+        - __MICROLIB
+      define-asm:
+        - __MICROLIB
+      misc:
+        - C:
+            - -std=c99
+          C-CPP:
+            - -fno-rtti
+            - -funsigned-char
+            - -fshort-enums
+            - -fshort-wchar
+            - -ffunction-sections
+            - -Wno-packed
+            - -Wno-missing-variable-declarations
+            - -Wno-missing-prototypes
+            - -Wno-missing-noreturn
+            - -Wno-sign-conversion
+            - -Wno-nonportable-include-path
+            - -Wno-reserved-id-macro
+            - -Wno-unused-macros
+            - -Wno-documentation-unknown-command
+            - -Wno-documentation
+            - -Wno-license-management
+            - -Wno-parentheses-equality
+          CPP:
+            - -xc++
+            - -std=c++11
+            - -fno-exceptions
+          ASM:
+            - -masm=auto
+          Link:
+            - --library_type=microlib
+            - --map
+            - --load_addr_map_info
+            - --xref
+            - --callgraph
+            - --symbols
+            - --info sizes
+            - --info totals
+            - --info unused
+            - --info veneers
+            - --strict
+            - --summary_stderr
+            - --info summarysizes
+  linker:
+    - script: ReFlasher_RAZ.sct
+  groups:
+    - group: STARTUP
+      files:
+        - file: ../firmware/CMSIS/device/startup/startup_n32g031.s
+          misc:
+            - ASM:
+                - -masm=armasm
+    - group: CMSIS
+      files:
+        - file: ../firmware/CMSIS/device/system_n32g031.c
+    - group: FWLIB
+      files:
+        - file: ../firmware/n32g031_std_periph_driver/src/n32g031_gpio.c
+        - file: ../firmware/n32g031_std_periph_driver/src/n32g031_spi.c
+        - file: ../firmware/n32g031_std_periph_driver/src/n32g031_rcc.c
+    - group: USER
+      files:
+        - file: ../src/main.c
+        - file: ../src/n32g031_it.c
+        - file: ../src/spi_flash.c

@@ -1,0 +1,87 @@
+build:
+  generated-by: csolution version 2.11.0
+  solution: ../../../ReFlasher.csolution.yml
+  project: ../../../ReFlasher.cproject.yml
+  context: ReFlasher+RAZ
+  compiler: AC6
+  optimize: debug
+  debug: on
+  misc:
+    ASM:
+      - -masm=auto
+    C:
+      - -std=c99
+      - -fno-rtti
+      - -funsigned-char
+      - -fshort-enums
+      - -fshort-wchar
+      - -ffunction-sections
+      - -Wno-packed
+      - -Wno-missing-variable-declarations
+      - -Wno-missing-prototypes
+      - -Wno-missing-noreturn
+      - -Wno-sign-conversion
+      - -Wno-nonportable-include-path
+      - -Wno-reserved-id-macro
+      - -Wno-unused-macros
+      - -Wno-documentation-unknown-command
+      - -Wno-documentation
+      - -Wno-license-management
+      - -Wno-parentheses-equality
+    CPP:
+      - -xc++
+      - -std=c++11
+      - -fno-exceptions
+      - -fno-rtti
+      - -funsigned-char
+      - -fshort-enums
+      - -fshort-wchar
+      - -ffunction-sections
+      - -Wno-packed
+      - -Wno-missing-variable-declarations
+      - -Wno-missing-prototypes
+      - -Wno-missing-noreturn
+      - -Wno-sign-conversion
+      - -Wno-nonportable-include-path
+      - -Wno-reserved-id-macro
+      - -Wno-unused-macros
+      - -Wno-documentation-unknown-command
+      - -Wno-documentation
+      - -Wno-license-management
+      - -Wno-parentheses-equality
+    Link:
+      - --library_type=microlib
+      - --map
+      - --load_addr_map_info
+      - --xref
+      - --callgraph
+      - --symbols
+      - --info sizes
+      - --info totals
+      - --info unused
+      - --info veneers
+      - --strict
+      - --summary_stderr
+      - --info summarysizes
+  define:
+    - N32G031
+    - USE_STDPERIPH_DRIVER
+    - USE_FULL_ASSERT
+    - __MICROLIB
+  define-asm:
+    - __MICROLIB
+  add-path:
+    - ../../../../inc
+    - ../../../../src
+    - ../../../../firmware/CMSIS/core
+    - ../../../../firmware/CMSIS/device
+    - ../../../../firmware/CMSIS/device/startup
+    - ../../../../firmware/n32g031_std_periph_driver/inc
+    - ../../../../firmware/n32g031_std_periph_driver/src
+  output-dirs:
+    intdir: ../../../tmp
+    outdir: .
+    rtedir: ../../../RTE
+  output:
+    - type: elf
+      file: ReFlasher.axf
