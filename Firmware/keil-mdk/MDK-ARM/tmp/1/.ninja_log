@@ -1,0 +1,14 @@
+# ninja log v6
+1	7	1761098107469248284	CMakeFiles/database	ad965cc7f0f7863
+1	7	1761098107469248284	/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/database	ad965cc7f0f7863
+3	129	1761098108058255615	CMakeFiles/Group_STARTUP.dir/home/cody/RAZ-RE/Firmware/keil-mdk/firmware/CMSIS/device/startup/startup_n32g031.o	1c18f69d194d251f
+13	224	1761098108068255739	CMakeFiles/Group_USER.dir/home/cody/RAZ-RE/Firmware/keil-mdk/src/n32g031_it.o	c9fcd359f7b69289
+4	234	1761098108059255627	CMakeFiles/Group_CMSIS.dir/home/cody/RAZ-RE/Firmware/keil-mdk/firmware/CMSIS/device/system_n32g031.o	28702fd81015ac98
+13	251	1761098108068255739	CMakeFiles/Group_USER.dir/home/cody/RAZ-RE/Firmware/keil-mdk/src/main.o	1649078e53f23315
+18	300	1761098108073255802	CMakeFiles/Group_USER.dir/home/cody/RAZ-RE/Firmware/keil-mdk/src/spi_flash.o	798f529c5375f8b
+11	300	1761098108066255714	CMakeFiles/Group_FWLIB.dir/home/cody/RAZ-RE/Firmware/keil-mdk/firmware/n32g031_std_periph_driver/src/n32g031_spi.o	a81ff3f5c695c6b2
+7	330	1761098108062255665	CMakeFiles/Group_FWLIB.dir/home/cody/RAZ-RE/Firmware/keil-mdk/firmware/n32g031_std_periph_driver/src/n32g031_gpio.o	28b57b81bb84429c
+12	350	1761098108067255727	CMakeFiles/Group_FWLIB.dir/home/cody/RAZ-RE/Firmware/keil-mdk/firmware/n32g031_std_periph_driver/src/n32g031_rcc.o	5c0690873295fa74
+350	488	1761098108405259933	/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ/ReFlasher.axf	a032880b7d510d59
+1	9	1761098108559261849	CMakeFiles/database	ad965cc7f0f7863
+1	9	1761098108559261849	/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/database	ad965cc7f0f7863

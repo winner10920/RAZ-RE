@@ -6,5 +6,13 @@ solution:
     - type: RAZ
       device: N32G031K8
       optimize: debug
+      target-set:
+        - set:
+          images:
+            - project-context: ReFlasher
+          debugger:
+            name: JLink Server
+            port: 3333
+            protocol: swd
   projects:
     - project: ReFlasher.cproject.yml

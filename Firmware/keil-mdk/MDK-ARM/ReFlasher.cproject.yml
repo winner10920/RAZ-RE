@@ -1,6 +1,6 @@
 project:
   packs:
-    - pack: Nationstech::N32G031_DFP@^1.0.4
+    - pack: NSING::N32G031_DFP@1.0.5
   setups:
     - setup: Options for RAZ
       add-path:
@@ -11,7 +11,7 @@ project:
         - ../firmware/CMSIS/device/startup
         - ../firmware/n32g031_std_periph_driver/inc
         - ../firmware/n32g031_std_periph_driver/src
-      debug: "on"
+      debug: on
       define:
         - N32G031
         - USE_STDPERIPH_DRIVER

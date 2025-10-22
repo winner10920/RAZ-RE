@@ -1,0 +1,5 @@
+cbuild-pack:
+  resolved-packs:
+    - resolved-pack: NSING::N32G031_DFP@1.0.5
+      selected-by-pack:
+        - NSING::N32G031_DFP@1.0.5

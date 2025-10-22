@@ -1,0 +1,40 @@
+cbuild-run:
+  generated-by: csolution version 2.11.0
+  solution: ../ReFlasher.csolution.yml
+  target-type: RAZ
+  target-set: <default>
+  compiler: AC6
+  device: NSING::N32G031K8
+  device-pack: NSING::N32G031_DFP@1.0.5
+  output:
+    - file: ReFlasher/RAZ/ReFlasher.axf
+      info: generate by ReFlasher+RAZ
+      type: elf
+      load: image+symbols
+  system-resources:
+    memory:
+      - name: IRAM1
+        access: rwx
+        start: 0x20000000
+        size: 0x00002000
+        from-pack: NSING::N32G031_DFP@1.0.5
+      - name: IROM1
+        access: rx
+        start: 0x08000000
+        size: 0x00010000
+        from-pack: NSING::N32G031_DFP@1.0.5
+  system-descriptions:
+    - file: ${CMSIS_PACK_ROOT}/NSING/N32G031_DFP/1.0.5/svd/N32G031.svd
+      type: svd
+  debugger:
+    name: JLink Server
+    protocol: swd
+    gdbserver:
+      - port: 3333
+    port: 3333
+  programming:
+    - algorithm: ${CMSIS_PACK_ROOT}/NSING/N32G031_DFP/1.0.5/Flash/N32G031x.FLM
+      start: 0x08000000
+      size: 0x00010000
+      ram-start: 0x20000000
+      ram-size: 0x00002000

@@ -4,6 +4,15 @@ build:
   project: ../../../ReFlasher.cproject.yml
   context: ReFlasher+RAZ
   compiler: AC6
+  device: NSING::N32G031K8
+  device-pack: NSING::N32G031_DFP@1.0.5
+  processor:
+    endian: little
+    fpu: off
+    core: Cortex-M0
+  packs:
+    - pack: NSING::N32G031_DFP@1.0.5
+      path: ${CMSIS_PACK_ROOT}/NSING/N32G031_DFP/1.0.5
   optimize: debug
   debug: on
   misc:
@@ -68,8 +77,10 @@ build:
     - USE_STDPERIPH_DRIVER
     - USE_FULL_ASSERT
     - __MICROLIB
+    - N32G031 USE_STDPERIPH_DRIVER
   define-asm:
     - __MICROLIB
+    - N32G031 USE_STDPERIPH_DRIVER
   add-path:
     - ../../../../inc
     - ../../../../src
@@ -78,6 +89,9 @@ build:
     - ../../../../firmware/CMSIS/device/startup
     - ../../../../firmware/n32g031_std_periph_driver/inc
     - ../../../../firmware/n32g031_std_periph_driver/src
+    - ${CMSIS_PACK_ROOT}/NSING/N32G031_DFP/1.0.5/firmware/CMSIS/device
+  add-path-asm:
+    - ${CMSIS_PACK_ROOT}/NSING/N32G031_DFP/1.0.5/firmware/CMSIS/device
   output-dirs:
     intdir: ../../../tmp
     outdir: .
@@ -85,3 +99,37 @@ build:
   output:
     - type: elf
       file: ReFlasher.axf
+  linker:
+    script: ../../../ReFlasher_RAZ.sct
+  groups:
+    - group: STARTUP
+      files:
+        - file: ../../../../firmware/CMSIS/device/startup/startup_n32g031.s
+          category: sourceAsm
+          misc:
+            ASM:
+              - -masm=armasm
+    - group: CMSIS
+      files:
+        - file: ../../../../firmware/CMSIS/device/system_n32g031.c
+          category: sourceC
+    - group: FWLIB
+      files:
+        - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_gpio.c
+          category: sourceC
+        - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_spi.c
+          category: sourceC
+        - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_rcc.c
+          category: sourceC
+    - group: USER
+      files:
+        - file: ../../../../src/main.c
+          category: sourceC
+        - file: ../../../../src/n32g031_it.c
+          category: sourceC
+        - file: ../../../../src/spi_flash.c
+          category: sourceC
+  licenses:
+    - license: <unknown>
+      packs:
+        - pack: NSING::N32G031_DFP@1.0.5

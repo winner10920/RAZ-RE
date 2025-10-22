@@ -1,0 +1,70 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "JLink (launch)",
+            "type": "gdbtarget",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/Firmware/keil-mdk/MDK-ARM",
+            "program": "out/ReFlasher/RAZ/ReFlasher.axf",
+            "gdb": "arm-none-eabi-gdb",
+            "preLaunchTask": "CMSIS Load",
+            "initCommands": [
+                "monitor reset",
+                "tbreak main"
+            ],
+            "customResetCommands": [
+                "monitor reset",
+                "tbreak main",
+                "continue"
+            ],
+            "target": {
+                "server": "JLinkGDBServerCLExe",
+                "serverParameters": [
+                    "-device",
+                    "N32G031K8",
+                    "-endian",
+                    "little",
+                    "-if",
+                    "SWD",
+                    "-speed",
+                    "4000",
+                    "-noir",
+                    "-vd",
+                    "-nogui",
+                    "-localhostonly",
+                    "-port",
+                    "3333"
+                ],
+                "port": "3333"
+            },
+            "cmsis": {
+                "cbuildRunFile": "${command:cmsis-csolution.getCbuildRunFile}",
+                "updateConfiguration": "auto"
+            }
+        },
+        {
+            "name": "JLink (attach)",
+            "type": "gdbtarget",
+            "request": "attach",
+            "cwd": "${workspaceFolder}/Firmware/keil-mdk/MDK-ARM",
+            "program": "out/ReFlasher/RAZ/ReFlasher.axf",
+            "gdb": "arm-none-eabi-gdb",
+            "initCommands": [
+                ""
+            ],
+            "customResetCommands": [
+                "monitor reset",
+                "tbreak main",
+                "continue"
+            ],
+            "target": {
+                "port": "3333"
+            },
+            "cmsis": {
+                "cbuildRunFile": "${command:cmsis-csolution.getCbuildRunFile}",
+                "updateConfiguration": "auto"
+            }
+        }
+    ]
+}
