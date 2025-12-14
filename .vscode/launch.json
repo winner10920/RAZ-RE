@@ -15,18 +15,20 @@
             ],
             "customResetCommands": [
                 "monitor reset",
+                "maintenance flush register-cache",
+                "maintenance flush dcache",
                 "tbreak main",
                 "continue"
             ],
             "target": {
-                "server": "JLinkGDBServerCLExe",
+                "server": "JLinkGDBServerCL",
                 "serverParameters": [
                     "-device",
                     "N32G031K8",
                     "-endian",
                     "little",
                     "-if",
-                    "SWD",
+                    "swd",
                     "-speed",
                     "4000",
                     "-noir",
@@ -41,7 +43,8 @@
             "cmsis": {
                 "cbuildRunFile": "${command:cmsis-csolution.getCbuildRunFile}",
                 "updateConfiguration": "auto"
-            }
+            },
+            "auxiliaryGdb": true
         },
         {
             "name": "JLink (attach)",
@@ -55,6 +58,8 @@
             ],
             "customResetCommands": [
                 "monitor reset",
+                "maintenance flush register-cache",
+                "maintenance flush dcache",
                 "tbreak main",
                 "continue"
             ],
@@ -64,7 +69,8 @@
             "cmsis": {
                 "cbuildRunFile": "${command:cmsis-csolution.getCbuildRunFile}",
                 "updateConfiguration": "auto"
-            }
+            },
+            "auxiliaryGdb": true
         }
     ]
 }

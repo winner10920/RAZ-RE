@@ -8,7 +8,7 @@ events:
       - "CMakeLists.txt:22 (project)"
     message: |
       The target system is: Generic -  - 
-      The host system is: Linux - 6.8.0-85-generic - x86_64
+      The host system is: Linux - 6.8.0-88-generic - x86_64
   -
     kind: "message-v1"
     backtrace:
@@ -92,36 +92,36 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-GjPrH9"
-      binary: "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-GjPrH9"
+      source: "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-CmjiIm"
+      binary: "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-CmjiIm"
     cmakeVariables:
       CMAKE_CXX_COMPILER_TARGET: "arm-arm-none-eabi"
       CMAKE_C_COMPILER_TARGET: "arm-arm-none-eabi"
       CMAKE_C_FLAGS: "--target=arm-arm-none-eabi -mcpu=Cortex-M0 -mfpu=none"
       CMAKE_C_FLAGS_DEBUG: "-g"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/home/cody/.vcpkg/artifacts/2139c4c6/tools.open.cmsis.pack.cmsis.toolbox/2.11.0/etc/CMakeASM"
+      CMAKE_MODULE_PATH: "/home/cody/.vcpkg/artifacts/2139c4c6/tools.open.cmsis.pack.cmsis.toolbox/2.12.0/etc/CMakeASM"
     buildResult:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-GjPrH9'
+        Change Dir: '/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-CmjiIm'
         
-        Run Build Command(s): /home/cody/.vcpkg/artifacts/2139c4c6/tools.ninja.build.ninja/1.12.1/ninja -v cmTC_d8830
-        [1/2] /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armclang --target=arm-arm-none-eabi   --target=arm-arm-none-eabi -mcpu=Cortex-M0 -mfpu=none    -v -MD -MT CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o -MF CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o.d -o CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o -c /home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/share/cmake-3.31/Modules/CMakeCCompilerABI.c
+        Run Build Command(s): /home/cody/.vcpkg/artifacts/2139c4c6/tools.ninja.build.ninja/1.12.1/ninja -v cmTC_fe347
+        [1/2] /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armclang --target=arm-arm-none-eabi   --target=arm-arm-none-eabi -mcpu=Cortex-M0 -mfpu=none    -v -MD -MT CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o -MF CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o.d -o CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o -c /home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/share/cmake-3.31/Modules/CMakeCCompilerABI.c
         Product: Keil MDK Community (non-commercial free of charge)
         Component: Arm Compiler for Embedded 6.24
         Tool: armclang [5f371900]
         
         Target: arm-arm-none-eabi
          (in-process)
-         "/home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armclang" -cc1 -triple thumbv6m-arm-none-eabi -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model static -mframe-pointer=none -menable-no-infs -menable-no-nans -fmath-errno -fno-signed-zeros -fdenormal-fp-math=preserve-sign,preserve-sign -ffp-contract=on -fno-rounding-math -ffinite-math-only -mconstructor-aliases -target-cpu cortex-m0 -target-feature +soft-float-abi -target-feature -vfp2 -target-feature -vfp2sp -target-feature -vfp3 -target-feature -vfp3d16 -target-feature -vfp3d16sp -target-feature -vfp3sp -target-feature -fp16 -target-feature -vfp4 -target-feature -vfp4d16 -target-feature -vfp4d16sp -target-feature -vfp4sp -target-feature -fp-armv8 -target-feature -fp-armv8d16 -target-feature -fp-armv8d16sp -target-feature -fp-armv8sp -target-feature -fullfp16 -target-feature -fp64 -target-feature -d32 -target-feature -neon -target-feature -sha2 -target-feature -aes -target-feature -dotprod -target-feature -fp16fml -target-feature -bf16 -target-feature -mve.fp -target-feature -fpregs -target-feature +strict-align -target-abi aapcs -mfloat-abi soft -Wunaligned-access -debugger-tuning=gdb -fforce-dwarf-frame -fdebug-compilation-dir=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-GjPrH9 -v -ffunction-sections -fdata-sections -fcoverage-compilation-dir=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-GjPrH9 -resource-dir /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/lib/clang/20 -dependency-file CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o.d -MT CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o -sys-header-deps -internal-isystem /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/../include -nobuiltininc -ferror-limit 19 -fvisibility=hidden -fno-signed-char -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fsuppress-licensing -aggressive-jump-threading -o CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o -x c /home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/share/cmake-3.31/Modules/CMakeCCompilerABI.c
+         "/home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armclang" -cc1 -triple thumbv6m-arm-none-eabi -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model static -mframe-pointer=none -menable-no-infs -menable-no-nans -fmath-errno -fno-signed-zeros -fdenormal-fp-math=preserve-sign,preserve-sign -ffp-contract=on -fno-rounding-math -ffinite-math-only -mconstructor-aliases -target-cpu cortex-m0 -target-feature +soft-float-abi -target-feature -vfp2 -target-feature -vfp2sp -target-feature -vfp3 -target-feature -vfp3d16 -target-feature -vfp3d16sp -target-feature -vfp3sp -target-feature -fp16 -target-feature -vfp4 -target-feature -vfp4d16 -target-feature -vfp4d16sp -target-feature -vfp4sp -target-feature -fp-armv8 -target-feature -fp-armv8d16 -target-feature -fp-armv8d16sp -target-feature -fp-armv8sp -target-feature -fullfp16 -target-feature -fp64 -target-feature -d32 -target-feature -neon -target-feature -sha2 -target-feature -aes -target-feature -dotprod -target-feature -fp16fml -target-feature -bf16 -target-feature -mve.fp -target-feature -fpregs -target-feature +strict-align -target-abi aapcs -mfloat-abi soft -Wunaligned-access -debugger-tuning=gdb -fforce-dwarf-frame -fdebug-compilation-dir=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-CmjiIm -v -ffunction-sections -fdata-sections -fcoverage-compilation-dir=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-CmjiIm -resource-dir /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/lib/clang/20 -dependency-file CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o.d -MT CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o -sys-header-deps -internal-isystem /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/../include -nobuiltininc -ferror-limit 19 -fvisibility=hidden -fno-signed-char -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fsuppress-licensing -aggressive-jump-threading -o CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o -x c /home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/share/cmake-3.31/Modules/CMakeCCompilerABI.c
         Arm Compiler for Embedded 6.24 -cc1 default target aarch64-arm-none-eabi
         #include "..." search starts here:
         #include <...> search starts here:
          /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/../include
         End of search list.
-        [2/2] : && /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armar --create -cr libcmTC_d8830.a  CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o && :
+        [2/2] : && /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armar --create -cr libcmTC_fe347.a  CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o && :
         
       exitCode: 0
   -
@@ -150,23 +150,23 @@ events:
       Parsed C implicit link information:
         link line regex: [^( *|.*[/\\])(armlink|;ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(armlink|;ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
-        ignore line: [Change Dir: '/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-GjPrH9']
+        ignore line: [Change Dir: '/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-CmjiIm']
         ignore line: []
-        ignore line: [Run Build Command(s): /home/cody/.vcpkg/artifacts/2139c4c6/tools.ninja.build.ninja/1.12.1/ninja -v cmTC_d8830]
-        ignore line: [[1/2] /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armclang --target=arm-arm-none-eabi   --target=arm-arm-none-eabi -mcpu=Cortex-M0 -mfpu=none    -v -MD -MT CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o -MF CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o.d -o CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o -c /home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/share/cmake-3.31/Modules/CMakeCCompilerABI.c]
+        ignore line: [Run Build Command(s): /home/cody/.vcpkg/artifacts/2139c4c6/tools.ninja.build.ninja/1.12.1/ninja -v cmTC_fe347]
+        ignore line: [[1/2] /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armclang --target=arm-arm-none-eabi   --target=arm-arm-none-eabi -mcpu=Cortex-M0 -mfpu=none    -v -MD -MT CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o -MF CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o.d -o CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o -c /home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/share/cmake-3.31/Modules/CMakeCCompilerABI.c]
         ignore line: [Product: Keil MDK Community (non-commercial free of charge)]
         ignore line: [Component: Arm Compiler for Embedded 6.24]
         ignore line: [Tool: armclang [5f371900]]
         ignore line: []
         ignore line: [Target: arm-arm-none-eabi]
         ignore line: [ (in-process)]
-        ignore line: [ "/home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armclang" -cc1 -triple thumbv6m-arm-none-eabi -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model static -mframe-pointer=none -menable-no-infs -menable-no-nans -fmath-errno -fno-signed-zeros -fdenormal-fp-math=preserve-sign preserve-sign -ffp-contract=on -fno-rounding-math -ffinite-math-only -mconstructor-aliases -target-cpu cortex-m0 -target-feature +soft-float-abi -target-feature -vfp2 -target-feature -vfp2sp -target-feature -vfp3 -target-feature -vfp3d16 -target-feature -vfp3d16sp -target-feature -vfp3sp -target-feature -fp16 -target-feature -vfp4 -target-feature -vfp4d16 -target-feature -vfp4d16sp -target-feature -vfp4sp -target-feature -fp-armv8 -target-feature -fp-armv8d16 -target-feature -fp-armv8d16sp -target-feature -fp-armv8sp -target-feature -fullfp16 -target-feature -fp64 -target-feature -d32 -target-feature -neon -target-feature -sha2 -target-feature -aes -target-feature -dotprod -target-feature -fp16fml -target-feature -bf16 -target-feature -mve.fp -target-feature -fpregs -target-feature +strict-align -target-abi aapcs -mfloat-abi soft -Wunaligned-access -debugger-tuning=gdb -fforce-dwarf-frame -fdebug-compilation-dir=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-GjPrH9 -v -ffunction-sections -fdata-sections -fcoverage-compilation-dir=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-GjPrH9 -resource-dir /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/lib/clang/20 -dependency-file CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o.d -MT CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o -sys-header-deps -internal-isystem /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/../include -nobuiltininc -ferror-limit 19 -fvisibility=hidden -fno-signed-char -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fsuppress-licensing -aggressive-jump-threading -o CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o -x c /home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/share/cmake-3.31/Modules/CMakeCCompilerABI.c]
+        ignore line: [ "/home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armclang" -cc1 -triple thumbv6m-arm-none-eabi -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model static -mframe-pointer=none -menable-no-infs -menable-no-nans -fmath-errno -fno-signed-zeros -fdenormal-fp-math=preserve-sign preserve-sign -ffp-contract=on -fno-rounding-math -ffinite-math-only -mconstructor-aliases -target-cpu cortex-m0 -target-feature +soft-float-abi -target-feature -vfp2 -target-feature -vfp2sp -target-feature -vfp3 -target-feature -vfp3d16 -target-feature -vfp3d16sp -target-feature -vfp3sp -target-feature -fp16 -target-feature -vfp4 -target-feature -vfp4d16 -target-feature -vfp4d16sp -target-feature -vfp4sp -target-feature -fp-armv8 -target-feature -fp-armv8d16 -target-feature -fp-armv8d16sp -target-feature -fp-armv8sp -target-feature -fullfp16 -target-feature -fp64 -target-feature -d32 -target-feature -neon -target-feature -sha2 -target-feature -aes -target-feature -dotprod -target-feature -fp16fml -target-feature -bf16 -target-feature -mve.fp -target-feature -fpregs -target-feature +strict-align -target-abi aapcs -mfloat-abi soft -Wunaligned-access -debugger-tuning=gdb -fforce-dwarf-frame -fdebug-compilation-dir=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-CmjiIm -v -ffunction-sections -fdata-sections -fcoverage-compilation-dir=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1/CMakeFiles/CMakeScratch/TryCompile-CmjiIm -resource-dir /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/lib/clang/20 -dependency-file CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o.d -MT CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o -sys-header-deps -internal-isystem /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/../include -nobuiltininc -ferror-limit 19 -fvisibility=hidden -fno-signed-char -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fsuppress-licensing -aggressive-jump-threading -o CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o -x c /home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/share/cmake-3.31/Modules/CMakeCCompilerABI.c]
         ignore line: [Arm Compiler for Embedded 6.24 -cc1 default target aarch64-arm-none-eabi]
         ignore line: [#include "..." search starts here:]
         ignore line: [#include <...> search starts here:]
         ignore line: [ /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/../include]
         ignore line: [End of search list.]
-        ignore line: [[2/2] : && /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armar --create -cr libcmTC_d8830.a  CMakeFiles/cmTC_d8830.dir/CMakeCCompilerABI.o && :]
+        ignore line: [[2/2] : && /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armar --create -cr libcmTC_fe347.a  CMakeFiles/cmTC_fe347.dir/CMakeCCompilerABI.o && :]
         ignore line: []
         ignore line: []
         implicit libs: []

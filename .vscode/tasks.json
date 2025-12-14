@@ -8,40 +8,15 @@
                 "echo Connect > .cmd.jlink &&",
                 "echo Erase >> .cmd.jlink &&",
                 "echo Exit >> .cmd.jlink &&",
-                "JLinkExe -device N32G031K8 -if SWD -speed 4000 -commandfile .cmd.jlink"
+                "JLinkExe -device N32G031K8 -if swd -speed 4000 -commandfile .cmd.jlink"
             ],
             "options": {
-                "cwd": "${workspaceFolder}/Firmware/keil-mdk/MDK-ARM"
-            },
-            "windows": {
-                "options": {
-                    "shell": {
-                        "executable": "cmd.exe",
-                        "args": [
-                            "/d",
-                            "/c"
-                        ]
-                    }
-                }
-            },
-            "linux": {
-                "options": {
-                    "shell": {
-                        "executable": "/bin/bash",
-                        "args": [
-                            "-c"
-                        ]
-                    }
-                }
-            },
-            "osx": {
-                "options": {
-                    "shell": {
-                        "executable": "/bin/bash",
-                        "args": [
-                            "-c"
-                        ]
-                    }
+                "cwd": "${workspaceFolder}/Firmware/keil-mdk/MDK-ARM",
+                "shell": {
+                    "executable": "/bin/bash",
+                    "args": [
+                        "-c"
+                    ]
                 }
             },
             "problemMatcher": []
@@ -53,40 +28,15 @@
                 "echo Connect > .cmd.jlink &&",
                 "echo LoadFile \"out/ReFlasher/RAZ/ReFlasher.axf\" >> .cmd.jlink &&",
                 "echo Exit >> .cmd.jlink &&",
-                "JLinkExe -device N32G031K8 -if SWD -speed 4000 -commandfile .cmd.jlink"
+                "JLinkExe -device N32G031K8 -if swd -speed 4000 -commandfile .cmd.jlink"
             ],
             "options": {
-                "cwd": "${workspaceFolder}/Firmware/keil-mdk/MDK-ARM"
-            },
-            "windows": {
-                "options": {
-                    "shell": {
-                        "executable": "cmd.exe",
-                        "args": [
-                            "/d",
-                            "/c"
-                        ]
-                    }
-                }
-            },
-            "linux": {
-                "options": {
-                    "shell": {
-                        "executable": "/bin/bash",
-                        "args": [
-                            "-c"
-                        ]
-                    }
-                }
-            },
-            "osx": {
-                "options": {
-                    "shell": {
-                        "executable": "/bin/bash",
-                        "args": [
-                            "-c"
-                        ]
-                    }
+                "cwd": "${workspaceFolder}/Firmware/keil-mdk/MDK-ARM",
+                "shell": {
+                    "executable": "/bin/bash",
+                    "args": [
+                        "-c"
+                    ]
                 }
             },
             "problemMatcher": []
@@ -94,39 +44,14 @@
         {
             "label": "CMSIS Run",
             "type": "shell",
-            "command": "JLinkGDBServerCLExe",
+            "command": "JLinkGDBServerCL",
             "options": {
-                "cwd": "${workspaceFolder}/Firmware/keil-mdk/MDK-ARM"
-            },
-            "windows": {
-                "options": {
-                    "shell": {
-                        "executable": "cmd.exe",
-                        "args": [
-                            "/d",
-                            "/c"
-                        ]
-                    }
-                }
-            },
-            "linux": {
-                "options": {
-                    "shell": {
-                        "executable": "/bin/bash",
-                        "args": [
-                            "-c"
-                        ]
-                    }
-                }
-            },
-            "osx": {
-                "options": {
-                    "shell": {
-                        "executable": "/bin/bash",
-                        "args": [
-                            "-c"
-                        ]
-                    }
+                "cwd": "${workspaceFolder}/Firmware/keil-mdk/MDK-ARM",
+                "shell": {
+                    "executable": "/bin/bash",
+                    "args": [
+                        "-c"
+                    ]
                 }
             },
             "args": [
@@ -135,8 +60,7 @@
                 "-endian",
                 "little",
                 "-if",
-                "SWD",
-                "-speed",
+                "swd-speed",
                 "4000",
                 "-nohalt",
                 "-noir",

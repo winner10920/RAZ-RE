@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION ${CMAKE_VERSION}) # this file comes with cmake
 
-set(command "/home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/bin/cmake;-G;Ninja;-S;/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ;-B;/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1;-DSOLUTION_ROOT=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM;-DCMSIS_PACK_ROOT=/home/cody/.cache/arm/packs;-DCMSIS_COMPILER_ROOT=/home/cody/.vcpkg/artifacts/2139c4c6/tools.open.cmsis.pack.cmsis.toolbox/2.11.0/etc")
+set(command "/home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/bin/cmake;-G;Ninja;-S;/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ;-B;/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1;-DSOLUTION_ROOT=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM;-DCMSIS_PACK_ROOT=/home/cody/.cache/arm/packs;-DCMSIS_COMPILER_ROOT=/home/cody/.vcpkg/artifacts/2139c4c6/tools.open.cmsis.pack.cmsis.toolbox/2.12.0/etc")
 set(log_merged "")
 set(log_output_on_failure "ON")
 set(stdout_log "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-configure-out.log")

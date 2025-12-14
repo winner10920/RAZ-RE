@@ -1,5 +1,5 @@
 build-idx:
-  generated-by: csolution version 2.11.0
+  generated-by: csolution version 2.12.0
   csolution: ReFlasher.csolution.yml
   cbuild-run: out/ReFlasher+RAZ.cbuild-run.yml
   tmpdir: tmp

@@ -1,6 +1,6 @@
 solution:
   created-by: uv2csolution@1.6.0
-  created-for: CMSIS-Toolbox@2.7.0
+  created-for: CMSIS-Toolbox@2.12.0
   compiler: AC6
   target-types:
     - type: RAZ
@@ -11,7 +11,7 @@ solution:
           images:
             - project-context: ReFlasher
           debugger:
-            name: JLink Server
+            name: J-Link Server
             port: 3333
             protocol: swd
   projects:

@@ -5,8 +5,11 @@
 /**
  * @brief  Main program.
  */
-#define LED_PIN GPIO_PIN_5
+#define LED_PIN GPIO_PIN_4
 #define LED_GPIO GPIOA
+
+#define ELEMENT_PIN GPIO_PIN_5
+#define ELEMENT_GPIO GPIOA
 
 #define BUFFER_SIZE 4096
 volatile int page[1];
@@ -53,7 +56,6 @@ int main(void)
 		FlashID = sFLASH_ReadID();
 		if(FlashID != 0) break;
 	}
-	
 	// Check Flash ID
 	if(FlashID == sFLASH_GD25Q80_ID){
 		status[0] = 1;
