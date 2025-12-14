@@ -82,3 +82,4 @@ project:
         - file: ../src/main.c
         - file: ../src/n32g031_it.c
         - file: ../src/spi_flash.c
+        - file: ../src/st7735.c

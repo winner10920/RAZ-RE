@@ -2,6 +2,7 @@
 #include "main.h"
 #include <stdio.h>
 #include <stdint.h>
+#include "st7735.h"
 /**
  * @brief  Main program.
  */
@@ -50,6 +51,11 @@ int main(void)
 	GPIO_Off(LED_GPIO, LED_PIN);
 	
 	sFLASH_Init();
+	// Initialize the ST7735 display (SPI2 with CS on PB7)
+	st7735_init();
+	// Clear screen to black and print Hello World in white
+	st7735_fill_screen(ST7735_COLOR565(0,0,0));
+	st7735_draw_string(8, 20, "Hello World", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
 	
 	while(1){
 		Delay(100);

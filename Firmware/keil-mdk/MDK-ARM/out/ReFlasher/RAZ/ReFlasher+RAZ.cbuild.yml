@@ -1,5 +1,5 @@
 build:
-  generated-by: csolution version 2.11.0
+  generated-by: csolution version 2.12.0
   solution: ../../../ReFlasher.csolution.yml
   project: ../../../ReFlasher.cproject.yml
   context: ReFlasher+RAZ
@@ -128,6 +128,8 @@ build:
         - file: ../../../../src/n32g031_it.c
           category: sourceC
         - file: ../../../../src/spi_flash.c
+          category: sourceC
+        - file: ../../../../src/st7735.c
           category: sourceC
   licenses:
     - license: <unknown>
