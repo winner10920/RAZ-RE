@@ -3,11 +3,11 @@
 <title>Static Call Graph - [/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ/ReFlasher.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ/ReFlasher.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Sun Dec 14 01:07:32 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Mon Dec 15 16:38:00 2025
 <BR><P>
-<H3>Maximum Stack Usage =        232 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        264 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-main &rArr; st7735_draw_string &rArr; st7735_draw_char &rArr; st7735_write_data &rArr; SPI_I2S_GetStatus
+main &rArr; st7735_draw_string &rArr; st7735_draw_char &rArr; st7735_set_addr_window &rArr; st7735_spi_write_byte &rArr; GPIO_ResetBits
 <P>
 <H3>
 Mutually Recursive functions
@@ -228,8 +228,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_data
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_command
+<BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_draw_char
+<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_set_addr_window
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_spi_write_byte
 <LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WritePage
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WaitForWriteEnd
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteEnable
@@ -247,8 +248,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_data
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_command
+<BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_draw_char
+<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_set_addr_window
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_spi_write_byte
 <LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WritePage
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WaitForWriteEnd
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteEnable
@@ -280,7 +282,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
+<BR>[Called By]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_init
+<LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 <LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -297,16 +300,13 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_data
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_command
-<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WritePage
+<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WritePage
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WaitForWriteEnd
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteEnable
 <LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
 <LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
 <LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
 <LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
-<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_fill_screen
 </UL>
 
 <P><STRONG><a name="[33]"></a>SPI_I2S_ReceiveData</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, n32g031_spi.o(.text.SPI_I2S_ReceiveData))
@@ -314,16 +314,13 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_data
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_command
-<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WritePage
+<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WritePage
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WaitForWriteEnd
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteEnable
 <LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
 <LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
 <LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
 <LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
-<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_fill_screen
 </UL>
 
 <P><STRONG><a name="[34]"></a>SPI_I2S_TransmitData</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, n32g031_spi.o(.text.SPI_I2S_TransmitData))
@@ -331,16 +328,13 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_data
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_command
-<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WritePage
+<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WritePage
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WaitForWriteEnd
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteEnable
 <LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
 <LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
 <LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
 <LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
-<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_fill_screen
 </UL>
 
 <P><STRONG><a name="[35]"></a>SPI_Init</STRONG> (Thumb, 296 bytes, Stack size 16 bytes, n32g031_spi.o(.text.SPI_Init))
@@ -377,8 +371,8 @@ Global Symbols
 <LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
 
-<P><STRONG><a name="[26]"></a>main</STRONG> (Thumb, 544 bytes, Stack size 72 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 232<LI>Call Chain = main &rArr; st7735_draw_string &rArr; st7735_draw_char &rArr; st7735_write_data &rArr; SPI_I2S_GetStatus
+<P><STRONG><a name="[26]"></a>main</STRONG> (Thumb, 604 bytes, Stack size 72 bytes, main.o(.text.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 264<LI>Call Chain = main &rArr; st7735_draw_string &rArr; st7735_draw_char &rArr; st7735_set_addr_window &rArr; st7735_spi_write_byte &rArr; GPIO_ResetBits
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
 <LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
@@ -512,43 +506,42 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteBuffer
 </UL>
 
-<P><STRONG><a name="[43]"></a>st7735_draw_char</STRONG> (Thumb, 356 bytes, Stack size 88 bytes, st7735.o(.text.st7735_draw_char))
-<BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = st7735_draw_char &rArr; st7735_write_data &rArr; SPI_I2S_GetStatus
+<P><STRONG><a name="[43]"></a>st7735_draw_char</STRONG> (Thumb, 316 bytes, Stack size 72 bytes, st7735.o(.text.st7735_draw_char))
+<BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = st7735_draw_char &rArr; st7735_set_addr_window &rArr; st7735_spi_write_byte &rArr; GPIO_ResetBits
 </UL>
-<BR>[Calls]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_data
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_command
+<BR>[Calls]<UL><LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_set_addr_window
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_spi_write_byte
+<LI><a href="#[2e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
+<LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_draw_string
 </UL>
 
 <P><STRONG><a name="[3a]"></a>st7735_draw_string</STRONG> (Thumb, 54 bytes, Stack size 32 bytes, st7735.o(.text.st7735_draw_string))
-<BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = st7735_draw_string &rArr; st7735_draw_char &rArr; st7735_write_data &rArr; SPI_I2S_GetStatus
+<BR><BR>[Stack]<UL><LI>Max Depth = 192<LI>Call Chain = st7735_draw_string &rArr; st7735_draw_char &rArr; st7735_set_addr_window &rArr; st7735_spi_write_byte &rArr; GPIO_ResetBits
 </UL>
 <BR>[Calls]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_draw_char
 </UL>
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[39]"></a>st7735_fill_screen</STRONG> (Thumb, 188 bytes, Stack size 24 bytes, st7735.o(.text.st7735_fill_screen))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = st7735_fill_screen &rArr; st7735_write_data &rArr; SPI_I2S_GetStatus
+<P><STRONG><a name="[39]"></a>st7735_fill_screen</STRONG> (Thumb, 76 bytes, Stack size 24 bytes, st7735.o(.text.st7735_fill_screen))
+<BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = st7735_fill_screen &rArr; st7735_set_addr_window &rArr; st7735_spi_write_byte &rArr; GPIO_ResetBits
 </UL>
-<BR>[Calls]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_data
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_command
-<LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_GetStatus
-<LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_ReceiveData
-<LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_TransmitData
+<BR>[Calls]<UL><LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_set_addr_window
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_spi_write_byte
 <LI><a href="#[2e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[38]"></a>st7735_init</STRONG> (Thumb, 200 bytes, Stack size 48 bytes, st7735.o(.text.st7735_init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = st7735_init &rArr; GPIO_InitPeripheral
+<P><STRONG><a name="[38]"></a>st7735_init</STRONG> (Thumb, 420 bytes, Stack size 64 bytes, st7735.o(.text.st7735_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = st7735_init &rArr; GPIO_InitPeripheral
 </UL>
-<BR>[Calls]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_data
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_write_command
+<BR>[Calls]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_spi_write_byte
 <LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Delay
+<LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_EnableAPB2PeriphClk
 <LI><a href="#[2e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 <LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
@@ -566,32 +559,27 @@ Global Symbols
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[44]"></a>st7735_write_command</STRONG> (Thumb, 72 bytes, Stack size 16 bytes, st7735.o(.text.st7735_write_command))
-<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = st7735_write_command &rArr; SPI_I2S_GetStatus
+<P><STRONG><a name="[45]"></a>st7735_spi_write_byte</STRONG> (Thumb, 108 bytes, Stack size 32 bytes, st7735.o(.text.st7735_spi_write_byte))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = st7735_spi_write_byte &rArr; GPIO_ResetBits
 </UL>
-<BR>[Calls]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_GetStatus
-<LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_ReceiveData
-<LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_TransmitData
-<LI><a href="#[2e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
+<BR>[Calls]<UL><LI><a href="#[2e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
 <BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_draw_char
+<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_set_addr_window
 <LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_fill_screen
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_init
 </UL>
 
-<P><STRONG><a name="[45]"></a>st7735_write_data</STRONG> (Thumb, 96 bytes, Stack size 24 bytes, st7735.o(.text.st7735_write_data))
-<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = st7735_write_data &rArr; SPI_I2S_GetStatus
+<P><STRONG><a name="[44]"></a>st7735_set_addr_window</STRONG> (Thumb, 224 bytes, Stack size 40 bytes, st7735.o(.text.st7735_set_addr_window))
+<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = st7735_set_addr_window &rArr; st7735_spi_write_byte &rArr; GPIO_ResetBits
 </UL>
-<BR>[Calls]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_GetStatus
-<LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_ReceiveData
-<LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_TransmitData
+<BR>[Calls]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_spi_write_byte
 <LI><a href="#[2e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
 <BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_draw_char
 <LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_fill_screen
-<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;st7735_init
 </UL>
 <P>
 <H3>

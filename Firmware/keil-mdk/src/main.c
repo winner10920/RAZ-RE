@@ -6,11 +6,20 @@
 /**
  * @brief  Main program.
  */
-#define LED_PIN GPIO_PIN_4
+#define LED_PIN GPIO_PIN_6
 #define LED_GPIO GPIOA
 
 #define ELEMENT_PIN GPIO_PIN_5
 #define ELEMENT_GPIO GPIOA
+
+
+// BackLight Pin Confirmed A6
+// Coil Element Pin Confirmed A5
+// Button Pin Maybe A7?
+
+
+
+
 
 #define BUFFER_SIZE 4096
 volatile int page[1];
@@ -57,6 +66,12 @@ int main(void)
 	st7735_fill_screen(ST7735_COLOR565(0,0,0));
 	st7735_draw_string(8, 20, "Hello World", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
 	
+    uint8_t mainran = 0;
+
+
+
+	if( mainran == 0){
+		
 	while(1){
 		Delay(100);
 		FlashID = sFLASH_ReadID();
@@ -154,8 +169,21 @@ int main(void)
 		GPIO_On(LED_GPIO, LED_PIN);
 		Delay(1000);
 		GPIO_Off(LED_GPIO, LED_PIN);
-		while(1)
+		Delay(1000);
+		GPIO_Off(LED_GPIO, LED_PIN);
+		Delay(1000);
+		GPIO_Off(LED_GPIO, LED_PIN);
+		//while(1)
+		mainran = 1
 			;
+	}
+	mainran = 1;
+	}
+	else{
+		GPIO_On(LED_GPIO, LED_PIN);
+		Delay(1000);
+		GPIO_Off(LED_GPIO, LED_PIN);
+		Delay(1000);
 	}
 }
 void Delay(volatile uint32_t count)

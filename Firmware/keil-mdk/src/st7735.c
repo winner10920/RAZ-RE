@@ -1,5 +1,8 @@
 /* Minimal ST7735 driver implementation (for 80x160 ST7735 variant)
- * Uses SPI2 peripheral for MOSI/SCK, CS on PB7, DC PB6, RST PB5.
+ * Uses the board's SPI peripheral (shared with sFLASH by default).
+ * Pin mapping (adjustable in inc/st7735.h):
+ *   CS = PA15, SCLK = PB3 (board), MOSI = PB5 (board) [SPI pins may be shared],
+ *   RST = PB6, RS(DC) = PB7
  * Provides basic init, fill screen, and text draw (5x8 font)
  */
 
@@ -120,13 +123,17 @@ static const uint8_t font5x8[][5] = {
 {0x00,0x00,0x00,0x00,0x00}  //127 DEL
 };
 
-// For simplicity, create a tiny helper that sends a byte over SPI2 and returns received byte
-static uint8_t st7735_spi_transfer(uint8_t b)
+// Transmit buffer using hardware SPI (SPI1 configured for display)
+static void st7735_spi_tx(const uint8_t* buff, uint32_t len)
 {
-    while (SPI_I2S_GetStatus(sFLASH_SPI, SPI_I2S_TE_FLAG) == RESET) ;
-    SPI_I2S_TransmitData(sFLASH_SPI, b);
-    while (SPI_I2S_GetStatus(sFLASH_SPI, SPI_I2S_RNE_FLAG) == RESET) ;
-    return SPI_I2S_ReceiveData(sFLASH_SPI);
+    for (uint32_t i = 0; i < len; ++i) {
+        // wait until transmit buffer empty
+        while (SPI_I2S_GetStatus(ST7735_SPI, SPI_I2S_TE_FLAG) == RESET) ;
+        SPI_I2S_TransmitData(ST7735_SPI, buff[i]);
+        // wait until a byte is received (read to clear RX flag)
+        while (SPI_I2S_GetStatus(ST7735_SPI, SPI_I2S_RNE_FLAG) == RESET) ;
+        (void)SPI_I2S_ReceiveData(ST7735_SPI);
+    }
 }
 
 static void st7735_cs_low(void)  { GPIO_ResetBits(ST7735_CS_GPIO_PORT, ST7735_CS_PIN); }
@@ -140,7 +147,7 @@ static void st7735_write_command(uint8_t cmd)
 {
     st7735_dc_cmd();
     st7735_cs_low();
-    st7735_spi_transfer(cmd);
+    st7735_spi_tx(&cmd, 1);
     st7735_cs_high();
 }
 
@@ -148,7 +155,7 @@ static void st7735_write_data(const uint8_t* buff, uint32_t len)
 {
     st7735_dc_data();
     st7735_cs_low();
-    for (uint32_t i = 0; i < len; ++i) st7735_spi_transfer(buff[i]);
+    st7735_spi_tx(buff, len);
     st7735_cs_high();
 }
 
@@ -171,7 +178,9 @@ void st7735_init(void)
 {
     GPIO_InitType gpio;
     GPIO_InitStruct(&gpio);
-    // enable ports (GPIOB clock handled in GPIO_Init)
+    // Enable GPIO clocks for used ports
+    RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB, ENABLE);
+
     // init CS, DC, RST pins as outputs
     gpio.Pin = ST7735_CS_PIN;
     gpio.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
@@ -183,7 +192,35 @@ void st7735_init(void)
     gpio.Pin = ST7735_RST_PIN;
     GPIO_InitPeripheral(ST7735_RST_GPIO_PORT, &gpio);
 
-    // ensure SPI2 already initialized by sFLASH_Init
+    // Configure SCLK (PB3) and MOSI (PB5) as SPI1 alternate-function outputs
+    gpio.Pin = ST7735_SCLK_PIN;
+    gpio.GPIO_Mode = GPIO_MODE_AF_PP;
+    gpio.GPIO_Alternate = ST7735_SPI_AF;
+    GPIO_InitPeripheral(ST7735_SCLK_GPIO_PORT, &gpio);
+
+    gpio.Pin = ST7735_MOSI_PIN;
+    gpio.GPIO_Mode = GPIO_MODE_AF_PP;
+    gpio.GPIO_Alternate = ST7735_SPI_AF;
+    GPIO_InitPeripheral(ST7735_MOSI_GPIO_PORT, &gpio);
+
+    // Enable SPI1 clock and AFIO
+    RCC_EnableAPB2PeriphClk(ST7735_SPI_CLK | RCC_APB2_PERIPH_AFIO, ENABLE);
+
+    // Initialize SPI1 peripheral (master, 8-bit, MSB)
+    {
+        SPI_InitType SPI_InitStructure;
+        SPI_InitStructure.DataDirection = SPI_DIR_DOUBLELINE_FULLDUPLEX;
+        SPI_InitStructure.SpiMode       = SPI_MODE_MASTER;
+        SPI_InitStructure.DataLen       = SPI_DATA_SIZE_8BITS;
+        SPI_InitStructure.CLKPOL        = SPI_CLKPOL_HIGH;
+        SPI_InitStructure.CLKPHA        = SPI_CLKPHA_SECOND_EDGE;
+        SPI_InitStructure.NSS           = SPI_NSS_SOFT;
+        SPI_InitStructure.BaudRatePres  = SPI_BR_PRESCALER_16;
+        SPI_InitStructure.FirstBit      = SPI_FB_MSB;
+        SPI_InitStructure.CRCPoly       = 7;
+        SPI_Init(ST7735_SPI, &SPI_InitStructure);
+        SPI_Enable(ST7735_SPI, ENABLE);
+    }
 
     // hardware reset
     st7735_rst_low();
@@ -213,14 +250,15 @@ void st7735_fill_screen(uint16_t color)
 {
     // fill entire screen with a single color
     st7735_set_addr_window(0, 0, ST7735_WIDTH-1, ST7735_HEIGHT-1);
-    // send color data as high byte then low byte repeatedly
+    // send color data as high byte then low byte repeatedly using hardware SPI
     st7735_dc_data();
     st7735_cs_low();
     uint8_t hi = color >> 8;
     uint8_t lo = color & 0xFF;
-    for (int i=0; i < (ST7735_WIDTH * ST7735_HEIGHT); ++i){
-        st7735_spi_transfer(hi);
-        st7735_spi_transfer(lo);
+    uint8_t pix[2];
+    pix[0] = hi; pix[1] = lo;
+    for (int i = 0; i < (ST7735_WIDTH * ST7735_HEIGHT); ++i) {
+        st7735_spi_tx(pix, 2);
     }
     st7735_cs_high();
 }
@@ -242,11 +280,13 @@ void st7735_draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint16_t b
             if (line & (1<<row)){
                 st7735_set_addr_window(px, py, px, py);
                 uint8_t hi = color >> 8; uint8_t lo = color & 0xFF;
-                st7735_write_data((uint8_t[]){hi, lo}, 2);
+                uint8_t tmpc[2] = { hi, lo };
+                st7735_write_data(tmpc, 2);
             } else {
                 st7735_set_addr_window(px, py, px, py);
                 uint8_t hi = bgcolor >> 8; uint8_t lo = bgcolor & 0xFF;
-                st7735_write_data((uint8_t[]){hi, lo}, 2);
+                uint8_t tmpb[2] = { hi, lo };
+                st7735_write_data(tmpb, 2);
             }
         }
     }
@@ -255,7 +295,8 @@ void st7735_draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint16_t b
         uint16_t px = x + 5; uint16_t py = y + row;
         st7735_set_addr_window(px, py, px, py);
         uint8_t hi = bgcolor >> 8; uint8_t lo = bgcolor & 0xFF;
-        st7735_write_data((uint8_t[]){hi, lo}, 2);
+        uint8_t tmpb[2] = { hi, lo };
+        st7735_write_data(tmpb, 2);
     }
 }
 
