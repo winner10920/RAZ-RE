@@ -1,8 +1,13 @@
 
+
 #include "main.h"
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdint.h>
-#include "st7735.h"
+
+
+
+
+#include "pa7_input.h"
 /**
  * @brief  Main program.
  */
@@ -12,11 +17,19 @@
 #define ELEMENT_PIN GPIO_PIN_5
 #define ELEMENT_GPIO GPIOA
 
+#define USE_ST7735 FALSE
+#define USE_CT18 TRUE
+
+#if USE_ST7735 == TRUE
+#include "st7735.h"
+#endif
+#if USE_CT18 == TRUE
+#include "ct018tn01.h"
+#endif
 
 // BackLight Pin Confirmed A6
 // Coil Element Pin Confirmed A5
-// Button Pin Maybe A7?
-
+// Button Pin A7
 
 
 
@@ -58,16 +71,72 @@ int main(void)
 	GPIO_Init(LED_GPIO, LED_PIN, GPIO_MODE_OUTPUT_PP);
 	Delay(100);
 	GPIO_Off(LED_GPIO, LED_PIN);
+	GPIO_On(LED_GPIO, LED_PIN);
+    Delay(1000);
 	
 	sFLASH_Init();
-	// Initialize the ST7735 display (SPI2 with CS on PB7)
-	st7735_init();
-	// Clear screen to black and print Hello World in white
-	st7735_fill_screen(ST7735_COLOR565(0,0,0));
-	st7735_draw_string(8, 20, "Hello World", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
-	
-    uint8_t mainran = 0;
 
+	/* If using the CT018 panel, initialize it now and perform a short
+	 * visual test pattern (fills). This runs before PA7/input setup so the
+	 * display is exercised early in boot.
+	 */
+	#if USE_CT18 == TRUE
+		ct018_init(CT018_VOLTAGE_3V3);
+		ct018_power_on();
+		Delay(50);
+		/* color cycle: white, red, green, blue, black */
+		ct018_fill_screen(CT018_COLOR565(255,255,255)); Delay(2500);
+		ct018_fill_screen(CT018_COLOR565(0,0,0)); Delay(2000);
+		ct018_fill_screen(CT018_COLOR565(255,0,0)); Delay(2500);
+		ct018_fill_screen(CT018_COLOR565(0,255,0)); Delay(2500);
+		ct018_fill_screen(CT018_COLOR565(0,0,255)); Delay(2500);
+		
+	#endif
+
+	/* Configure PA7 as input */
+
+	pa7_input_init();
+
+	#if USE_ST7735 == TRUE
+	
+		// st7735_init();
+		// st7735_fill_screen(ST7735_COLOR565(255,255,255));
+		// Delay(1000);
+		// st7735_fill_screen(ST7735_COLOR565(125,125,125));
+		// Delay(1000);
+		// st7735_fill_screen(ST7735_COLOR565(0,0,0));
+		// Delay(1000);
+		// st7735_fill_screen(ST7735_COLOR565(125,125,125));
+		// st7735_draw_string(8, 8, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
+		// st7735_draw_string(24, 24, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
+		// st7735_draw_string(60, 60, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
+		// st7735_draw_string(100, 8, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
+		// st7735_draw_string(8, 100, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
+	/* Run ST7735 diagnostic: fill screen with test colors */
+			//st7735_diag();
+
+	#endif
+
+	
+    uint8_t mainran = 2;
+
+
+	
+
+	/* Simple PA7 test: toggle LED on each rising edge (short startup test) */
+	{
+		uint8_t prev = pa7_input_read();
+		uint8_t led_state = 1; // currently LED was turned on earlier
+		for (int i = 0; i < 1000; ++i) {
+			uint8_t cur = pa7_input_read();
+			if (cur && !prev) {
+				led_state = !led_state;
+				if (led_state) GPIO_On(LED_GPIO, LED_PIN); else GPIO_Off(LED_GPIO, LED_PIN);
+			}
+			prev = cur;
+			Delay(100);
+		}
+	}
 
 
 	if( mainran == 0){
@@ -77,13 +146,16 @@ int main(void)
 		FlashID = sFLASH_ReadID();
 		if(FlashID != 0) break;
 	}
+
+
+
+
 	// Check Flash ID
-	if(FlashID == sFLASH_GD25Q80_ID){
+	if(FlashID == 8740886){      //sFLASH_PD32S_ID){
 		status[0] = 1;
 		
 		// Wait for continue flag
-		while(continue_flag[0] == 0)
-			;
+		while(continue_flag[0] == 0);
 		continue_flag[0] = 0;
 		
 		status[0] = 2;
@@ -171,8 +243,7 @@ int main(void)
 		GPIO_Off(LED_GPIO, LED_PIN);
 		Delay(1000);
 		GPIO_Off(LED_GPIO, LED_PIN);
-		Delay(1000);
-		GPIO_Off(LED_GPIO, LED_PIN);
+	
 		//while(1)
 		mainran = 1
 			;
@@ -180,10 +251,22 @@ int main(void)
 	mainran = 1;
 	}
 	else{
-		GPIO_On(LED_GPIO, LED_PIN);
-		Delay(1000);
-		GPIO_Off(LED_GPIO, LED_PIN);
-		Delay(1000);
+
+
+			/* Simple PA7 test: toggle LED on each rising edge (short startup test) */
+	{
+		uint8_t prev = pa7_input_read();
+		uint8_t led_state = 1; // currently LED was turned on earlier
+		for (int i = 0; i < 500; ++i) {
+			uint8_t cur = pa7_input_read();
+			if (cur && !prev) {
+				led_state = !led_state;
+				if (led_state) GPIO_On(LED_GPIO, LED_PIN); else GPIO_Off(LED_GPIO, LED_PIN);
+			}
+			prev = cur;
+			Delay(100);
+		}
+	}
 	}
 }
 void Delay(volatile uint32_t count)

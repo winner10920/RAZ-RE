@@ -6,6 +6,6 @@
 -- Check for working C compiler: /home/cody/.vcpkg/artifacts/2139c4c6/compilers.arm.armclang/6.24.0/bin/armclang - skipped
 -- Detecting C compile features
 -- Detecting C compile features - done
--- Configuring done (0.5s)
+-- Configuring done (0.4s)
 -- Generating done (0.0s)
 -- Build files have been written to: /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1

@@ -131,6 +131,10 @@ build:
           category: sourceC
         - file: ../../../../src/st7735.c
           category: sourceC
+        - file: ../../../../src/pa7_input.c
+          category: sourceC
+        - file: ../../../../src/ct018tn01.c
+          category: sourceC
   licenses:
     - license: <unknown>
       packs:

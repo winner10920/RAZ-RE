@@ -89,6 +89,7 @@ extern "C" {
 #define sFLASH_W25Q128_ID 0x00EF4018
 #define sFLASH_M25P64_ID  0x202017
 #define sFLASH_GD25Q80_ID  0xC46014
+#define sFLASH_PD32S_ID 0x856016
 
 //SPI 
 #define sFLASH_SPI_SCK_GPIO_PORT        GPIOA      /* GPIOA */

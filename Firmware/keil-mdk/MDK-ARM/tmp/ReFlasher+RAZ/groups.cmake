@@ -82,6 +82,8 @@ add_library(Group_USER OBJECT
   "${SOLUTION_ROOT}/../src/n32g031_it.c"
   "${SOLUTION_ROOT}/../src/spi_flash.c"
   "${SOLUTION_ROOT}/../src/st7735.c"
+  "${SOLUTION_ROOT}/../src/pa7_input.c"
+  "${SOLUTION_ROOT}/../src/ct018tn01.c"
 )
 target_include_directories(Group_USER PUBLIC
   $<TARGET_PROPERTY:${CONTEXT},INTERFACE_INCLUDE_DIRECTORIES>
