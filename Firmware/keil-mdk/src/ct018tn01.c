@@ -117,8 +117,6 @@ void ct018_init(ct018_voltage_t vopt)
     /* ensure CS high by default */
     GPIO_SetBits(CT018_CS_GPIO_PORT, CT018_CS_PIN);
 
-    /* Apply initial voltage registers mapping */
-    ct018_set_voltage_option(vopt);
 }
 
 void ct018_power_on(void)
@@ -128,6 +126,19 @@ void ct018_power_on(void)
     Delay(20);
     GPIO_SetBits(CT018_RST_GPIO_PORT, CT018_RST_PIN);
     Delay(20);
+
+    /* R00 <- 0x0001 */
+    {
+        uint16_t v = 0x0001;
+        uint8_t b[2] = { (uint8_t)(v >> 8), (uint8_t)(v & 0xFF) };
+        ct018_send_cmd(0x00); ct018_send_data(b, 2);
+    }
+
+
+
+
+
+
 
     /* The panel's datasheet (pages 10-16) prescribes a specific register
      * initialization flow. The flow below follows that order verbatim:
@@ -245,29 +256,30 @@ void ct018_power_on(void)
     }
     Delay(1);
 
-    /* Continue with standard display on flow: SWRESET/SLPOUT, color mode and MADCTL */
-    ct018_send_cmd(0x01); /* SWRESET */
-    Delay(120);
-    ct018_send_cmd(0x11); /* SLPOUT */
-    Delay(120);
+    // /* Continue with standard display on flow: SWRESET/SLPOUT, color mode and MADCTL */
+    // ct018_send_cmd(0x01); /* SWRESET */
+    // Delay(120);
+    // ct018_send_cmd(0x11); /* SLPOUT */
+    // Delay(120);
 
-    /* Set color mode to 16-bit by default */
-    ct018_send_cmd(0x3A); /* COLMOD */
-    uint8_t colmod = 0x05; ct018_send_data(&colmod, 1);
-    Delay(10);
+    // /* Set color mode to 16-bit by default */
+    // ct018_send_cmd(0x3A); /* COLMOD */
+    // uint8_t colmod = 0x05; ct018_send_data(&colmod, 1);
+    // Delay(10);
 
-    /* MADCTL default (row/col order) */
-    ct018_send_cmd(0x36); uint8_t mad = 0x00; ct018_send_data(&mad, 1);
-    Delay(10);
+    // /* MADCTL default (row/col order) */
+    // ct018_send_cmd(0x36); uint8_t mad = 0x00; ct018_send_data(&mad, 1);
+    // Delay(10);
 
-    /* Apply VCOM control according to selected voltage mapping */
-    {
-        uint8_t c5 = vmap[current_vopt].vcom_byte;
-        ct018_send_cmd(0xC5); ct018_send_data(&c5, 1);
-    }
+    // /* Apply VCOM control according to selected voltage mapping */
+    // {
+    //     uint8_t c5 = vmap[current_vopt].vcom_byte;
+    //     ct018_send_cmd(0xC5); ct018_send_data(&c5, 1);
+    // }
 
     /* Apply default gamma */
-    ct018_apply_default_gamma();
+    ct018_gamma_set();
+    ct018_chip_set();
 
     /* Display on */
     ct018_send_cmd(0x29); /* DISPON */
@@ -286,38 +298,98 @@ void ct018_power_off(void)
     GPIO_ResetBits(CT018_RST_GPIO_PORT, CT018_RST_PIN);
 }
 
-void ct018_set_vcom(int16_t vcom_mv)
+
+
+
+void ct018_gamma_set(void)
 {
-    /* Convert millivolts to controller register value.
-     * The mapping here is an affine approximation; datasheet gives exact
-     * lookup tables—adjust these coefficients if needed for your panel.
-     */
-    if (vcom_mv < -2000) vcom_mv = -2000;
-    if (vcom_mv > 2000) vcom_mv = 2000;
-    /* simple linear conversion to 8-bit value centered at 0x40 */
-    int32_t reg = (int32_t)((vcom_mv * 0.02f) + 0x40);
-    if (reg < 0) reg = 0; if (reg > 0xFF) reg = 0xFF;
-    uint8_t v = (uint8_t)reg;
-    ct018_send_cmd(0xC5); ct018_send_data(&v, 1);
+    uint8_t gamma_regs[9] = {
+        0x30,
+        0x31,
+        0x32,
+        0x33,
+        0x34,
+        0x35,
+        0x36,
+        0x37,
+        0x3f
+    };
+
+    uint16_t gamma_vals[9] = {
+        0x0604,
+        0x0407,
+        0x0107,
+        0x0302,
+        0x0006,
+        0x0003,
+        0x0301,
+        0x0203,
+        0x0000
+    };
+    for (int i = 0; i < 9; ++i) {
+        ct018_send_cmd(gamma_regs[i]);
+        uint8_t b[2] = { (uint8_t)(gamma_vals[i] >> 8), (uint8_t)(gamma_vals[i] & 0xFF) };
+        ct018_send_data(b, 2);
+    }
+
 }
 
-void ct018_set_gamma(const uint8_t* gamma_pos, size_t pos_len, const uint8_t* gamma_neg, size_t neg_len)
+void ct018_chip_set(void)
 {
-    /* Positive gamma */
-    if (gamma_pos && pos_len) {
-        ct018_send_cmd(0xE0);
-        ct018_send_data(gamma_pos, (uint32_t)pos_len);
-    }
-    /* Negative gamma */
-    if (gamma_neg && neg_len) {
-        ct018_send_cmd(0xE1);
-        ct018_send_data(gamma_neg, (uint32_t)neg_len);
-    }
-}
 
-void ct018_apply_default_gamma(void)
-{
-    ct018_set_gamma(default_gamma_pos, sizeof(default_gamma_pos), default_gamma_neg, sizeof(default_gamma_neg));
+    uint8_t chip_set_regs[13] = {
+        0x01,
+        0x02,
+        0x05,
+        0x06,
+        0x07,
+        0x0B,
+        0x0F,
+        0x11,
+        0x14,
+        0x15,
+        0x16,
+        0x17,
+        0x20
+    };
+
+    uint16_t chip_set_vals[13] = {
+        0x0113,
+        0x0700,
+        0x0230,
+        0x0000,
+        0x0700,
+        0x0000,
+        0x000A,
+        0x0000,
+        0x9F00,
+        0x8050,
+        0x7F00,
+        0x9F00,
+        0x0000
+    };
+
+    for (int i = 0; i < 13; ++i) {
+        ct018_send_cmd(chip_set_regs[i]);
+        uint8_t b[2] = { (uint8_t)(chip_set_vals[i] >> 8), (uint8_t)(chip_set_vals[i] & 0xFF) };
+        ct018_send_data(b, 2);
+    }
+
+    /* R0A <- 0x0106 */
+    {
+        uint16_t v = 0x0106; uint8_t b[2] = { (uint8_t)(v >> 8), (uint8_t)(v & 0xFF) };
+        ct018_send_cmd(0x0A); ct018_send_data(b, 2);
+    }
+    Delay(1);
+    /* R0A <- 0x0107 */
+    {
+        uint16_t v = 0x0107; uint8_t b[2] = { (uint8_t)(v >> 8), (uint8_t)(v & 0xFF) };
+        ct018_send_cmd(0x0A); ct018_send_data(b, 2);
+    }
+    Delay(1);
+
+
+
 }
 
 /* Fill the whole panel with a single RGB565 color. Implemented here so
@@ -351,12 +423,4 @@ void ct018_fill_screen(uint16_t color)
     }
 }
 
-void ct018_set_voltage_option(ct018_voltage_t vopt)
-{
-    if (vopt >= CT018_VOLTAGE_3V3 && vopt <= CT018_VOLTAGE_5V) {
-        current_vopt = vopt;
-        /* apply VCOM register for new option if panel is live */
-        uint8_t c5 = vmap[current_vopt].vcom_byte;
-        ct018_send_cmd(0xC5); ct018_send_data(&c5, 1);
-    }
-}
+

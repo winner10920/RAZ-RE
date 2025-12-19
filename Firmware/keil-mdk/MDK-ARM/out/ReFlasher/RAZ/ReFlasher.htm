@@ -3,7 +3,7 @@
 <title>Static Call Graph - [/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ/ReFlasher.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ/ReFlasher.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Thu Dec 18 19:59:18 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Fri Dec 19 00:55:52 2025
 <BR><P>
 <H3>Maximum Stack Usage =        656 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -68,7 +68,7 @@ Global Symbols
 <P><STRONG><a name="[28]"></a>__main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry.o(.ARM.Collect$$$$00000000))
 <BR>[Address Reference Count : 1]<UL><LI> startup_n32g031.o(.text)
 </UL>
-<P><STRONG><a name="[41]"></a>_main_stk</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry2.o(.ARM.Collect$$$$00000001))
+<P><STRONG><a name="[42]"></a>_main_stk</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry2.o(.ARM.Collect$$$$00000001))
 
 <P><STRONG><a name="[29]"></a>_main_scatterload</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry5.o(.ARM.Collect$$$$00000004))
 <BR><BR>[Calls]<UL><LI><a href="#[2a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload
@@ -78,15 +78,15 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[2a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload
 </UL>
 
-<P><STRONG><a name="[42]"></a>_main_clock</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry7b.o(.ARM.Collect$$$$00000008))
+<P><STRONG><a name="[43]"></a>_main_clock</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry7b.o(.ARM.Collect$$$$00000008))
 
-<P><STRONG><a name="[43]"></a>_main_cpp_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry8b.o(.ARM.Collect$$$$0000000A))
+<P><STRONG><a name="[44]"></a>_main_cpp_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry8b.o(.ARM.Collect$$$$0000000A))
 
-<P><STRONG><a name="[44]"></a>_main_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry9a.o(.ARM.Collect$$$$0000000B))
+<P><STRONG><a name="[45]"></a>_main_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry9a.o(.ARM.Collect$$$$0000000B))
 
-<P><STRONG><a name="[45]"></a>__rt_final_cpp</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry10a.o(.ARM.Collect$$$$0000000D))
+<P><STRONG><a name="[46]"></a>__rt_final_cpp</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry10a.o(.ARM.Collect$$$$0000000D))
 
-<P><STRONG><a name="[46]"></a>__rt_final_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry11a.o(.ARM.Collect$$$$0000000F))
+<P><STRONG><a name="[47]"></a>__rt_final_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry11a.o(.ARM.Collect$$$$0000000F))
 
 <P><STRONG><a name="[0]"></a>Reset_Handler</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, startup_n32g031.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_n32g031.o(RESET)
@@ -197,12 +197,13 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[29]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_main_scatterload
 </UL>
 
-<P><STRONG><a name="[47]"></a>__scatterload_rt2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, init.o(.text), UNUSED)
+<P><STRONG><a name="[48]"></a>__scatterload_rt2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, init.o(.text), UNUSED)
 
-<P><STRONG><a name="[3d]"></a>Delay</STRONG> (Thumb, 32 bytes, Stack size 8 bytes, main.o(.text.Delay))
+<P><STRONG><a name="[3a]"></a>Delay</STRONG> (Thumb, 32 bytes, Stack size 8 bytes, main.o(.text.Delay))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Delay
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_chip_set
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
 </UL>
 
 <P><STRONG><a name="[2c]"></a>GPIO_InitPeripheral</STRONG> (Thumb, 660 bytes, Stack size 56 bytes, n32g031_gpio.o(.text.GPIO_InitPeripheral))
@@ -210,18 +211,18 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_init
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
+<BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_init
+<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 <LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3b]"></a>GPIO_InitStruct</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, n32g031_gpio.o(.text.GPIO_InitStruct))
+<P><STRONG><a name="[3d]"></a>GPIO_InitStruct</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, n32g031_gpio.o(.text.GPIO_InitStruct))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = GPIO_InitStruct
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_init
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
+<BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_init
+<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 <LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -230,7 +231,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_read
+<BR>[Called By]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_read
 </UL>
 
 <P><STRONG><a name="[2f]"></a>GPIO_ResetBits</STRONG> (Thumb, 140 bytes, Stack size 16 bytes, n32g031_gpio.o(.text.GPIO_ResetBits))
@@ -240,7 +241,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_data
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_cmd
-<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
 <LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -251,9 +252,9 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_data
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_cmd
-<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
+<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 <LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -275,9 +276,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_init
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
+<BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_init
+<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 <LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -286,8 +287,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
+<BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 </UL>
 
 <P><STRONG><a name="[33]"></a>SPI_I2S_GetStatus</STRONG> (Thumb, 136 bytes, Stack size 16 bytes, n32g031_spi.o(.text.SPI_I2S_GetStatus))
@@ -322,8 +323,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
+<BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 </UL>
 
 <P><STRONG><a name="[3]"></a>SVC_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, n32g031_it.o(.text.SVC_Handler))
@@ -353,7 +354,17 @@ Global Symbols
 <LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
 
-<P><STRONG><a name="[37]"></a>ct018_fill_screen</STRONG> (Thumb, 116 bytes, Stack size 544 bytes, ct018tn01.o(.text.ct018_fill_screen))
+<P><STRONG><a name="[37]"></a>ct018_chip_set</STRONG> (Thumb, 108 bytes, Stack size 32 bytes, ct018tn01.o(.text.ct018_chip_set))
+<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = ct018_chip_set &rArr; ct018_send_data &rArr; SPI_I2S_GetStatus
+</UL>
+<BR>[Calls]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_data
+<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_cmd
+<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Delay
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
+</UL>
+
+<P><STRONG><a name="[3b]"></a>ct018_fill_screen</STRONG> (Thumb, 116 bytes, Stack size 544 bytes, ct018tn01.o(.text.ct018_fill_screen))
 <BR><BR>[Stack]<UL><LI>Max Depth = 584<LI>Call Chain = ct018_fill_screen &rArr; ct018_send_data &rArr; SPI_I2S_GetStatus
 </UL>
 <BR>[Calls]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_data
@@ -362,27 +373,26 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3a]"></a>ct018_init</STRONG> (Thumb, 212 bytes, Stack size 72 bytes, ct018tn01.o(.text.ct018_init))
+<P><STRONG><a name="[3c]"></a>ct018_init</STRONG> (Thumb, 176 bytes, Stack size 72 bytes, ct018tn01.o(.text.ct018_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = ct018_init &rArr; GPIO_InitPeripheral
 </UL>
-<BR>[Calls]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_data
-<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_cmd
-<LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_EnableAPB2PeriphClk
+<BR>[Calls]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_EnableAPB2PeriphClk
 <LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_Enable
 <LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_Init
 <LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
+<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
 <LI><a href="#[2c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitPeripheral
 </UL>
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3c]"></a>ct018_power_on</STRONG> (Thumb, 576 bytes, Stack size 64 bytes, ct018tn01.o(.text.ct018_power_on))
-<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = ct018_power_on &rArr; ct018_send_data &rArr; SPI_I2S_GetStatus
+<P><STRONG><a name="[3e]"></a>ct018_power_on</STRONG> (Thumb, 504 bytes, Stack size 56 bytes, ct018tn01.o(.text.ct018_power_on))
+<BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = ct018_power_on &rArr; ct018_chip_set &rArr; ct018_send_data &rArr; SPI_I2S_GetStatus
 </UL>
-<BR>[Calls]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_data
+<BR>[Calls]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_chip_set
+<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_data
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_send_cmd
-<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Delay
+<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Delay
 <LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
@@ -392,31 +402,31 @@ Global Symbols
 <P><STRONG><a name="[26]"></a>main</STRONG> (Thumb, 500 bytes, Stack size 72 bytes, main.o(.text.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 656<LI>Call Chain = main &rArr; ct018_fill_screen &rArr; ct018_send_data &rArr; SPI_I2S_GetStatus
 </UL>
-<BR>[Calls]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_read
-<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_init
-<LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_fill_screen
-<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
+<BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_read
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pa7_input_init
+<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_fill_screen
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
+<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 <LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_EnableAPB2PeriphClk
 <LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
+<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
 <LI><a href="#[2c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitPeripheral
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> entry9a.o(.ARM.Collect$$$$0000000B)
 </UL>
-<P><STRONG><a name="[3f]"></a>pa7_input_init</STRONG> (Thumb, 44 bytes, Stack size 40 bytes, pa7_input.o(.text.pa7_input_init))
+<P><STRONG><a name="[40]"></a>pa7_input_init</STRONG> (Thumb, 44 bytes, Stack size 40 bytes, pa7_input.o(.text.pa7_input_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = pa7_input_init &rArr; GPIO_InitPeripheral
 </UL>
 <BR>[Calls]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_EnableAPB2PeriphClk
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
+<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
 <LI><a href="#[2c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitPeripheral
 </UL>
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[40]"></a>pa7_input_read</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, pa7_input.o(.text.pa7_input_read))
+<P><STRONG><a name="[41]"></a>pa7_input_read</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, pa7_input.o(.text.pa7_input_read))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = pa7_input_read &rArr; GPIO_ReadInputDataBit
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ReadInputDataBit
@@ -424,24 +434,24 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3e]"></a>sFLASH_Init</STRONG> (Thumb, 156 bytes, Stack size 56 bytes, spi_flash.o(.text.sFLASH_Init))
+<P><STRONG><a name="[3f]"></a>sFLASH_Init</STRONG> (Thumb, 156 bytes, Stack size 56 bytes, spi_flash.o(.text.sFLASH_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = sFLASH_Init &rArr; GPIO_InitPeripheral
 </UL>
 <BR>[Calls]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_EnableAPB2PeriphClk
 <LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_Enable
 <LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_Init
 <LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
+<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
 <LI><a href="#[2c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitPeripheral
 </UL>
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[48]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)
+<P><STRONG><a name="[49]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)
 
-<P><STRONG><a name="[49]"></a>__scatterload_null</STRONG> (Thumb, 2 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_null), UNUSED)
+<P><STRONG><a name="[4a]"></a>__scatterload_null</STRONG> (Thumb, 2 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_null), UNUSED)
 
-<P><STRONG><a name="[4a]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
+<P><STRONG><a name="[4b]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
 <P>
 <H3>
 Local Symbols
@@ -455,9 +465,9 @@ Local Symbols
 <LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
-<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_fill_screen
-<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_chip_set
+<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_fill_screen
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
 </UL>
 
 <P><STRONG><a name="[39]"></a>ct018_send_data</STRONG> (Thumb, 92 bytes, Stack size 24 bytes, ct018tn01.o(.text.ct018_send_data))
@@ -469,9 +479,9 @@ Local Symbols
 <LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
-<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_fill_screen
-<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_init
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_chip_set
+<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_fill_screen
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ct018_power_on
 </UL>
 <P>
 <H3>

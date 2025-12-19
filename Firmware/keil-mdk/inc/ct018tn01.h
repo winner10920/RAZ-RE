@@ -81,25 +81,15 @@ void ct018_power_on(void);
 /** Power off sequence (puts panel into sleep if supported). */
 void ct018_power_off(void);
 
-/** Set VCOM (approximate) in millivolts. This computes a register value and
- *  sends the appropriate command. The concrete mapping depends on panel
- *  electronics; the implementation uses the datasheet-recommended mapping.
- */
-void ct018_set_vcom(int16_t vcom_mv);
 
-/** Set gamma correction curve. The driver expects `len` bytes matching the
- *  controller's gamma table format. A convenience function `ct018_apply_default_gamma`
- *  applies a working default from the datasheet.
- */
-void ct018_set_gamma(const uint8_t* gamma_pos, size_t pos_len, const uint8_t* gamma_neg, size_t neg_len);
-void ct018_apply_default_gamma(void);
+void ct018_gamma_set(void);
+void ct018_chip_set(void);
 
 /* Fill the entire panel with a single RGB565 color. Useful for quick tests. */
 void ct018_fill_screen(uint16_t color);
 
 /** Reconfigure voltage option at runtime (re-applies recommended registers).
  */
-void ct018_set_voltage_option(ct018_voltage_t vopt);
 
 #ifdef __cplusplus
 }
