@@ -84,4 +84,3 @@ project:
         - file: ../src/spi_flash.c
         - file: ../src/st7735.c
         - file: ../src/pa7_input.c
-        - file: ../src/ct018tn01.c

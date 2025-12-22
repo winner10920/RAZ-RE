@@ -7,7 +7,7 @@
  */
 
 #include "st7735.h"
-//#include <string.h>
+#include <string.h>
 
  
 
@@ -70,8 +70,11 @@ void st7735_init(void)
 {
     GPIO_InitType gpio;
     GPIO_InitStruct(&gpio);
-    // Enable GPIO clocks for used ports
+    // Enable GPIO clocks for used ports (explicit, do not depend on sFLASH macros)
     RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB, ENABLE);
+
+    // Enable SPI clock and AFIO
+    RCC_EnableAPB2PeriphClk(ST7735_SPI_CLK | RCC_APB2_PERIPH_AFIO, ENABLE);
 
     // init CS, DC, RST pins as outputs
     gpio.Pin = ST7735_CS_PIN;
@@ -95,10 +98,8 @@ void st7735_init(void)
     gpio.GPIO_Alternate = ST7735_SPI_AF;
     GPIO_InitPeripheral(ST7735_MOSI_GPIO_PORT, &gpio);
 
-    // Enable SPI1 clock and AFIO
-    RCC_EnableAPB2PeriphClk(ST7735_SPI_CLK | RCC_APB2_PERIPH_AFIO, ENABLE);
-
-    // Initialize SPI1 peripheral (master, 8-bit, MSB)
+    
+    // Initialize SPI peripheral (master, 8-bit, MSB)
     {
         SPI_InitType SPI_InitStructure;
         SPI_InitStructure.DataDirection = SPI_DIR_DOUBLELINE_FULLDUPLEX;
@@ -107,7 +108,7 @@ void st7735_init(void)
         SPI_InitStructure.CLKPOL        = SPI_CLKPOL_HIGH;
         SPI_InitStructure.CLKPHA        = SPI_CLKPHA_SECOND_EDGE;
         SPI_InitStructure.NSS           = SPI_NSS_SOFT;
-
+        SPI_InitStructure.BaudRatePres  = SPI_BR_PRESCALER_2;
         SPI_InitStructure.FirstBit      = SPI_FB_MSB;
         SPI_InitStructure.CRCPoly       = 7;
         SPI_Init(ST7735_SPI, &SPI_InitStructure);
@@ -132,72 +133,13 @@ void st7735_init(void)
     st7735_write_data(&colmod, 1);
     Delay(10);
     st7735_write_command(ST7735_MADCTL);
-    uint8_t mad = 0x00; // row/col order, may require tweak
+    uint8_t mad = 0x80; // row/col order, may require tweak
     st7735_write_data(&mad, 1);
     Delay(10);
     st7735_write_command(ST7735_DISPON);
     Delay(100);
 }
 
-// void Innolux_CT018TN01::powerSet()
-// {
-//     uint16_t r0c_val = 0x0000;
-//     uint16_t r0d_val_1 = 0x0000;
-//     uint16_t r0d_val_2 = 0x0000;
-
-//     [span_14](start_span) // Determine values based on Page 11 Lookup Tables[span_14](end_span)
-//         if (SYSTEM_VCI_VOLTAGE == VCI_2_5V)
-//     {
-//         r0c_val = 0x0004;
-//         r0d_val_1 = 0x0609;
-//         r0d_val_2 = 0x0619;
-//     }
-//     else if (SYSTEM_VCI_VOLTAGE == VCI_2_8V)
-//     {
-//         r0c_val = 0x0000;
-//         r0d_val_1 = 0x0608;
-//         r0d_val_2 = 0x0618;
-//     }
-//     else
-//     { // VCI_3_3V
-//         r0c_val = 0x0001;
-//         r0d_val_1 = 0x0605;
-//         r0d_val_2 = 0x0615;
-//     }
-
-//     [span_15](start_span)            // Sequence Start[span_15](end_span)
-//         writeRegister(0x04, 0x0C0C); // R04 << 0C0Ch
-//     writeRegister(0x0C, r0c_val);    // R0C << xxxx (Based on VCI)
-//     writeRegister(0x0D, r0d_val_1);  // R0D << xxxx (Based on VCI)
-
-//     writeRegister(0x0A, 0x0101); // R0A << 0101h
-//     delayMs(1);                  // Delay 1ms
-
-//     writeRegister(0x0E, 0x141A); // R0E << 141Ah
-
-//     writeRegister(0x0A, 0x0102); // R0A << 0102h
-//     delayMs(1);                  // Delay 1ms
-
-//     writeRegister(0x03, 0x2010); // R03 << 2010h
-
-//     // Continue Flow (Page 11 Right Column)
-//     writeRegister(0x0A, 0x0100); // R0A << 0100h
-//     delayMs(40);                 // Delay 40ms (2 Frames or More)
-
-//     writeRegister(0x0E, 0x341A); // R0E << 341Ah
-
-//     writeRegister(0x0A, 0x0102); // R0A << 0102h
-//     delayMs(1);                  // Delay 1ms
-
-//     writeRegister(0x0A, 0x0100); // R0A << 0100h
-//     delayMs(40);                 // Delay 40ms (2 Frames or More)
-
-//     writeRegister(0x0D, r0d_val_2); // R0D << xxxx (Based on VCI)
-
-//     writeRegister(0x0A, 0x0101); // R0A << 0101h
-//     delayMs(1);                  // Delay 1ms
-// }
-// }
 
 void st7735_fill_screen(uint16_t color)
 {

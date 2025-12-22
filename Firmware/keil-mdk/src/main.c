@@ -1,7 +1,7 @@
 
 
 #include "main.h"
-//#include <stdio.h>
+#include <stdio.h>
 #include <stdint.h>
 
 
@@ -17,15 +17,8 @@
 #define ELEMENT_PIN GPIO_PIN_5
 #define ELEMENT_GPIO GPIOA
 
-#define USE_ST7735 FALSE
-#define USE_CT18 TRUE
 
-#if USE_ST7735 == TRUE
 #include "st7735.h"
-#endif
-#if USE_CT18 == TRUE
-#include "ct018tn01.h"
-#endif
 
 // BackLight Pin Confirmed A6
 // Coil Element Pin Confirmed A5
@@ -74,24 +67,9 @@ int main(void)
 	GPIO_On(LED_GPIO, LED_PIN);
     Delay(1000);
 	
-	sFLASH_Init();
+	// sFLASH_Init();
 
-	/* If using the CT018 panel, initialize it now and perform a short
-	 * visual test pattern (fills). This runs before PA7/input setup so the
-	 * display is exercised early in boot.
-	 */
-	#if USE_CT18 == TRUE
-		ct018_init(CT018_VOLTAGE_3V3);
-		ct018_power_on();
-		Delay(50);
-		/* color cycle: white, red, green, blue, black */
-		ct018_fill_screen(CT018_COLOR565(255,255,255)); Delay(2500);
-		ct018_fill_screen(CT018_COLOR565(0,0,0)); Delay(2000);
-		ct018_fill_screen(CT018_COLOR565(255,0,0)); Delay(2500);
-		ct018_fill_screen(CT018_COLOR565(0,255,0)); Delay(2500);
-		ct018_fill_screen(CT018_COLOR565(0,0,255)); Delay(2500);
-		
-	#endif
+
 
 	/* Configure PA7 as input */
 
@@ -99,19 +77,19 @@ int main(void)
 
 	#if USE_ST7735 == TRUE
 	
-		// st7735_init();
-		// st7735_fill_screen(ST7735_COLOR565(255,255,255));
-		// Delay(1000);
-		// st7735_fill_screen(ST7735_COLOR565(125,125,125));
-		// Delay(1000);
-		// st7735_fill_screen(ST7735_COLOR565(0,0,0));
-		// Delay(1000);
-		// st7735_fill_screen(ST7735_COLOR565(125,125,125));
-		// st7735_draw_string(8, 8, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
-		// st7735_draw_string(24, 24, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
-		// st7735_draw_string(60, 60, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
-		// st7735_draw_string(100, 8, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
-		// st7735_draw_string(8, 100, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
+		st7735_init();
+		st7735_fill_screen(ST7735_COLOR565(255,255,255));
+		Delay(1000);
+		st7735_fill_screen(ST7735_COLOR565(125,125,125));
+		Delay(1000);
+		st7735_fill_screen(ST7735_COLOR565(0,0,0));
+		Delay(1000);
+		st7735_fill_screen(ST7735_COLOR565(125,125,125));
+		st7735_draw_string(8, 8, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
+		st7735_draw_string(24, 24, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
+		st7735_draw_string(60, 60, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
+		st7735_draw_string(100, 8, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
+		st7735_draw_string(8, 100, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
 	/* Run ST7735 diagnostic: fill screen with test colors */
 			//st7735_diag();
 

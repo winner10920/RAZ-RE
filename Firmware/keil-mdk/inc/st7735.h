@@ -5,7 +5,7 @@
 #define __ST7735_H__
 
 #include <stdint.h>
-#include "spi_flash.h"
+#include "n32g031.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,13 +34,6 @@ extern "C" {
 #define ST7735_SPI_CLK          RCC_APB2_PERIPH_SPI1
 #define ST7735_SPI_AF           GPIO_AF5_SPI1
 
-// Debug LED used to indicate SPI activity (can be overridden)
-#ifndef ST7735_DEBUG_LED_GPIO_PORT
-#define ST7735_DEBUG_LED_GPIO_PORT GPIOA
-#define ST7735_DEBUG_LED_PIN       GPIO_PIN_6
-#endif
-
-
 
 // ST7735 commands
 #define ST7735_SWRESET 0x01
@@ -53,25 +46,9 @@ extern "C" {
 #define ST7735_COLMOD  0x3A
 
 // Display dimensions for ST7735 80x160
-#define ST7735_WIDTH  120
+#define ST7735_WIDTH  80
 #define ST7735_HEIGHT 160
 
-// ST7735 commands
-// #define ST7735_SWRESET 0x04
-// #define ST7735_PWR1    0x0C
-// #define ST7735_PWR2    0x0D
-// #define ST7735_PWR3    0x0A
-// #define ST7735_SLPOUT  0x11
-// #define ST7735_DISPON  0x29
-// #define ST7735_CASET   0x2A
-// #define ST7735_RASET   0x2B
-// #define ST7735_RAMWR   0x2C
-// #define ST7735_MADCTL  0x36
-// #define ST7735_COLMOD  0x3A
-
-// // Display dimensions for ST7735 80x160
-// #define ST7735_WIDTH  120
-// #define ST7735_HEIGHT 160
 
 
 
