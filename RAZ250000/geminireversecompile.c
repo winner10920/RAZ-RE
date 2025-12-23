@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdbool.h>
-#include "BinaryNinja Decompile.c"
+#include "geminireversecompile.h"
 
 // --- Hardware Registers ---
 // RCC Registers
@@ -468,7 +468,7 @@ void RCC_EnableAPB1(int32_t bit_mask, int32_t enable) // sub_467c
 // --- Initialization Data Sequence (Extracted from sub_2234) ---  
 // Format: {Command, Data}  
 // Note: 0xFF/0xA5 is likely a Manufacturer Command Access Protect unlock  
-static const uint8_t init_cmds[] = {  
+const uint8_t init_cmds[] = {  
     0xFF, 0xA5,  // User Command Set Enable?  
     0x3E, 0x08,  
     0x3A, 0x65,  // COLMOD: 18-bit/pixel (0x65) or 16-bit (0x55)  
@@ -499,6 +499,7 @@ static const uint8_t init_cmds[] = {
     0xAF, 0x07,  
     0xFF, 0x00   // Lock/End  
 };  
+const unsigned init_cmds_size = sizeof(init_cmds);
   
 void LCD_WriteCmd(uint8_t cmd) {  
     GPIO_ResetBits(LCD_GPIO_PORT, LCD_DC_PIN); // DC Low = Command  
@@ -511,8 +512,7 @@ void LCD_WriteData(uint8_t data) {
     SPI_I2S_SendData(SPI1, data);  
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET);  
 }  
-  
-void LCD_Init(void) {  
+  void LCD_Init(void) {  
     // 1. Hardware Reset (Extracted from sub_290c/sub_3280)  
     GPIO_SetBits(LCD_GPIO_PORT, LCD_RST_PIN);  
     Delay_ms(10);  

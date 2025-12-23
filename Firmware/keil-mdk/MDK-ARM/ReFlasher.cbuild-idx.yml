@@ -13,4 +13,4 @@ build-idx:
         info:
           - ReFlasher.cbuild-pack.yml - file is already up-to-date
           - ReFlasher+RAZ.cbuild-run.yml - file is already up-to-date
-          - ReFlasher+RAZ.cbuild.yml - file generated successfully
+          - ReFlasher+RAZ.cbuild.yml - file is already up-to-date

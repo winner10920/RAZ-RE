@@ -18,7 +18,7 @@
 #define ELEMENT_GPIO GPIOA
 
 
-#include "st7735.h"
+#include "nv3029.h"
 
 // BackLight Pin Confirmed A6
 // Coil Element Pin Confirmed A5
@@ -75,25 +75,21 @@ int main(void)
 
 	pa7_input_init();
 
-	#if USE_ST7735 == TRUE
-	
-		st7735_init();
-		st7735_fill_screen(ST7735_COLOR565(255,255,255));
-		Delay(1000);
-		st7735_fill_screen(ST7735_COLOR565(125,125,125));
-		Delay(1000);
-		st7735_fill_screen(ST7735_COLOR565(0,0,0));
-		Delay(1000);
-		st7735_fill_screen(ST7735_COLOR565(125,125,125));
-		st7735_draw_string(8, 8, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
-		st7735_draw_string(24, 24, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
-		st7735_draw_string(60, 60, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
-		st7735_draw_string(100, 8, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
-		st7735_draw_string(8, 100, "Hello World 123123123456456456789789789", ST7735_COLOR565(255,255,255), ST7735_COLOR565(0,0,0));
-	/* Run ST7735 diagnostic: fill screen with test colors */
-			//st7735_diag();
 
-	#endif
+	
+		nv3029_init();
+		nv3029_fill_screen(NV3029_COLOR565(255,255,255));
+		Delay(1000);
+		nv3029_fill_screen(NV3029_COLOR565(125,125,125));
+		Delay(1000);
+		nv3029_fill_screen(NV3029_COLOR565(0,0,0));
+		Delay(1000);
+		nv3029_fill_screen(NV3029_COLOR565(125,125,125));
+		nv3029_draw_string(8, 8, "Hello World 123123123456456456789789789", NV3029_COLOR565(255,255,255), NV3029_COLOR565(0,0,0));
+		nv3029_draw_string(24, 24, "Hello World 123123123456456456789789789", NV3029_COLOR565(255,255,255), NV3029_COLOR565(0,0,0));
+		nv3029_draw_string(60, 60, "Hello World 123123123456456456789789789", NV3029_COLOR565(255,255,255), NV3029_COLOR565(0,0,0));
+	/* Run NV3029 diagnostic: fill screen with test colors */
+			//nv3029_diag();
 
 	
     uint8_t mainran = 2;

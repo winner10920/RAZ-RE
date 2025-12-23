@@ -1,10 +1,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "bn_decompile.h"
 
 
-
-int32_t sub_0(int32_t arg1, int32_t arg2, int32_t arg3, int32_t arg4, int32_t arg5 @ r4, int32_t arg6 @ r6)
+//int32_t sub_0(int32_t arg1, int32_t arg2, int32_t arg3, int32_t arg4, int32_t arg5 @ r4, int32_t arg6 @ r6)
+int32_t sub_0(int32_t arg1, int32_t arg2, int32_t arg3, int32_t arg4, int32_t arg5, int32_t arg6)
 {
     *(arg5 - 0x81 + arg6) = arg4 << 3;
     sub_904();
@@ -17,7 +18,7 @@ int32_t sub_c8()
     /* jump -> 0x8006dd1 */
 }
 
-int32_t sub_d8()``
+int32_t sub_d8()
 {
     0x80053a5(0x80053a5);
     /* jump -> 0x80000c1 */
@@ -1152,17 +1153,24 @@ uint32_t sub_f8c(int32_t* arg1 @ r5)
     int32_t r1_1;
     r0_3 = sub_698(*0x2000013c);
     
-    if (!TEST_BIT(r2, 0x1d) && !(*0x40010c10 & 2))
-        *0x20000120 = 1;
+    // if (!TEST_BIT(r2, 0x1d) && !(*0x40010c10 & 2))
+    //     *0x20000120 = 1;
+    if (!TEST_BIT(r2, 0x1d) && !(GPIOB->PID & 2))
+        (*(volatile uint32_t*)0x20000120) = 1;
     
     if (*0x20000120 != *0x200000c8)
     {
         *0x200000c8 = *0x20000120;
         
-        if (sub_2e44() && *0x40010c10 & 2 && *0x20000006 != 1 && *0x20000006 != 2
-                && *0x20000006 != 4 && *0x20000006 != 5 && *0x20000006 != 3 && *0x20000006 != 6
-                && *0x20000006 != 0xe)
-            sub_1de4(*0x20000120);
+        // if (sub_2e44() && *0x40010c10 & 2 && *0x20000006 != 1 && *0x20000006 != 2
+        //         && *0x20000006 != 4 && *0x20000006 != 5 && *0x20000006 != 3 && *0x20000006 != 6
+        //         && *0x20000006 != 0xe)
+        //     sub_1de4(*0x20000120);
+        if (sub_2e44() && (GPIOB->PID & 2) && (((volatile uint8_t*)0x20000006)[0] != 1)
+                && (((volatile uint8_t*)0x20000006)[0] != 2) && (((volatile uint8_t*)0x20000006)[0] != 4)
+                && (((volatile uint8_t*)0x20000006)[0] != 5) && (((volatile uint8_t*)0x20000006)[0] != 3)
+                && (((volatile uint8_t*)0x20000006)[0] != 6) && (((volatile uint8_t*)0x20000006)[0] != 0xe))
+            sub_1de4((*(volatile uint32_t*)0x20000120));
     }
     
     sub_2e58();
@@ -1704,7 +1712,8 @@ int32_t sub_15d0()
     int32_t var_10 = 0;
     int32_t var_18_1 = 0x10110000;
     int32_t var_1c = 8;
-    sub_2ba0(0x40010800, &var_1c);
+    // sub_2ba0(0x40010800, &var_1c);
+    sub_2ba0(GPIOA, &var_1c);
     int32_t var_24 = 8;
     char var_20 = 0;
     char var_1f = 0x10;
@@ -2152,7 +2161,8 @@ int32_t sub_1cd4()
     int32_t var_10 = 0;
     int32_t var_14 = 2;
     var_1c = 8;
-    sub_2ba0(0x40010800, &var_1c);
+    // sub_2ba0(0x40010800, &var_1c);
+    sub_2ba0(GPIOA, &var_1c);
     int32_t var_24 = 8;
     char var_20 = 0;
     char var_1f = 0xc;
@@ -2307,14 +2317,17 @@ int32_t sub_1f80()
         int32_t var_10_2 = 0;
         int32_t var_14_2 = 2;
         var_1c = 8;
-        sub_2ba0(0x40010800, &var_1c);
+        // sub_2ba0(0x40010800, &var_1c);
+        sub_2ba0(GPIOA, &var_1c);
         int32_t var_18_3 = 0;
         int32_t var_10_3 = 0;
         int32_t var_14_3 = 1;
         var_1c = 2;
-        sub_2ba0(0x40010c00, &var_1c);
+        // sub_2ba0(0x40010c00, &var_1c);
+        sub_2ba0(GPIOB, &var_1c);
         var_1c = 0x80;
-        sub_2ba0(0x40010800, &var_1c);
+        // sub_2ba0(0x40010800, &var_1c);
+        sub_2ba0(GPIOA, &var_1c);
         var_24 = 0x82;
         char var_20_2 = 0;
         char var_1f_2 = 0xc;
@@ -2337,14 +2350,17 @@ int32_t sub_1f80()
     int32_t var_10 = 0;
     int32_t var_14 = 2;
     var_1c = 8;
-    sub_2ba0(0x40010800, &var_1c);
+    // sub_2ba0(0x40010800, &var_1c);
+    sub_2ba0(GPIOA, &var_1c);
     int32_t var_18_1 = 0;
     int32_t var_10_1 = 0;
     int32_t var_14_1 = 1;
     var_1c = 2;
-    sub_2ba0(0x40010c00, &var_1c);
+    // sub_2ba0(0x40010c00, &var_1c);
+    sub_2ba0(GPIOB, &var_1c);
     var_1c = 0x80;
-    sub_2ba0(0x40010800, &var_1c);
+    // sub_2ba0(0x40010800, &var_1c);
+    sub_2ba0(GPIOA, &var_1c);
     var_24 = 8;
     char var_20 = 0;
     char var_1f = 8;

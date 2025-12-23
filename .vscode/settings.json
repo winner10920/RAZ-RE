@@ -3,5 +3,19 @@
         "--compile-commands-dir=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ"
     ],
     "debug.hideSlowPreLaunchWarning": true,
-    "debug.showInStatusBar": "never"
+    "debug.showInStatusBar": "never",
+    "favorites.resources": [
+        {
+            "filePath": "Firmware/keil-mdk/src/nv3029.c",
+            "group": "Default"
+        },
+        {
+            "filePath": "Firmware/keil-mdk/inc/nv3029.h",
+            "group": "Default"
+        },
+        {
+            "filePath": "Firmware/keil-mdk/src/main.c",
+            "group": "Default"
+        }
+    ]
 }
