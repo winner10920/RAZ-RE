@@ -133,7 +133,7 @@ static void nv3029_spi_tx(const uint8_t* buff, uint32_t len)
 {
     for (uint32_t i = 0; i < len; ++i) {
         // wait until transmit buffer empty
-        while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_TE_FLAG) == RESET) ;
+        while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_BUSY_FLAG) == SET) ;
         SPI_I2S_TransmitData(NV3029_SPI, buff[i]);
         //while (SPI_I2S_GetFlagStatus(NV3029_SPI, SPI_I2S_FLAG_BUSY) == SET);
 
@@ -186,8 +186,9 @@ static void nv3029_set_addr_window(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y
 
 void nv3029_init(void)
 {
-    GPIO_InitType gpio;
-    GPIO_InitStruct(&gpio);
+    GPIO_InitType GPIO_InitStructure;
+
+    GPIO_InitStruct(&GPIO_InitStructure);
     // Enable GPIO clocks for used ports (explicit, do not depend on sFLASH macros)
     RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB, ENABLE);
 
@@ -195,26 +196,27 @@ void nv3029_init(void)
     RCC_EnableAPB2PeriphClk(NV3029_SPI_CLK | RCC_APB2_PERIPH_AFIO, ENABLE);
 
     // init CS, DC, RST pins as outputs
-    gpio.Pin = NV3029_CS_PIN;
-    gpio.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitPeripheral(NV3029_CS_GPIO_PORT, &gpio);
+    GPIO_InitStructure.Pin = NV3029_CS_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitPeripheral(NV3029_CS_GPIO_PORT, &GPIO_InitStructure);
 
-    gpio.Pin = NV3029_DC_PIN;
-    GPIO_InitPeripheral(NV3029_DC_GPIO_PORT, &gpio);
+    GPIO_InitStructure.Pin = NV3029_DC_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitPeripheral(NV3029_DC_GPIO_PORT, &GPIO_InitStructure);
 
-    gpio.Pin = NV3029_RST_PIN;
-    GPIO_InitPeripheral(NV3029_RST_GPIO_PORT, &gpio);
+    GPIO_InitStructure.Pin = NV3029_RST_PIN;
+    GPIO_InitPeripheral(NV3029_RST_GPIO_PORT, &GPIO_InitStructure);
 
     // Configure SCLK (PB3) and MOSI (PB5) as SPI1 alternate-function outputs
-    gpio.Pin = NV3029_SCLK_PIN;
-    gpio.GPIO_Mode = GPIO_MODE_AF_PP;
-    gpio.GPIO_Alternate = NV3029_SPI_AF;
-    GPIO_InitPeripheral(NV3029_SCLK_GPIO_PORT, &gpio);
+    GPIO_InitStructure.Pin = NV3029_SCLK_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStructure.GPIO_Alternate = NV3029_SPI_AF;
+    GPIO_InitPeripheral(NV3029_SCLK_GPIO_PORT, &GPIO_InitStructure);
 
-    gpio.Pin = NV3029_MOSI_PIN;
-    gpio.GPIO_Mode = GPIO_MODE_AF_PP;
-    gpio.GPIO_Alternate = NV3029_SPI_AF;
-    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &gpio);
+    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStructure.GPIO_Alternate = NV3029_SPI_AF;
+    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
 
     // Initialize SPI peripheral (master, 8-bit, MSB)
     {
@@ -232,6 +234,8 @@ void nv3029_init(void)
         SPI_Enable(NV3029_SPI, ENABLE);
     }
 
+    
+
     // hardware reset
     nv3029_rst_high();
     Delay(10);
@@ -240,6 +244,8 @@ void nv3029_init(void)
     nv3029_rst_high();
     Delay(120);
 
+    nv3029_write_command(NV3029_SLPOUT);
+    Delay(120);
     // Use the reverse-engineered NV3029_Init_Sequence array to initialize the panel.
     // The array contains pairs {cmd, data}
     const uint16_t len = sizeof(NV3029_Init_Sequence);
@@ -251,9 +257,13 @@ void nv3029_init(void)
         // small delay between commands may be required for some entries; add if necessary
     }
 
+    nv3029_write_command(NV3029_MADCTL);
+    nv3029_write_data((uint8_t*)"\x80", 1); // MADCTL: MY=1, MX=0, MV=0, ML=0, RGB=0, MH=0
     // Finally, ensure display on
     nv3029_write_command(NV3029_DISPON);
-    Delay(100);
+    Delay(10);
+    nv3029_write_command(NV3029_RAMWR);
+
 }
 
 

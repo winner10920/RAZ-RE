@@ -1,5 +1,5 @@
 build:
-  generated-by: csolution version 2.12.0+p41-gfeadfc5e
+  generated-by: csolution version 2.12.0
   solution: ../../../ReFlasher.csolution.yml
   project: ../../../ReFlasher.cproject.yml
   context: ReFlasher+RAZ
@@ -131,7 +131,7 @@ build:
           category: sourceC
         - file: ../../../../src/nv3029.c
           category: sourceC
-        - file: ../../../../src/pa7_input.c
+        - file: ../../../../src/input.c
           category: sourceC
   licenses:
     - license: <unknown>
