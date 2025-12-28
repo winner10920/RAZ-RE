@@ -83,4 +83,3 @@ project:
         - file: ../src/n32g031_it.c
         - file: ../src/spi_flash.c
         - file: ../src/nv3029.c
-        - file: ../src/input.c

@@ -31,7 +31,6 @@ extern "C" {
 #include "n32g031_it.h"
 #include "spi_flash.h"
 #include "nv3029.h"
-#include "input.h"
 
 void Delay(volatile uint32_t count);
 void GPIO_Init(GPIO_Module* GPIOx, uint16_t Pin, uint32_t GpioMode);

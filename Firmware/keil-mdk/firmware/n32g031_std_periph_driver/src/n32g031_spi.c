@@ -706,7 +706,7 @@ FlagStatus SPI_I2S_GetStatus(SPI_Module* SPIx, uint16_t SPI_I2S_FLAG)
     assert_param(IS_SPI_PERIPH(SPIx));
     assert_param(IS_SPI_I2S_GET_FLAG(SPI_I2S_FLAG));
     /* Check the status of the specified SPI/I2S flag */
-    if ((SPIx->STS & SPI_I2S_FLAG) != (uint16_t)RESET)
+     if ((SPIx->STS & SPI_I2S_FLAG) != (uint16_t)RESET)
     {
         /* SPI_I2S_FLAG is set */
         bitstatus = SET;

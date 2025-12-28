@@ -1,0 +1,1 @@
+cmd='/home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/bin/cmake;-G;Ninja;-S;<SOURCE_DIR>;-B;<BINARY_DIR>;-DSOLUTION_ROOT=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM;-DCMSIS_PACK_ROOT=/home/cody/.cache/arm/packs;-DCMSIS_COMPILER_ROOT=/home/cody/.vcpkg/artifacts/2139c4c6/tools.open.cmsis.pack.cmsis.toolbox/2.12.0/etc'

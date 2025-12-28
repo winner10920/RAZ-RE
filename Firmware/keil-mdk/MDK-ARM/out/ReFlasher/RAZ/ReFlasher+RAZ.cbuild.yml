@@ -131,8 +131,6 @@ build:
           category: sourceC
         - file: ../../../../src/nv3029.c
           category: sourceC
-        - file: ../../../../src/input.c
-          category: sourceC
   licenses:
     - license: <unknown>
       packs:

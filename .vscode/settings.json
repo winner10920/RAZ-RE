@@ -17,5 +17,7 @@
             "filePath": "Firmware/keil-mdk/src/main.c",
             "group": "Default"
         }
-    ]
+    ],
+    "peripheral-inspector.periodicRefreshMode": "while running",
+    "peripheral-inspector.periodicRefreshInterval": 500
 }

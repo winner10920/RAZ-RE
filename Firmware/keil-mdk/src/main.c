@@ -5,18 +5,26 @@
 #include <stdint.h>
 #include "nv3029.h"
 #include "spi_flash.h"
-#include "input.h"
 
 
 
 #define LCD_BACKLIGHT_PIN GPIO_PIN_6
 #define LCD_BACKLIGHT_GPIO GPIOA
 
+#define LCD_SPI_CS_PIN GPIO_PIN_15
+#define LCD_SPI_CS_GPIO GPIOA
+
+#define LCD_RST_PIN GPIO_PIN_6
+#define LCD_RST_GPIO GPIOB
+
+#define LCD_DC_PIN GPIO_PIN_7
+#define LCD_DC_GPIO GPIOB
+
 #define ELEMENT_PIN GPIO_PIN_5
 #define ELEMENT_GPIO GPIOA
 
-#define ENABLE_A_PIN GPIO_PIN_4
-#define ENABLE_A_GPIO GPIOB
+#define LCD_FLASH_PWR_EN_PIN GPIO_PIN_4
+#define LCD_FLASH_PWR_EN_GPIO GPIOB
 
 #define ELEMENT_TV2_PIN GPIO_PIN_8
 #define ELEMENT_TV2_GPIO GPIOB
@@ -30,12 +38,18 @@
 #define LP4086_ISET_PIN GPIO_PIN_0
 #define LP4086_ISET_GPIO GPIOB
 
+#define UNKNOWN_INPUT_PIN GPIO_PIN_2
+#define UNKNOWN_INPUT_GPIO GPIOB
+
 
 #define BUTTON_PIN GPIO_PIN_7
 #define BUTTON_GPIO GPIOA
 
-#define BATTERY_VOLTAGE_PIN GPIO_PIN_1
-#define BATTERY_VOLTAGE_GPIO GPIOA
+#define TV1_VOLTAGE_SENSE_PIN GPIO_PIN_1
+#define TV1_VOLTAGE_SENSE_GPIO GPIOA
+
+#define TV2_VOLTAGE_SENSE_PIN GPIO_PIN_2
+#define TV2_VOLTAGE_SENSE_GPIO GPIOA
 
 #define  COIL_PIN        GPIO_PIN_8
 #define  COIL_GPIO       GPIOB	
@@ -46,33 +60,50 @@ GPIO
 
 PORT & PIN      MODE	SETTINGS	FUNCTION
 GPIOA    
-1 			    INPUT   ANALOG      BATTERY VOLTAGE SENSE
-3			    OUTPUT  PP,LOW      MIC ENABLE?
+0 			    INPUT               ?
+1 			    ANALOG  HSR         TV1_VOLTAGE_SENSE        
+2               ANALOG  HSR         TV2_VOLTAGE_SENSE
+3			    INPUT               MIC ?
 4			    OUTPUT  PP,LOW      NC
 5			    OUTPUT  PP,LOW      ELEMENT TV2
 6				OUTPUT  PP,LOW      LCD_BACKLIGHT
 7			    INPUT   PULLUP      BUTTON
-8               OUTPUT  PP,LOW      FLASH_CS
-9               OUTPUT  PP,LOW      FLASH_SPI_SCLK
-10 			    OUTPUT  PP,LOW      FLASH_SPI_MOSI
-11 			    INPUT   PULLUP      FLASH_SPI_MISO
-12
-13
-14
-15              OUTPUT  PP,LOW      LCD_SPI_CS
+8               OUTPUT  PP,HIGH     FLASH_CS
+9               OUTPUT  PP,LOW      SPI2_SCLK, FLASH_SPI_SCLK
+10 			    OUTPUT  PP,LOW      SPI2_MISO, FLASH_SPI_MISO
+11 			    INPUT   PULLUP      SPI2_MOSI, FLASH_SPI_MOSI
+12              OUTPUT  PP,HIGH     ??
+13				INPUT   PULLUP      SWCLK
+14              INPUT   PULLDOWN    SWDIO
+15              OUTPUT  PP,HIGH     LCD_SPI_CS
 
 GPIOB
 0	            OUTPUT  PP,LOW      LP4086_ISET
 1               INPUT   PULLUP      LP4086_CHRG (PULLED LOW ACTIVE)
-2			    
-3               OUTPUT  PP,LOW      LCD_SPI_SCLK
-4               OUTPUT  PP,LOW      ?ENABLE 
-5			    OUTPUT  PP,LOW      LCD_SPI_MOSI
-6 			    OUTPUT  PP,LOW      LCD_RST
-7  		        OUTPUT  PP,LOW      LCD_DC
+2			    INPUT   PULLUP      UNKOWN_INPUT
+3               OUTPUT  PP,LOW      SPI1_SCLK, LCD_SPI_SCLK
+4               OUTPUT  OD,LOW      LCD_FLASH_PWR_EN 
+5			    OUTPUT  PP,LOW      SPI1_MOSI, LCD_SPI_MOSI
+6 			    OUTPUT  PP,HIGH     LCD_RST
+7  		        OUTPUT  PP,HIGH     LCD_DC
 8				OUTPUT  PP,LOW      ELEMENT TV1
+
+GPIOC
+13              ANALOG  HSR         UNKOWN_ANALOG
+14 			    ? 					FSLP     
+15              ?                   VPSW
+
+GPIOF
+0              ANALOG  HSR         UNKOWN_ANALOG
+1              ANALOG  HSR         UNKOWN_ANALOG
+2              ANALOG  HSR         UNKOWN_ANALOG
+6              ANALOG  HSR         UNKOWN_ANALOG
+7              ANALOG  HSR         UNKOWN_ANALOG
 */
 
+
+
+volatile uint8_t mainran = 0;
 
 
 #define BUFFER_SIZE 4096
@@ -114,15 +145,26 @@ int main(void)
 	Delay(100);
 	GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
 	GPIO_On(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
+
+	GPIO_Init(LCD_SPI_CS_GPIO, LCD_SPI_CS_PIN, GPIO_MODE_OUTPUT_PP);
+	GPIO_On(LCD_SPI_CS_GPIO, LCD_SPI_CS_PIN);
+
+	GPIO_Init(LCD_RST_GPIO, LCD_RST_PIN, GPIO_MODE_OUTPUT_PP);
+	GPIO_On(LCD_RST_GPIO, LCD_RST_PIN);
+
+	GPIO_Init(LCD_DC_GPIO, LCD_DC_PIN, GPIO_MODE_OUTPUT_PP);
+	GPIO_On(LCD_DC_GPIO, LCD_DC_PIN);
+
+	GPIO_Init(MIC_ENABLE_GPIO, MIC_ENABLE_PIN, GPIO_MODE_INPUT);
+
+    GPIO_Init(UNKNOWN_INPUT_GPIO, UNKNOWN_INPUT_PIN, GPIO_MODE_INPUT);
 	
-	GPIO_Init(MIC_ENABLE_GPIO, MIC_ENABLE_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On(MIC_ENABLE_GPIO, MIC_ENABLE_PIN);
 
     GPIO_Init(ELEMENT_GPIO, ELEMENT_PIN, GPIO_MODE_OUTPUT_PP);
 	GPIO_On(ELEMENT_GPIO, ELEMENT_PIN);
 	
-	GPIO_Init(ENABLE_A_GPIO, ENABLE_A_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On(ENABLE_A_GPIO, ENABLE_A_PIN);
+	GPIO_Init(LCD_FLASH_PWR_EN_GPIO, LCD_FLASH_PWR_EN_PIN, GPIO_MODE_OUTPUT_OD);
+	GPIO_Off(LCD_FLASH_PWR_EN_GPIO, LCD_FLASH_PWR_EN_PIN);
 
 	GPIO_Init(ELEMENT_TV2_GPIO, ELEMENT_TV2_PIN, GPIO_MODE_OUTPUT_PP);
 	GPIO_On(ELEMENT_TV2_GPIO, ELEMENT_TV2_PIN);
@@ -143,12 +185,13 @@ int main(void)
 
     // ANALOG
 
-	GPIO_Init(BATTERY_VOLTAGE_GPIO, BATTERY_VOLTAGE_PIN, GPIO_MODE_ANALOG);
+	GPIO_Init(TV1_VOLTAGE_SENSE_GPIO, TV1_VOLTAGE_SENSE_PIN, GPIO_MODE_ANALOG);
+	GPIO_Init(TV2_VOLTAGE_SENSE_GPIO, TV2_VOLTAGE_SENSE_PIN, GPIO_MODE_ANALOG);
 
 
     Delay(1000);
 	
-	// sFLASH_Init();
+	
 
 
 	
@@ -168,17 +211,16 @@ int main(void)
 			//nv3029_diag();
 
 	
-    uint8_t mainran = 2;
-
+    
 
 	
 
 	/* Simple PA7 test: toggle LED on each rising edge (short startup test) */
 	{
-		uint8_t prev = input_read();
-		uint8_t led_state = 1; // currently LED was turned on earlier
-		for (int i = 0; i < 1000; ++i) {
-			uint8_t cur = input_read();
+		uint8_t prev = GPIO_ReadInputDataBit(BUTTON_GPIO, BUTTON_PIN);
+		uint8_t led_state = GPIO_ReadOutputDataBit(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);; // currently LED was turned on earlier
+		for (int i = 0; i < 500; ++i) {
+			uint8_t cur = GPIO_ReadInputDataBit(BUTTON_GPIO, BUTTON_PIN);
 			if (cur && !prev) {
 				led_state = !led_state;
 				if (led_state) GPIO_On(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN); else GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
@@ -190,6 +232,8 @@ int main(void)
 
 
 	if( mainran == 0){
+
+		 sFLASH_Init();
 		
 	while(1){
 		Delay(100);
@@ -237,18 +281,15 @@ int main(void)
 			status[0] = 5;
 			for(uint32_t i=0; i<256; i++){
 				while(status[0] == 5) ;
-				GPIO_On(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
 				uint32_t addr = i * BUFFER_SIZE;
 				sFLASH_WriteBuffer(buffer, addr, BUFFER_SIZE);
 				status[0] = 5;
-				GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
 			}
 			//sFLASH_EraseBulk();
 			//Delay(10);
 			//while(1){
 				//if(tmp_page != page[0]){
 					//status[0] = 4;
-					//GPIO_On(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
 					//tmp_page = page[0];
 					//uint32_t addr = page[0] * BUFFER_SIZE;
 					//sFLASH_WriteBuffer(buffer, addr, BUFFER_SIZE);
@@ -261,7 +302,6 @@ int main(void)
 					//}
 					//sFLASH_ReadBuffer(buffer, addr, BUFFER_SIZE);
 					//status[0] = 5;
-					//GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
 				//}
 				
 			//}
@@ -269,11 +309,9 @@ int main(void)
 			while(1){
 				if(tmp_page != page[0]){
 					status[0] = 6;
-					GPIO_On(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
 					tmp_page = page[0];
 					uint32_t addr = page[0] * BUFFER_SIZE;
 					sFLASH_ReadBuffer(buffer, addr, BUFFER_SIZE);
-					GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
 					status[0] = 7;
 				}
 			}
@@ -303,32 +341,11 @@ int main(void)
 	else{
 
 
-			/* Simple PA7 test: toggle LED on each rising edge (short startup test) */
-	{
-		uint8_t prev = input_read();
-		uint8_t led_state = 1; // currently LED was turned on earlier
-		for (int i = 0; i < 500; ++i) {
-			uint8_t cur = input_read();
-			if (cur && !prev) {
-				led_state = !led_state;
-				if (led_state) GPIO_On(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN); else GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
-			}
-			prev = cur;
-			Delay(100);
-		}
-	}
+
 	}
 }
 
-/*
-GPIOA base address: 0x40010800 
-GPIOB base address: 0x40010C00 
-GPIOC base address: 0x40011000 
-GPIOF base address: 0x40011C00 
 
-
-
-*/
 
 
 
