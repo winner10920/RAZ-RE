@@ -1,4 +1,4 @@
-import os, time, argparse, swd
+import os, time, argparse, swd, pylink
 from PIL import Image
 
 # -------------------------------------
@@ -167,11 +167,19 @@ class ReFlasher:
         self.cm     = None
     
     def connect(self):
-        self.dev = swd.Swd()
+        #self.dev = swd.Swd()
+        self.dev = pylink.JLink()
         self.cm = swd.CortexM(self.dev)
-        print(self.dev.get_version().str)
-        print("Target Voltage:", self.dev.get_target_voltage())
-        print("MCU ID:", hex(self.dev.get_idcode()))
+        
+        # print("Target Voltage:", self.dev.get_target_voltage())
+        self.dev.open()
+        print(self.dev.product_name)
+        print(self.dev.serial_number)
+        self.dev.connect('N32G031K8')
+        #self.dev.swo_start()
+
+        print(self.dev.target_connected())
+        print("MCU ID:", hex(self.dev.core_id()))
 
     def reset_halt(self):
         try:
@@ -185,6 +193,7 @@ class ReFlasher:
             pass
     def dump_fw(self, file_path):
         print("Extracting FW: ", end='', flush=True)
+        #self.dev.memory_read()
         data1 = bytes(self.dev.read_mem(MCU_PROGMEM_ADDR, MCU_PROGMEM_LEN))
         data2 = bytes(self.dev.read_mem(MCU_PROGMEM_ADDR, MCU_PROGMEM_LEN))
 
@@ -282,17 +291,17 @@ class ReFlasher:
             print(f"Error - Invalid file path: {self.flash_input_file}")       
     def dump_flash(self, file_path=""):
         print("Dumping Flash > " + file_path)
+        self.connect()
         if self.verbose:
             print("BLOCK_SIZE:\t\t" + str(FLASH_BLOCK_SIZE))
             print("BLOCKS:\t\t\t" + str(FLASH_BLOCKS))
-
-        self.dev.write_mem8(CONTINUE_FLAG_ADDR, [1])
+        self.dev.memory_write8(CONTINUE_FLAG_ADDR, [1])
 
         #Set to 4 to write data to memory from flash
-        self.dev.write_mem8(STATUS_REG_ADDR, [4])
+        self.dev.memory_write8(STATUS_REG_ADDR, [4])
 
         #Wait for read to complete
-        while(int.from_bytes(bytes(self.dev.read_mem8(STATUS_REG_ADDR, 1)), 'big') != 5):
+        while(int.from_bytes(bytes(self.dev.memory_read8(STATUS_REG_ADDR, 1)), 'big') != 5):
                 pass
 
         # Read data from memory
@@ -309,14 +318,13 @@ class ReFlasher:
                     print("=", end="", flush=True)
 
                 #Set to 4 to write data to memory from flash
-                self.dev.write_mem8(STATUS_REG_ADDR, [4])
+                self.dev.memory_write8(STATUS_REG_ADDR, [4])
 
                 #Wait for read to complete
-                while(int.from_bytes(bytes(self.dev.read_mem8(STATUS_REG_ADDR, 1)), 'big') != 5):
+                while(int.from_bytes(bytes(self.dev.memory_read8(STATUS_REG_ADDR, 1)), 'big') != 5):
                         pass
-
                 # Read from memory and add to existing data buffer
-                d = bytes(self.dev.read_mem(DATA_BUFFER_ADDR, FLASH_BLOCK_SIZE))
+                d = bytes(self.dev.memory_read8(DATA_BUFFER_ADDR, FLASH_BLOCK_SIZE))
                 data += d
             
 
@@ -443,7 +451,7 @@ if __name__ == "__main__":
             if args.force:
                 rf.upload_flash()
         
-
+        
         if args.out != None:
             rf.flash_output_file = args.out
             if args.force:

@@ -221,13 +221,13 @@ void nv3029_init(void)
     // Initialize SPI peripheral (master, 8-bit, MSB)
     {
         SPI_InitType SPI_InitStructure;
-        SPI_InitStructure.DataDirection = SPI_DIR_DOUBLELINE_FULLDUPLEX;
+        SPI_InitStructure.DataDirection = SPI_DIR_SINGLELINE_TX;
         SPI_InitStructure.SpiMode       = SPI_MODE_MASTER;
         SPI_InitStructure.DataLen       = SPI_DATA_SIZE_8BITS;
         SPI_InitStructure.CLKPOL        = SPI_CLKPOL_HIGH;
         SPI_InitStructure.CLKPHA        = SPI_CLKPHA_SECOND_EDGE;
         SPI_InitStructure.NSS           = SPI_NSS_SOFT;
-        SPI_InitStructure.BaudRatePres  = SPI_BR_PRESCALER_2;
+        SPI_InitStructure.BaudRatePres  = SPI_BR_PRESCALER_4;
         SPI_InitStructure.FirstBit      = SPI_FB_MSB;
         SPI_InitStructure.CRCPoly       = 7;
         SPI_Init(NV3029_SPI, &SPI_InitStructure);

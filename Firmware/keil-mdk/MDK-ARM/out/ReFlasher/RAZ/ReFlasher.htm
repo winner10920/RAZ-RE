@@ -3,9 +3,9 @@
 <title>Static Call Graph - [/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ/ReFlasher.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ/ReFlasher.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Sun Dec 28 11:11:25 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Mon Dec 29 01:03:21 2025
 <BR><P>
-<H3>Maximum Stack Usage =        240 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        248 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; nv3029_draw_string &rArr; nv3029_draw_char &rArr; nv3029_set_addr_window &rArr; SPI_I2S_GetStatus
 <P>
@@ -397,8 +397,8 @@ Global Symbols
 <LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
 
-<P><STRONG><a name="[26]"></a>main</STRONG> (Thumb, 1316 bytes, Stack size 88 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 240<LI>Call Chain = main &rArr; nv3029_draw_string &rArr; nv3029_draw_char &rArr; nv3029_set_addr_window &rArr; SPI_I2S_GetStatus
+<P><STRONG><a name="[26]"></a>main</STRONG> (Thumb, 1408 bytes, Stack size 96 bytes, main.o(.text.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 248<LI>Call Chain = main &rArr; nv3029_draw_string &rArr; nv3029_draw_char &rArr; nv3029_set_addr_window &rArr; SPI_I2S_GetStatus
 </UL>
 <BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
@@ -451,7 +451,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[39]"></a>nv3029_init</STRONG> (Thumb, 568 bytes, Stack size 80 bytes, nv3029.o(.text.nv3029_init))
+<P><STRONG><a name="[39]"></a>nv3029_init</STRONG> (Thumb, 572 bytes, Stack size 80 bytes, nv3029.o(.text.nv3029_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = nv3029_init &rArr; GPIO_InitPeripheral
 </UL>
 <BR>[Calls]<UL><LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Delay
