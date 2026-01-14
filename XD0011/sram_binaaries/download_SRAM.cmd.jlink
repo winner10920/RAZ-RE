@@ -1,0 +1,5 @@
+Connect
+HALT
+SaveBin XD0011_F.sram.bin 20000000 1FFF
+go
+Exit

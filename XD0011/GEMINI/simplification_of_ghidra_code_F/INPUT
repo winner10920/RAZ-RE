@@ -1,0 +1,27 @@
+/*
+ * Original: FUN_0800141c
+ * Refactored Name: Button_Debounce_Handler
+ * Description: Reads raw GPIOs, applies a counter-based filter, and updates the global input state.
+ */
+void Button_Debounce_Handler(void) {
+    // Read raw port Input Data Register (IDR)
+    // Likely Port A or Port B
+    uint16_t raw_input = GPIO_ReadInputData(PTR_GPIO_BUTTONS); 
+    
+    // Check if state changed from last known stable state
+    if (raw_input != Global_Last_Stable_Input) {
+        Debounce_Counter++;
+        
+        // If stable for X cycles (e.g. 50ms)
+        if (Debounce_Counter > DEBOUNCE_THRESHOLD) {
+            Global_Last_Stable_Input = raw_input;
+            Global_Input_Flags = raw_input; // Update the "official" input state
+            Debounce_Counter = 0;
+            
+            // Reset Idle Timer because user is active
+            Idle_Timer = 0; 
+        }
+    } else {
+        Debounce_Counter = 0;
+    }
+}

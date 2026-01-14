@@ -1,0 +1,90 @@
+/*
+ * Original: setDMA_SPI_CTL2->2?_lcd?FUN_080031b4
+ * Refactored Name: SPI1_DMA_Transmit_LCD
+ * Description: Configures DMA to blast a buffer of data out to SPI1 (the LCD).
+ * This bypasses the CPU for high-speed drawing.
+ */
+void SPI1_DMA_Transmit_LCD(void* source_address, uint32_t data_length, int mode) {
+    uint32_t dma_config;
+    
+    // 1. Clear previous DMA flags on Channel 2 (SPI1_TX uses DMA Ch2 or Ch3 typically)
+    DMA_Clear_Flags(DMA_CHANNEL_LCD); 
+
+    // 2. Select LCD (Chip Select Low) - Pin 15 (0x8000)
+    // GPIO_ResetBits(GPIOA, GPIO_Pin_15);
+    GPIO_Set_Low(PTR_GPIOA_LCD_CS, 0x8000); 
+
+    // 3. Configure DMA Control Register
+    // Base config: Memory-to-Peripheral, 8-bit or 16-bit width
+    dma_config = DMA_DIR_PeripheralDST | DMA_Priority_High | DMA_M2M_Disable;
+    
+    // Configure Source/Dest addresses
+    DMA_Set_Memory_Addr(DMA_CHANNEL_LCD, source_address);
+    DMA_Set_Count(DMA_CHANNEL_LCD, data_length);
+
+    // 4. Handle "Mode" (Increment vs Fixed)
+    if (mode == 2) {
+        // Mode 2: Standard Memory Increment (Send buffer array)
+        dma_config |= DMA_MemoryInc_Enable | DMA_PeripheralInc_Disable;
+        // Enable SPI TX DMA Request
+        SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
+    }
+    else {
+        // Mode 0, 1, 3: Fill Color (Fixed Memory Address)
+        // Used when filling the screen with a solid color to save RAM
+        dma_config |= DMA_MemoryInc_Disable; 
+        
+        if (mode == 1) { 
+            // 16-bit mode (Color fill)
+            dma_config |= DMA_MemoryDataSize_HalfWord | DMA_PeripheralDataSize_HalfWord;
+        } else {
+            // 8-bit mode
+            dma_config |= DMA_MemoryDataSize_Byte | DMA_PeripheralDataSize_Byte;
+        }
+        
+        // Enable DMA and SPI TX Request
+        SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
+        
+        // Enable TX Buffer Empty Interrupt/Event (SPI_CTRL2 register)
+        SPI_Config_Interrupts(SPI1, SPI_I2S_IT_TXE, ENABLE);
+        
+        // Enable the DMA Channel
+        DMA_Cmd(DMA_CHANNEL_LCD, ENABLE);
+    }
+}
+
+/*
+ * Original: lcd_cmd_LOW_SEND_FUN_000035a4
+ * Refactored Name: LCD_Write_Command_Byte
+ * Description: Sends a command byte (DC pin LOW).
+ */
+void LCD_Write_Command_Byte(uint8_t cmd) {
+    uint8_t temp_buffer = cmd;
+    
+    // Set DC Pin LOW (Command Mode) - Pin 7 (0x80)
+    GPIO_Set_Low(PTR_GPIOB_LCD_DC, 0x0080);
+    
+    // Use DMA to send the single byte (Overkill, but consistent)
+    SPI1_DMA_Transmit_LCD(&temp_buffer, 1, 0);
+    
+    // Wait for transfer to complete
+    SPI_Wait_Busy();
+}
+
+/*
+ * Original: lcd_cmd_HIGH_SEND_FUN_08003500
+ * Refactored Name: LCD_Write_Data_Byte
+ * Description: Sends a parameter byte (DC pin HIGH).
+ */
+void LCD_Write_Data_Byte(uint8_t data) {
+    uint8_t temp_buffer = data;
+    
+    // Set DC Pin HIGH (Data Mode) - Pin 7 (0x80)
+    GPIO_Set_High(PTR_GPIOB_LCD_DC, 0x0080);
+    
+    // Use DMA to send
+    SPI1_DMA_Transmit_LCD(&temp_buffer, 1, 0);
+    
+    // Wait
+    SPI_Wait_Busy();
+}

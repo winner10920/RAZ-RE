@@ -1,0 +1,53 @@
+/*
+ * Original: send_spi2__byte_FUN_0800748
+ * Refactored Name: SPI2_Transfer_Byte
+ * Description: Sends a single byte over SPI2 and returns the received byte.
+ * Used for sending Flash commands and reading status registers.
+ */
+uint8_t SPI2_Transfer_Byte(uint8_t data) {
+    // Wait until Transmit Buffer is Empty (TXE flag)
+    // Offset 0x08 is Status Register, Bit 1 is TXE
+    while (!SPI_Wait_Flag(PTR_SPI2_PERIPH, SPI_FLAG_TXE)); 
+
+    // Write Data to Data Register (Offset 0x0C)
+    // FUN_08004c3a writes to offset 0xC
+    SPI_Write_Data(PTR_SPI2_PERIPH, data);
+
+    // Wait until Receive Buffer is Not Empty (RXNE flag)
+    // Bit 0 is typically RXNE
+    while (!SPI_Wait_Flag(PTR_SPI2_PERIPH, SPI_FLAG_RXNE));
+
+    // Read and return data
+    return SPI_Read_Data(PTR_SPI2_PERIPH);
+}
+
+/*
+ * Original: FUN_080075d0
+ * Refactored Name: Flash_Read_Bytes_Polled
+ * Description: Reads a sequence of bytes from the external Flash memory.
+ * Inputs: buffer to store data, flash memory address, count of bytes.
+ */
+void Flash_Read_Bytes_Polled(uint8_t* buffer, uint32_t flash_addr, uint32_t count) {
+    // 1. Select Flash (CS Low)
+    // Uses GPIO_Set_Low on the Flash CS Pin
+    GPIO_Set_Low(PTR_GPIOB_FLASH_CS, 0x100); 
+
+    // 2. Send "Read Data" Command (0x03)
+    SPI2_Transfer_Byte(0x03);
+
+    // 3. Send 24-bit Address
+    SPI2_Transfer_Byte((flash_addr >> 16) & 0xFF);
+    SPI2_Transfer_Byte((flash_addr >> 8) & 0xFF);
+    SPI2_Transfer_Byte(flash_addr & 0xFF);
+
+    // 4. Read Loop
+    while (count > 0) {
+        // Send dummy byte (0xA5) to clock out data
+        *buffer = SPI2_Transfer_Byte(0xA5);
+        buffer++;
+        count--;
+    }
+
+    // 5. Deselect Flash (CS High)
+    GPIO_Set_High(PTR_GPIOB_FLASH_CS, 0x100);
+}

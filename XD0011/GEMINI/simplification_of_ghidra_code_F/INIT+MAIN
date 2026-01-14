@@ -1,0 +1,76 @@
+/*
+ * Original: Screen_init__FUN_0800290c
+ * Refactored Name: LCD_Hardware_Init
+ * Description: Toggles Reset pins and sends init commands.
+ */
+void LCD_Hardware_Init(void) {
+    // 1. Hardware Reset
+    GPIO_Set_High(GPIOB, GPIO_Pin_6); // LCD_RST High
+    Delay_ms(10);
+    GPIO_Set_Low(GPIOB, GPIO_Pin_6);  // LCD_RST Low
+    Delay_ms(10);
+    GPIO_Set_High(GPIOB, GPIO_Pin_6); // LCD_RST High
+    Delay_ms(10);
+
+    // 2. Enable Chip Select
+    GPIO_Set_Low(GPIOA, GPIO_Pin_15); // LCD_CS Low
+
+    // 3. Send Sleep Out Command
+    LCD_Write_Command_Byte(0x11); // Sleep Out
+    Delay_ms(120);
+
+    // 4. Send Panel Configuration (Gamma, Power, etc.)
+    // Calls the long function with 0xCF, 0xED... power control commands
+    LCD_Send_Init_Sequence(); 
+
+    // 5. Turn Display On
+    LCD_Write_Command_Byte(0x29); // Display ON
+    Delay_ms(10);
+}
+
+/*
+ * Original: FUN_08006f44
+ * Refactored Name: OS_Main_Task_Loop
+ * Description: The infinite loop processing UI and System events.
+ */
+void OS_Main_Task_Loop(void) {
+    // Initialize Peripherals
+    System_Clock_Init();
+    GPIO_Init();
+    
+    // Init LCD
+    LCD_Hardware_Init();
+    
+    // Check Touch Screen or Buttons? (FUN_080013b4 checks input state)
+    if (Input_Check_State() != 0) {
+        System_Error_Handler();
+    }
+    
+    // Draw Initial Screen (Background, Icons)
+    GFX_Draw_Element(0, 0, 128, 160, RESOURCE_BG_IMAGE);
+    
+    // Main Event Loop
+    do {
+        // 1. Check Sleep Conditions
+        if (System_Idle_Timer_Expired()) {
+            System_Enter_Sleep();
+        }
+        
+        // 2. Poll Inputs (Buttons/Touch)
+        Input_Poll_Scanning();
+        
+        // 3. Update UI based on Input
+        if (Global_UI_Dirty_Flag) {
+           UI_Refresh_Screen();
+        }
+        
+        // 4. Battery Monitoring
+        if (ADC_Read_Battery() < BATTERY_LOW_THRESHOLD) {
+           UI_Show_Low_Bat_Warning();
+        }
+        
+        // 5. Watchdog Feed
+        IWDG_Reload();
+        
+    } while (true);
+}

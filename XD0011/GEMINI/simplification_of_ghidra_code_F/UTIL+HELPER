@@ -1,0 +1,35 @@
+/*
+ * Original: PBC_FUN_08002db8
+ * Refactored Name: GPIO_Set_Low
+ * Description: Writes to the Bit Reset Register (BRR)
+ */
+void GPIO_Set_Low(uint32_t port_addr, uint32_t pin_mask) {
+    // Offset 0x28 is usually BRR (Bit Reset Register) on STM32/N32
+    *(volatile uint32_t *)(port_addr + 0x28) = pin_mask;
+}
+
+/*
+ * Original: PBSC_FUN_08002dbc
+ * Refactored Name: GPIO_Set_High
+ * Description: Writes to the Bit Set/Reset Register (BSRR)
+ */
+void GPIO_Set_High(uint32_t port_addr, uint32_t pin_mask) {
+    // Offset 0x18 is usually BSRR (Bit Set/Reset Register)
+    *(volatile uint32_t *)(port_addr + 0x18) = pin_mask;
+}
+
+/*
+ * Original: check_spi_status_bitFUN_08004b1c
+ * Refactored Name: SPI_Wait_Flag
+ * Description: Polling loop to check SPI status bits (TXE, RXNE, BSY).
+ * Includes a "hard fault" check if the stack overflows (0x20000058 check).
+ */
+bool SPI_Wait_Flag(uint32_t spi_addr, uint16_t flag_mask) {
+    // Safety check: Monitor stack/heap boundary
+    if (*(volatile uint16_t*)(0x20000058) > 0x50) {
+        System_Hard_Fault(); // Infinite loop trap
+    }
+    
+    // Check the register (Offset 0x08 is SPI_SR Status Register)
+    return (*(volatile uint16_t *)(spi_addr + 0x08) & flag_mask) != 0;
+}

@@ -1,0 +1,54 @@
+/*
+ * Original: FUN_08004c80
+ * Refactored Name: SoftSPI_Read_Byte
+ * Description: Manually toggles the Clock pin to read 8 bits from the MISO pin.
+ */
+uint8_t SoftSPI_Read_Byte(void) {
+    uint8_t data = 0;
+    
+    // Loop 8 times for 8 bits
+    for (int i = 0; i < 8; i++) {
+        data = (data << 1); // Shift result to make room for new bit
+
+        // Clock Low
+        GPIO_Set_Low(PTR_GPIO_SCK, PIN_SCK);
+        
+        // Read MISO Pin (Bit 5 usually on Port B or A)
+        // FUN_08002ee4 checks IDR (Input Data Register)
+        if (GPIO_Read_Pin(PTR_GPIO_MISO, PIN_MISO) != 0) {
+            data |= 1; // Set LSB if pin is High
+        }
+
+        // Clock High
+        GPIO_Set_High(PTR_GPIO_SCK, PIN_SCK);
+    }
+    return data;
+}
+
+/*
+ * Original: FUN_0800744c
+ * Refactored Name: LCD_Read_ID_BitBang
+ * Description: Reads the LCD Display ID to identify the panel model (e.g. ST7789 vs ILI9341).
+ * It reads 3 bytes. The function `FUN_08007104` checks if the result is "30%" (ASCII 0x33, 0x30, 0x25).
+ */
+void LCD_Read_ID_BitBang(uint8_t command) {
+    // 1. Configure Pins for Bit-Banging (Output for SCK/MOSI, Input for MISO)
+    LCD_Config_BitBang_Mode(command); 
+
+    // 2. Select LCD (CS Low)
+    GPIO_Set_Low(PTR_GPIO_LCD_CS, PIN_LCD_CS);
+
+    // 3. Send Command (e.g. 0x04 or 0xD3)
+    // (There is likely a SoftSPI_Write_Byte call here, seemingly inlined or in setup)
+
+    // 4. Read 3 Bytes of ID data
+    global_id_buffer[0] = SoftSPI_Read_Byte();
+    global_id_buffer[1] = SoftSPI_Read_Byte();
+    global_id_buffer[2] = SoftSPI_Read_Byte();
+
+    // 5. Deselect LCD
+    GPIO_Set_High(PTR_GPIO_LCD_CS, PIN_LCD_CS);
+
+    // 6. Restore Hardware SPI Mode
+    LCD_Config_Hardware_Mode();
+}

@@ -1,0 +1,1037 @@
+# Pinout
+
+
+QFN32 (4x4) | Pin Name | Type | Alternate Function | Optional Function | XD0011_NTMB_V1_2
+--- | --- | --- | --- | --- | --- 
+1 | VDD | S |  |  | 
+2 | PC14-OSC32_IN | I/O | OSC32_IN |  | 
+3 | PC15-OSC32_OUT | I/O | OSC32_OUT |  | 
+4 | NRST | I/O | Device reset input/internal reset output |  | 
+5 | VDDA | S | Analog power supply |  | 
+6 | PA0 | I/O | USART1_CTS, USART2_CTS, LPUART_TX, ADC_IN0, SPI1_SCK, RTC_TAMP2, WKUP0, I2S_CK | COMP_INM, COMP_OUT, OPAMP_VINP | NC?
+7 | PA1 | I/O | USART1_RTS, USART2_RTS, EVENTOUT, SPI1_NSS, I2S_WS, LPTIM_IN2, TIM8_CH2, I2C1_SMBA, TIM3_ETR, LPUART_TX | ADC_IN1, COMP_INP, OPAMP_VINP | TV1 VOLTAGE SENSE
+8 | PA2 | I/O | USART1_TX, USART2_TX, TIM8_CH3, SPI1_MOSI, I2S_SD, TIM1_BKIN | ADC_IN2, WKUP2, OPAMP_VINM | TV2 VOLTAGE SENSE
+9 | PA3 | I/O | USART1_RX, USART2_RX, TIM8_CH4, TIM1_CH2, SPI1_MISO, I2S_MCK, LPUART_RX | ADC_IN3, COMP_INP | MIC ?
+10 | PA4 | I/O | SPI1_NSS, I2S_WS, USART1_CK, USART2_CK, TIM3_CH1, TIM1_CH1, SPI1_NSS, I2S_WS, I2C1_SCL, TIM8_ETR, LPUART_TX | ADC_IN4, COMP_INM, OPAMP_VINP | Not Connected
+11 | PA5 | I/O | SPI1_SCK, I2S_CK, TIM8_ETR, TIM1_CH2N, TIM1_CH3 | ADC_IN5, COMP_INM, OPAMP_VINM | COIL TV2
+12 | PA6 | I/O | SPI1_MISO, I2S_MCK, TIM3_CH1, TIM1_BKIN, TIM8_CH1, EVENTOUT, LPUART_CTS, LPUART_TX, I2C2_SCL, LPTIM_ETR, BEEPER_OUT | ADC_IN6, COMP_OUT, OPAMP_VOUT | BACKLIGHT
+13 | PA7 | I/O | SPI1_MOSI, SPI2_NSS, I2S_SD, TIM3_CH2, TIM1_CH1N, TIM8_CH2, EVENTOUT, LPUART_RX, I2C2_SDA, BEEPER_N_OUT, USART2_CTS | ADC_IN7, OPAMP_VINP, COMP_INP | BUTTON
+14 | PB0 | I/O | TIM3_CH3, TIM1_CH2N, EVENTOUT, SPI2_SCK | ADC_IN8, OPAMP_VINP | LP4086 ISET<br> PULL LOW FOR FASTER CHARGE?
+15 | PB1 | I/O | LPUART_RTS, I2S_SD, SPI2_MOSI, USART2_CK, SPI1_MOSI | ADC_IN9, OPAMP_VINM, ADC_IN10 | LP4086 CHRG <br> PULLED LOW ACTIVE
+16 | PB2 | I/O | I2C1_SMBA, I2C2_SMBA, TIM3_CH4, LPTIM_OUT | ADC_in10| R2?
+17 | VDD | S | Digital power supply |  | GROUND
+18 | PA8 | I/O | USART1_CK, TIM1_CH1, EVENTOUT, MCO, SPI2_NSS, TIM8_CH2N |  | GT25Q80A CS
+19 | PA9 | I/O | I2C1_SCL, I2C2_SCL, SPI2_SCK, TIM8_CH1N, LPTIM_OUT, USART2_TX, MCO, USART1_TX, TIM1_CH2, TIM8_BKIN |  | GT25Q80A CLK
+20 | PA10 | I/O | USART1_RX, TIM1_CH3, TIM8_BKIN, I2C1_SDA, I2C2_SDA, SPI2_MISO, USART2_RX, RTC_REFIN, USART1_CTS |  | GT25Q80A DO
+21 | PA11 | I/O | TIM1_CH4, EVENTOUT, I2C2_SCL, SPI2_MOSI | RTC_REFIN, COMP_OUT | GT25Q80A DI
+22 | PA12 | I/O | USART1_RTS, TIM1_ETR, EVENTOUT, I2C2_SDA, SPI2_MISO | COMP_OUT | 
+23 | PA13 (SWDIO) | I/O | USART1_RX, USART2_RX, I2C1_SDA, SPI1_SCK, I2S_CK, SWDIO |  | SWDIO
+24 | PA14 (SWCLK) | I/O | USART1_TX, USART2_TX, SWCLK, I2C1_SMBA, SPI1_MISO |  | SWCLK
+25 | PA15 | I/O | SPI1_NSS, I2S_WS, USART1_RX, USART2_RX, LPUART_RTS, EVENTOUT |  | DISP CS
+26 | PB3 | I/O | SPI1_SCK, I2S_CK, EVENTOUT, LPUART_TX, TIM3_ETR |  | DISP SCLK
+27 | PB4 | I/O | SPI1_MISO, TIM3_CH1, EVENTOUT, TIM8_BKIN, LPUART_RX, LPTIM_OUT |  | COIL TV1
+28 | PB5 | I/O | SPI1_MOSI,I2S_SD,I2C1_SMBA, TIM8_BKIN, TIM3_CH2, LPUART_TX, LPTIM_IN1, TIM8_CH3N, I2C1_SCL |  | DISP MOSI
+29 | PB6 | I/O | USART1_TX, TIM8_CH1N, TIM8_CH3, LPTIM_ETR, I2C1_SDA, USART1_RX |  | DISP RST
+30 | PB7 | I/O | TIM8_CH2N, LPUART_CTS, LPUART_RX, LPTIM_IN2, TIM8_CH4 |  | DISP RS
+31 | PF2-BOOT0 | I | Boot memory selection |  | 
+32 | PB8 | I/O | I2C1_SCL, TIM8_CH1 |  | COIL TV1?
+
+
+| GPIOA |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| PIN | PMODE |  | STATE |  | PUPD |  |  | POTYPE | SR | POD | PID | DS | AF |
+| 15 | 0 | GENERAL OUTPUT | ON, HSR |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 1 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 14 | 1 | ALTERNATE | SWDIO |  | 1 | PD ⬇ |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 13 | 1 | ALTERNATE | SWCLK |  | 0 | PU ⬆ |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 1 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 12 | 0 | GENERAL OUTPUT | ON |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 1 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 11 | 1 | ALTERNATE | SPI2 MOSI, HSR |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 10 | 1 | ALTERNATE | SPI2 MISO, HSR |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 9 | 1 | ALTERNATE | SPI2 SCLK, HSR |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 8 | 0 | GENERAL OUTPUT | ON, HSR |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 1 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 7 | 0 | INPUT | HIGH |  | 0 | PU ⬆ | 15 | 0 | 1 | 1 | 1 | 0 | AF15 |
+|  | 0 |  |  |  | 1 |  | 14 | 0 | 0 | 0 | 0 | 0 | AF0 |
+| 6 | 1 | ALTERNATE | TIM3_CH1, HSR, HDS |  | 0 | NO PU/PD | 13 | 0 | 0 | 0 | 0 | 0 | AF0 |
+|  | 0 |  |  |  | 0 |  | 12 | 0 | 0 | 1 | 1 | 0 | AF15 |
+| 5 | 1 | ALTERNATE | TIM1_CH1 HSR, HDS |  | 0 | NO PU/PD | 11 | 0 | 1 | 0 | 1 | 0 | AF0 |
+|  | 0 |  |  |  | 0 |  | 10 | 0 | 1 | 0 | 0 | 0 | AF0 |
+| 4 | 0 | GENERAL OUTPUT | OFF |  | 0 | PU ⬆ | 9 | 0 | 1 | 0 | 1 | 0 | AF0 |
+|  | 1 |  |  |  | 1 |  | 8 | 0 | 1 | 1 | 1 | 0 | AF15 |
+| 3 | 0 | INPUT | LOW, HDS |  | 0 | NO PU/PD | 7 | 0 | 0 | 0 | 1 | 0 | AF15 |
+|  | 0 |  |  |  | 0 |  | 6 | 0 | 1 | 0 | 0 | 1 | AF2 |
+| 2 | 1 | ANALOG | HSR |  | 0 | NO PU/PD | 5 | 0 | 1 | 1 | 0 | 1 | AF3 |
+|  | 1 |  |  |  | 0 |  | 4 | 0 | 0 | 0 | 0 | 0 | AF15 |
+| 1 | 1 | ANALOG | HSR |  | 0 | NO PU/PD | 3 | 0 | 0 | 0 | 0 | 1 | AF15 |
+|  | 1 |  |  |  | 0 |  | 2 | 0 | 1 | 0 | 0 | 0 | AF15 |
+| 0 | 0 | INPUT | LOW |  | 0 | NO PU/PD | 1 | 0 | 1 | 0 | 0 | 0 | AF15 |
+|  | 0 |  |  |  | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | AF15 |
+
+
+
+| GPIOB |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| PIN | PMODE |  | STATE |  | PUPD |  |  | POTYPE | SR | POD | PID | DS | AF |
+| 15 | 1 | ANALOG |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 1 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 14 | 1 | ANALOG |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 1 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 13 | 1 | ANALOG |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 1 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 12 | 1 | ANALOG |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 1 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 11 | 1 | ANALOG |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 1 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 10 | 1 | ANALOG |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 1 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 9 | 1 | ANALOG |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 1 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 8 | 1 | ALTERNATE | TIM8_CH1, HSR, HDS |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 7 | 0 | GENERAL OUTPUT | HIGH, HSR |  | 0 | NO PU/PD | 15 | 0 | 1 | 0 | 0 | 0 | AF15 |
+|  | 1 |  |  |  | 0 |  | 14 | 0 | 1 | 0 | 0 | 0 | AF15 |
+| 6 | 0 | GENERAL OUTPUT | HIGH, HSR |  | 0 | NO PU/PD | 13 | 0 | 1 | 0 | 0 | 0 | AF15 |
+|  | 1 |  |  |  | 0 |  | 12 | 0 | 1 | 0 | 0 | 0 | AF15 |
+| 5 | 1 | ALTERNATE | SPI1_I2S_MOSI_SD, HSR |  | 0 | NO PU/PD | 11 | 0 | 1 | 0 | 0 | 0 | AF15 |
+|  | 0 |  |  |  | 0 |  | 10 | 0 | 1 | 0 | 0 | 0 | AF15 |
+| 4 | 0 | GENERAL OUTPUT | OPEN-DRAIN |  | 0 | NO PU/PD | 9 | 0 | 1 | 0 | 0 | 0 | AF15 |
+|  | 1 |  |  |  | 0 |  | 8 | 0 | 1 | 0 | 0 | 1 | AF5 |
+| 3 | 1 | ALTERNATE | SPI1_I2S_SCLK_CK, HSR, HIGH |  | 0 | NO PU/PD | 7 | 0 | 1 | 1 | 1 | 0 | AF15 |
+|  | 0 |  |  |  | 0 |  | 6 | 0 | 1 | 1 | 1 | 0 | AF15 |
+| 2 | 0 | INPUT | HIGH, PULLUP |  | 0 | PU ⬆ | 5 | 0 | 1 | 0 | 0 | 0 | AF0 |
+|  | 0 |  |  |  | 1 |  | 4 | 1 | 0 | 0 | 0 | 0 | AF15 |
+| 1 | 0 | INPUT | LOW, PULLUP |  | 0 | PU ⬆ | 3 | 0 | 1 | 1 | 1 | 0 | AF0 |
+|  | 0 |  |  |  | 1 |  | 2 | 0 | 0 | 0 | 1 | 0 | AF15 |
+| 0 | 0 | GENERAL OUTPUT | LOW |  | 0 | NO PU/PD | 1 | 0 | 0 | 0 | 0 | 0 | AF15 |
+|  | 1 |  |  |  | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | AF15 |
+
+| GPIOC |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| PIN | PMODE |  | STATE |  | PUPD |  |  | POTYPE | SR | POD | PID | DS | AF |
+| 15 | 0 | INPUT | HIGH, PULLUP |  | 0 | PU ⬆ |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 1 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 14 | 0 | INPUT | HIGH, PULLUP |  | 0 | PU ⬆ |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 1 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 13 | 1 | ANALOG | HSR |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 1 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 12 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 11 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 10 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 9 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 8 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  |
+| 7 | 0 | INPUT |  |  | 0 | NO PU/PD | 15 | 0 | 0 | 0 | 1 | 0 | AF15 |
+|  | 0 |  |  |  | 0 |  | 14 | 0 | 0 | 0 | 1 | 0 | AF15 |
+| 6 | 0 | INPUT |  |  | 0 | NO PU/PD | 13 | 0 | 1 | 0 | 0 | 0 | AF15 |
+|  | 0 |  |  |  | 0 |  | 12 | 0 | 0 | 0 | 0 | 0 | AF0 |
+| 5 | 0 | INPUT |  |  | 0 | NO PU/PD | 11 | 0 | 0 | 0 | 0 | 0 | AF0 |
+|  | 0 |  |  |  | 0 |  | 10 | 0 | 0 | 0 | 0 | 0 | AF0 |
+| 4 | 0 | INPUT |  |  | 0 | NO PU/PD | 9 | 0 | 0 | 0 | 0 | 0 | AF0 |
+|  | 0 |  |  |  | 0 |  | 8 | 0 | 0 | 0 | 0 | 0 | AF0 |
+| 3 | 0 | INPUT |  |  | 0 | NO PU/PD | 7 | 0 | 0 | 0 | 0 | 0 | AF0 |
+|  | 0 |  |  |  | 0 |  | 6 | 0 | 0 | 0 | 0 | 0 | AF0 |
+| 2 | 0 | INPUT |  |  | 0 | NO PU/PD | 5 | 0 | 0 | 0 | 0 | 0 | AF0 |
+|  | 0 |  |  |  | 0 |  | 4 | 0 | 0 | 0 | 0 | 0 | AF0 |
+| 1 | 0 | INPUT |  |  | 0 | NO PU/PD | 3 | 0 | 0 | 0 | 0 | 0 | AF0 |
+|  | 0 |  |  |  | 0 |  | 2 | 0 | 0 | 0 | 0 | 0 | AF0 |
+| 0 | 0 | INPUT |  |  | 0 | NO PU/PD | 1 | 0 | 0 | 0 | 0 | 0 | AF0 |
+|  | 0 |  |  |  | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | AF0 |
+
+
+| GPIOF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| PIN | PMODE |  | STATE |  | PUPD |  |  | POTYPE | SR | POD | PID | DS | AF | AFL |
+| 15 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  | 1 |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 1 |
+| 14 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  | 1 |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 1 |
+| 13 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  | 1 |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 1 |
+| 12 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  | 1 |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 1 |
+| 11 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  | 0 |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |
+| 10 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  | 0 |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |
+| 9 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  | 0 |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |
+| 8 | 0 | INPUT |  |  | 0 | NO PU/PD |  | 0 | 0 | 0 | 0 | 0 |  | 0 |
+|  | 0 |  |  |  | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |
+| 7 | 1 | ANALOG | HSR |  | 0 | NO PU/PD | 15 | 0 | 0 | 0 | 0 | 0 | AF0 | 0 |
+|  | 1 |  |  |  | 0 |  | 14 | 0 | 0 | 0 | 0 | 0 | AF0 | 0 |
+| 6 | 1 | ANALOG | HSR |  | 0 | NO PU/PD | 13 | 0 | 0 | 0 | 0 | 0 | AF0 | 0 |
+|  | 1 |  |  |  | 0 |  | 12 | 0 | 0 | 0 | 0 | 0 | AF0 | 0 |
+| 5 | 0 | INPUT |  |  | 0 | NO PU/PD | 11 | 0 | 0 | 0 | 0 | 0 | AF0 | 1 |
+|  | 0 |  |  |  | 0 |  | 10 | 0 | 0 | 0 | 0 | 0 | AF0 | 1 |
+| 4 | 0 | INPUT |  |  | 0 | NO PU/PD | 9 | 0 | 0 | 0 | 0 | 0 | AF0 | 1 |
+|  | 0 |  |  |  | 0 |  | 8 | 0 | 0 | 0 | 0 | 0 | AF0 | 1 |
+| 3 | 0 | INPUT |  |  | 0 | NO PU/PD | 7 | 0 | 1 | 0 | 0 | 0 | AF15 | 1 |
+|  | 0 |  |  |  | 0 |  | 6 | 0 | 1 | 0 | 0 | 0 | AF15 | 1 |
+| 2 | 1 | ANALOG | HSR |  | 0 | NO PU/PD | 5 | 0 | 0 | 0 | 0 | 0 | AF0 | 1 |
+|  | 1 |  |  |  | 0 |  | 4 | 0 | 0 | 0 | 0 | 0 | AF0 | 1 |
+| 1 | 1 | ANALOG | HSR |  | 0 | NO PU/PD | 3 | 0 | 0 | 0 | 0 | 0 | AF0 | 1 |
+|  | 1 |  |  |  | 0 |  | 2 | 0 | 1 | 0 | 0 | 0 | AF15 | 1 |
+| 0 | 1 | ANALOG | HSR |  | 0 | NO PU/PD | 1 | 0 | 1 | 0 | 0 | 0 | AF15 | 1 |
+|  | 1 |  |  |  | 0 |  | 0 | 0 | 1 | 0 | 0 | 0 | AF15 | 1 |
+
+
+
+original peripherals
+GPIOA 0x40010800
+GPIOx_PMODE @ 0x0 = 0x69a9293c
+GPIOx_POTYPE @ 0x4 = 0x00000000
+GPIOx_SR @ 0x8 = 0x00008f66
+GPIOx_PUPD @ 0xc = 0x24004100
+GPIOx_PID @ 0x10 = 0x00009b80
+GPIOx_POD @ 0x14 = 0x00009120
+GPIOx_PBSC @ 0x18 = 0x00000000
+GPIOx_PLOCK @ 0x1c = 0x00000000
+GPIOx_AFL @ 0x20 = 0xf23fffff
+GPIOx_AFH @ 0x24 = 0xf00f000f
+GPIOx_PBC @ 0x28 = 0x00000000
+GPIOx_DS @ 0x2c = 0x00000068
+
+GPIOB 0x40010c00
+GPIOx_PMODE @ 0x0 = 0xfffe5981
+GPIOx_POTYPE @ 0x4 = 0x00000010
+GPIOx_SR @ 0x8 = 0x0000ffe8
+GPIOx_PUPD @ 0xc = 0x00000014
+GPIOx_PID @ 0x10 = 0x000000cc
+GPIOx_POD @ 0x14 = 0x000000c8
+GPIOx_PBSC @ 0x18 = 0x00000000
+GPIOx_PLOCK @ 0x1c = 0x00000000
+GPIOx_AFL @ 0x20 = 0xff0f0fff
+GPIOx_AFH @ 0x24 = 0xfffffff5
+GPIOx_PBC @ 0x28 = 0x00000000
+GPIOx_DS @ 0x2c = 0x00000100
+
+GPIOC 0x40011000
+GPIOx_PMODE @ 0x0 = 0x0c000000
+GPIOx_POTYPE @ 0x4 = 0x00000000
+GPIOx_SR @ 0x8 = 0x00002000
+GPIOx_PUPD @ 0xc = 0x50000000
+GPIOx_PID @ 0x10 = 0x0000c000
+GPIOx_POD @ 0x14 = 0x00000000
+GPIOx_PBSC @ 0x18 = 0x00000000
+GPIOx_PLOCK @ 0x1c = 0x00000000
+GPIOx_AFL @ 0x20 = 0x00000000
+GPIOx_AFH @ 0x24 = 0xfff00000
+GPIOx_PBC @ 0x28 = 0x00000000
+GPIOx_DS @ 0x2c = 0x00000000
+
+GPIOF 0x40011c00
+GPIOx_PMODE @ 0x0 = 0x0000f03f
+GPIOx_POTYPE @ 0x4 = 0x00000000
+GPIOx_SR @ 0x8 =  	
+GPIOx_PUPD @ 0xc = 0x00000000
+GPIOx_PID @ 0x10 = 0x00000000
+GPIOx_POD @ 0x14 = 0x00000000
+GPIOx_PBSC @ 0x18 = 0x00000000
+GPIOx_PLOCK @ 0x1c = 0x00000000
+GPIOx_AFL @ 0x20 = 0xff000fff
+GPIOx_AFH @ 0x24 = 0x00000000
+GPIOx_PBC @ 0x28 = 0x00000000
+GPIOx_DS @ 0x2c = 0x00000000
+
+
+AFIO_EXTI_CFG1 @ 0x8
+0x00000010
+EXTI0_CFG [3:0]
+0x0
+EXTI1_CFG [7:4]
+0x1  //pb1
+EXTI2_CFG [11:8]
+0x0
+EXTI3_CFG [15:12]
+0x0
+
+
+ADC
+0x40020800
+ADC_STS @ 0x0
+0x0000007a
+ADC_CTRL1 @ 0x4
+0x00000580
+ADC_CTRL2 @ 0x8
+0x000ef003
+ADC_SMPR1 @ 0xc
+0x00000000
+ADC_SMPR2 @ 0x10
+0x00900900 //ch 13 + 10 120 cycles
+ADC_SMPR3 @ 0x14
+0x00000990  //ch 2 +1 120cycles
+ADC_JOFFSET1 @ 0x18
+0x00000000
+ADC_JOFFSET2 @ 0x1c
+0x00000000
+ADC_JOFFSET3 @ 0x20
+0x00000000
+ADC_JOFFSET4 @ 0x24
+0x00000000
+ADC_WDGHIGH @ 0x28
+0x00000fff
+ADC_WDGLOW @ 0x2c
+0x00000000
+ADC_RSEQ1 @ 0x30
+0x00300000
+ADC_RSEQ2 @ 0x34
+0x00000000
+ADC_RSEQ3 @ 0x38
+0x00000000
+ADC_JSEQ @ 0x3c
+0x0036a841
+ADC_JDAT1 @ 0x40
+0x00000000
+ADC_JDAT2 @ 0x44
+0x00000000
+ADC_JDAT3 @ 0x48
+0x000009f6
+ADC_JDAT4 @ 0x4c
+0x00000673
+ADC_DAT @ 0x50
+0x00000582
+ADC_CTRL3 @ 0x54
+0x00000026
+ADC_OPACTRL @ 0x5c
+0x00000000
+
+IWDG
+0x40003000
+IWDG_KEY @ 0x0
+0x00000000
+IWDG_PREDIV @ 0x4
+0x00000005
+IWDG_RELV @ 0x8
+0x00000398
+IWDG_STS @ 0xc
+0x00000000
+
+
+
+LPTIM
+0x40000c00
+LPTIM_INTSTS @ 0x0
+0x00000000
+LPTIM_INTCLR @ 0x4
+(Write Only)
+LPTIM_INTEN @ 0x8
+0x00000000
+LPTIM_CFG @ 0xc
+0x00000000
+LPTIM_CTRL @ 0x10
+0x00000000
+LPTIM_CMP @ 0x14
+0x00000000
+LPTIM_ARR @ 0x18
+0x00000001
+LPTIM_CNT @ 0x1c
+0x00000001
+
+
+LPUART
+0x40004800
+LPUART_STS @ 0x0
+0x00000000
+LPUART_INTEN @ 0x4
+0x00000000
+LPUART_CTRL @ 0x8
+0x00000200
+LPUART_BRCFG1 @ 0xc
+0x00000174
+LPUART_DAT @ 0x10
+0x00000000
+LPUART_BRCFG2 @ 0x14
+0x00000000
+LPUART_WUDAT @ 0x18
+0x00000000
+
+
+PWR
+0x40007000
+PWR_CTRL @ 0x0
+0x00000200
+PWR_CTRLSTS @ 0x4
+0x00000800
+PWR_CTRL2 @ 0x8
+0x00000400
+PWR_CTRL3 @ 0xc
+0x00000000
+PWR_CTRL4 @ 0x20
+0x00000020
+PWR_CTRL5 @ 0x24
+0x00000007
+PWR_CTRL6 @ 0x28
+0x00000000
+DBG_CTRL @ 0x30
+0x00000000
+
+RCC
+0x40021000
+RCC_CTRL @ 0x0
+0x0380007b
+RCC_CFG @ 0x4
+0x20034502
+RCC_CLKINT @ 0x8
+0x00000020
+RCC_APB2PRST @ 0xc
+0x00000000
+RCC_APB1PRST @ 0x10
+0x00000000
+RCC_AHBPCLKEN @ 0x14
+0x00001015
+RCC_APB2PCLKEN @ 0x18
+0x0000361d
+RCC_APB1PCLKEN @ 0x1c
+0x00000012
+RCC_LSCTRL @ 0x20
+0x00000003
+RCC_CTRLSTS @ 0x24
+0x00000078
+RCC_AHBPRST @ 0x28
+0x00000000
+RCC_CFG2 @ 0x2c
+0x00003804
+RCC_EMCCTRL @ 0x30
+0x00000000
+
+
+RTC
+0x40002800
+RTC_TSH @ 0x0
+0x00000000
+RTC_DATE @ 0x4
+0x00002101
+RTC_CTRL @ 0x8
+0x00000000
+RTC_INITSTS @ 0xc
+0x00000007
+RTC_PRE @ 0x10
+0x007f00ff
+RTC_WKUPT @ 0x14
+0x0000ffff
+RTC_ALARMA @ 0x1c
+0x00000000
+RTC_ALARMB @ 0x20
+0x00000000
+RTC_WRP @ 0x24
+0x00000000
+RTC_SUBS @ 0x28
+0x00000000
+RTC_SCTRL @ 0x2c
+0x00000000
+RTC_TST @ 0x30
+0x00000000
+RTC_TSD @ 0x34
+0x00000000
+RTC_TSSS @ 0x38
+0x00000000
+RTC_CALIB @ 0x3c
+0x00000000
+RTC_TMPCFG @ 0x40
+0x00000000
+RTC_ALRMASS @ 0x44
+0x00000000
+RTC_ALRMBSS @ 0x48
+0x00000000
+
+SSPI1
+0x40012000
+SPI_CTRL1 @ 0x0
+0x0000034f
+SPI_CTRL2 @ 0x4
+0x00000002
+SPI_STS @ 0x8
+0x00000042
+SPI_DAT @ 0xc
+0x00000000
+SPI_CRCPOLY @ 0x10
+0x00000007
+SPI_CRCRDAT @ 0x14
+0x00000000
+SPI_CRCTDAT @ 0x18
+0x00000000
+SPI_I2SCFG @ 0x1c
+0x00000000
+SPI_I2SPREDIV @ 0x20
+0x00000002
+
+
+SPI2
+0x40014400
+SPI_CTRL1 @ 0x0
+0x0000034f
+SPI_CTRL2 @ 0x4
+0x00000002
+SPI_STS @ 0x8
+0x00000002
+SPI_DAT @ 0xc
+0x00000000
+SPI_CRCPOLY @ 0x10
+0x00000007
+SPI_CRCRDAT @ 0x14
+0x00000000
+SPI_CRCTDAT @ 0x18
+0x00000000
+
+
+USART1
+0x40013800
+USART_STS @ 0x0
+0x000000c0
+USART_DAT @ 0x4
+0x00000000
+USART_BRCF @ 0x8
+0x00000000
+USART_CTRL1 @ 0xc
+0x00000000
+USART_CTRL2 @ 0x10
+0x00000000
+USART_CTRL3 @ 0x14
+0x00000000
+USART_GTP @ 0x18
+0x00000000
+
+USART2
+0x40004400
+USART_STS @ 0x0
+0x000000c0
+USART_DAT @ 0x4
+0x00000000
+USART_BRCF @ 0x8
+0x00000000
+USART_CTRL1 @ 0xc
+0x00000000
+USART_CTRL2 @ 0x10
+0x00000000
+USART_CTRL3 @ 0x14
+0x00000000
+USART_GTP @ 0x18
+0x00000000
+
+
+WWDG
+0x40002c00
+WWDG_CTRL @ 0x0
+0x0000007f
+WWDG_CFG @ 0x4
+0x0000007f
+WWDG_STS @ 0x8
+0x00000000
+
+
+DMA
+0x40020000
+DMA_INTSTS @ 0x0
+0x00077700
+DMA_INTCLR @ 0x4
+0x00020000
+DMA_CHCFG1 @ 0x8
+0x00000000
+DMA_TXNUM1 @ 0xc
+0x00000000
+DMA_PADDR1 @ 0x10
+0x00000000
+DMA_MADDR1 @ 0x14
+0x00000000
+DMA_CHSEL1 @ 0x18
+0x00000000
+DMA_CHCFG2 @ 0x1c
+0x00000000
+DMA_TXNUM2 @ 0x20
+0x00000000
+DMA_PADDR2 @ 0x24
+0x00000000
+DMA_MADDR2 @ 0x28
+0x00000000
+DMA_CHSEL2 @ 0x2c
+0x00000000
+DMA_CHCFG3 @ 0x30
+0x00002080
+DMA_TXNUM3 @ 0x34
+0x00000000
+DMA_PADDR3 @ 0x38
+0x4001440c
+DMA_MADDR3 @ 0x3c
+0x2000018a
+DMA_CHSEL3 @ 0x40
+0x00000010
+DMA_CHCFG4 @ 0x44
+0x00002010
+DMA_TXNUM4 @ 0x48
+0x00000000
+DMA_PADDR4 @ 0x4c
+0x4001440c
+DMA_MADDR4 @ 0x50
+0x200000c4
+DMA_CHSEL4 @ 0x54
+0x0000000f
+DMA_CHCFG5 @ 0x58
+0x00002290
+DMA_TXNUM5 @ 0x5c
+0x00000000
+DMA_PADDR5 @ 0x60
+0x4001200c
+DMA_MADDR5 @ 0x64
+0x2000018a
+DMA_CHSEL5 @ 0x68
+0x0000000d
+
+
+EXTI
+0x40010400
+EXTI_IMASK @ 0x0
+0x00000008
+EXTI_EMASK @ 0x4
+0x00000000
+EXTI_RT_CFG @ 0x8
+0x00000008
+EXTI_FT_CFG @ 0xc
+0x00000008
+EXTI_SWIE @ 0x10
+0x00000000
+EXTI_PEND @ 0x14
+0x00000000
+EXTI_TS_SEL @ 0x18
+0x00000000
+
+
+TIM1
+0x40012c00
+TIMx_CTRL1 @ 0x0
+0x00008801
+TIMx_CTRL2 @ 0x4
+0x00000000
+TIMx_SMCTRL @ 0x8
+0x00000000
+TIMx_DINTEN @ 0xc
+0x00000000
+TIMx_STS @ 0x10
+0x0003001f
+TIMx_EVTGEN @ 0x14
+0x00000000
+TIMx_CCMOD1 @ 0x18
+0x00000000
+TIMx_CCMOD2 @ 0x1c
+0x00000070
+TIMx_CCEN @ 0x20
+0x00000300
+TIMx_CNT @ 0x24
+0x00000042
+TIMx_PSC @ 0x28
+0x00000008
+TIMx_AR @ 0x2c
+0x00000a64
+TIMx_REPCNT @ 0x30
+0x00000000
+TIMx_CCDAT1 @ 0x34
+0x00000000
+TIMx_CCDAT2 @ 0x38
+0x00000000
+TIMx_CCDAT3 @ 0x3c
+0x00000000
+TIMx_CCDAT4 @ 0x40
+0x00000000
+TIMx_BKDT @ 0x44
+0x00008000
+TIMx_DCTRL @ 0x48
+0x00000000
+TIMx_DADDR @ 0x4c
+0x00008801
+TIMx_CCMOD3 @ 0x54
+0x00000000
+TIMx_CCDAT5 @ 0x58
+0x00000000
+TIMx_CCDAT6 @ 0x5c
+0x00000000
+
+TIM3
+0x40000400
+TIMx_CTRL1 @ 0x0
+0x0000a801
+TIMx_CTRL2 @ 0x4
+0x00000100
+TIMx_SMCTRL @ 0x8
+0x00000000
+TIMx_DINTEN @ 0xc
+0x00000000
+TIMx_STS @ 0x10
+0x0000001f
+TIMx_EVTGEN @ 0x14
+0x00000000
+TIMx_CCMOD1 @ 0x18
+0x00000070
+TIMx_CCMOD2 @ 0x1c
+0x00000000
+TIMx_CCEN @ 0x20
+0x00000001
+TIMx_CNT @ 0x24
+0x00000bd8
+TIMx_PSC @ 0x28
+0x00000008
+TIMx_AR @ 0x2c
+0x00000fa0
+TIMx_CCDAT1 @ 0x34
+0x00000fa1
+TIMx_CCDAT2 @ 0x38
+0x00000000
+TIMx_CCDAT3 @ 0x3c
+0x00000000
+TIMx_CCDAT4 @ 0x40
+0x00000000
+TIMx_DCTRL @ 0x48
+0x00000000
+TIMx_DADDR @ 0x4c
+0x0000a801
+
+TIM6
+0x40001000
+TIMx_CTRL1 @ 0x0
+0x00000001
+TIMx_CTRL2 @ 0x4
+0x00000000
+TIMx_DINTEN @ 0xc
+0x00000001
+TIMx_STS @ 0x10
+0x00000000
+TIMx_EVTGEN @ 0x14
+0x00000000
+TIMx_CNT @ 0x24
+0x00001fc1
+TIMx_PSC @ 0x28
+0x00000000
+TIMx_AR @ 0x2c
+0x00002f44
+
+
+TIM8
+0x40013400
+TIMx_CTRL1 @ 0x0
+0x00008801
+TIMx_CTRL2 @ 0x4
+0x00000000
+TIMx_SMCTRL @ 0x8
+0x00000000
+TIMx_DINTEN @ 0xc
+0x00000000
+TIMx_STS @ 0x10
+0x0003001f
+TIMx_EVTGEN @ 0x14
+0x00000000
+TIMx_CCMOD1 @ 0x18
+0x00000070
+TIMx_CCMOD2 @ 0x1c
+0x00000000
+TIMx_CCEN @ 0x20
+0x00000003
+TIMx_CNT @ 0x24
+0x00000779
+TIMx_PSC @ 0x28
+0x00000008
+TIMx_AR @ 0x2c
+0x00000a64
+TIMx_REPCNT @ 0x30
+0x00000000
+TIMx_CCDAT1 @ 0x34
+0x00000000
+TIMx_CCDAT2 @ 0x38
+0x00000000
+TIMx_CCDAT3 @ 0x3c
+0x00000000
+TIMx_CCDAT4 @ 0x40
+0x00000000
+TIMx_BKDT @ 0x44
+0x00008000
+TIMx_DCTRL @ 0x48
+0x00000000
+TIMx_DADDR @ 0x4c
+0x00008801
+TIMx_CCMOD3 @ 0x54
+0x00000000
+TIMx_CCDAT5 @ 0x58
+0x00000000
+TIMx_CCDAT6 @ 0x5c
+0x00000000
+
+while running 
+
+
+GPIOA
+0x40010800
+GPIOx_PMODE @ 0x0
+0x69a9293c
+GPIOx_POTYPE @ 0x4
+0x00000000
+GPIOx_SR @ 0x8
+0x00008f66
+GPIOx_PUPD @ 0xc
+0x24004100
+GPIOx_PID @ 0x10
+0x00009b80
+GPIOx_POD @ 0x14
+0x00009120
+GPIOx_PBSC @ 0x18
+0x00000000
+GPIOx_PLOCK @ 0x1c
+0x00000000
+GPIOx_AFL @ 0x20
+0xf23fffff
+GPIOx_AFH @ 0x24
+0xf00f000f
+GPIOx_PBC @ 0x28
+0x00000000
+GPIOx_DS @ 0x2c
+0x00000068
+
+
+GPIOB
+0x40010c00
+GPIOx_PMODE @ 0x0
+0xfffe5981
+GPIOx_POTYPE @ 0x4
+0x00000010
+GPIOx_SR @ 0x8
+0x0000ffe8
+GPIOx_PUPD @ 0xc
+0x00000014
+GPIOx_PID @ 0x10
+0x000000cc
+GPIOx_POD @ 0x14
+0x000000c8
+GPIOx_PBSC @ 0x18
+0x00000000
+GPIOx_PLOCK @ 0x1c
+0x00000000
+GPIOx_AFL @ 0x20
+0xff0f0fff
+GPIOx_AFH @ 0x24
+0xfffffff5
+GPIOx_PBC @ 0x28
+0x00000000
+GPIOx_DS @ 0x2c
+0x00000100
+
+GPIOC
+0x40011000
+GPIOx_PMODE @ 0x0
+0x0c000000
+GPIOx_POTYPE @ 0x4
+0x00000000
+GPIOx_SR @ 0x8
+0x00002000
+GPIOx_PUPD @ 0xc
+0x50000000
+GPIOx_PID @ 0x10
+0x0000c000
+GPIOx_POD @ 0x14
+0x00000000
+GPIOx_PBSC @ 0x18
+0x00000000
+GPIOx_PLOCK @ 0x1c
+0x00000000
+GPIOx_AFL @ 0x20
+0x00000000
+GPIOx_AFH @ 0x24
+0xfff00000
+GPIOx_PBC @ 0x28
+0x00000000
+GPIOx_DS @ 0x2c
+0x00000000
+
+GPIOF
+0x40011c00
+GPIOx_PMODE @ 0x0
+0x0000f03f
+GPIOx_POTYPE @ 0x4
+0x00000000
+GPIOx_SR @ 0x8
+0x000000c7
+GPIOx_PUPD @ 0xc
+0x00000000
+GPIOx_PID @ 0x10
+0x00000000
+GPIOx_POD @ 0x14
+0x00000000
+GPIOx_PBSC @ 0x18
+0x00000000
+GPIOx_PLOCK @ 0x1c
+0x00000000
+GPIOx_AFL @ 0x20
+0xff000fff
+GPIOx_AFH @ 0x24
+0x00000000
+GPIOx_PBC @ 0x28
+0x00000000
+GPIOx_DS @ 0x2c
+0x00000000
+
+FLASH
+0x40022000
+FLASH_AC @ 0x0
+0x00000032
+FLASH_KEY @ 0x4
+0x00000000
+FLASH_OPTKEY @ 0x8
+0x00000000
+FLASH_STS @ 0xc
+0x00000000
+FLASH_CTRL @ 0x10
+0x00000080
+FLASH_ADD @ 0x14
+0x00000000
+FLASH_OB @ 0x1c
+0x03fffffc
+FLASH_WRP @ 0x20
+0x0000ffff
+FLASH_ECC @ 0x24
+
+
+
+RCC
+0x40021000
+RCC_CTRL @ 0x0
+    0x0380009b
+RCC_CFG @ 0x4
+0x20034002
+RCC_CLKINT @ 0x8
+0x00000000
+RCC_APB2PRST @ 0xc
+0x00000000
+RCC_APB1PRST @ 0x10
+0x00000000
+RCC_AHBPCLKEN @ 0x14
+0x00000014
+RCC_APB2PCLKEN @ 0x18
+0x0000020d
+RCC_APB1PCLKEN @ 0x1c
+0x00000000
+RCC_LSCTRL @ 0x20
+0x00000003
+RCC_CTRLSTS @ 0x24
+0x00000018
+RCC_AHBPRST @ 0x28
+0x00000000
+RCC_CFG2 @ 0x2c
+0x00003800
+RCC_EMCCTRL @ 0x30
+0x00000000
+
+LPUART
+0x40004800
+LPUART_STS @ 0x0
+0x00000000
+LPUART_INTEN @ 0x4
+0x00000000
+LPUART_CTRL @ 0x8
+0x00000200
+LPUART_BRCFG1 @ 0xc
+0x00000174
+LPUART_DAT @ 0x10
+0x00000000
+LPUART_BRCFG2 @ 0x14
+0x00000000
+LPUART_WUDAT @ 0x18
+0x00000000
+
+-----------------------------------------------------------------------
+
+
+
+TIMx_PSC @ 0x28
+0x00000008
+TIMx_AR @ 0x2c
+0x00000a64
+TIMx_REPCNT @ 0x30
+0x00000000
+TIMx_CCDAT1 @ 0x34
+0x00000000
+TIMx_CCDAT2 @ 0x38
+0x00000000
+TIMx_CCDAT3 @ 0x3c
+0x00000000
+TIMx_CCDAT4 @ 0x40
+0x00000000
+TIMx_BKDT @ 0x44
+0x00008000
+TIMx_DCTRL @ 0x48
+0x00000000
+TIMx_DADDR @ 0x4c
+0x00008801
+TIMx_CCMOD3 @ 0x54
+0x00000000
+TIMx_CCDAT5 @ 0x58
+0x00000000
+TIMx_CCDAT6 @ 0x5c
+0x00000000
+USART1
+0x40013800
+USART_STS @ 0x0
+0x00000000
+USART_DAT @ 0x4
+0x00000000
+USART_BRCF @ 0x8
+0x00000000
+USART_CTRL1 @ 0xc
+0x00000000
+USART_CTRL2 @ 0x10
+0x00000000
+USART_CTRL3 @ 0x14
+0x00000000
+USART_GTP @ 0x18
+0x00000000
+USART2
+0x40004400
+USART_STS @ 0x0
+0x00000000
+USART_DAT @ 0x4
+0x00000000
+USART_BRCF @ 0x8
+0x00000000
+USART_CTRL1 @ 0xc
+0x00000000
+USART_CTRL2 @ 0x10
+0x00000000
+USART_CTRL3 @ 0x14
+0x00000000
+USART_GTP @ 0x18
+0x00000000
+WWDG
+0x40002c00
+WWDG_CTRL @ 0x0
+0x0000007f
+T [6:0]
+0x7f
+ACTB [7:7]
+
+WWDG_CFG @ 0x4
+0x0000007f
+W [6:0]
+0x7f
+TIMERB [8:7]
+0b00
+EWINT [9:9]
+
+WWDG_STS @ 0x8
+0x00000000
+EWINTF [0:0]
+
+
+
+*0x200000f2:1
+
+*0x200000f3:-16777216
+
+*0x200000f4:-65536

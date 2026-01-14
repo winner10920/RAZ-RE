@@ -1,0 +1,27 @@
+/*
+ * Original: FUN_08004e70
+ * Refactored Name: System_Hardware_Setup
+ * Description: Initializes clocks, GPIOs, and Peripherals.
+ */
+void System_Hardware_Setup(void) {
+    // 1. Configure Clocks (RCC)
+    System_Clock_Config(); 
+
+    // 2. Configure GPIO Ports
+    // Sets up pin modes (Input/Output/AF) for Port A and Port B
+    // Likely configuring PA5/PA7 for SPI1, PB13/15 for SPI2
+    GPIO_Init_Struct_Config();
+
+    // 3. Set Initial Pin States
+    // Set CS pins High (Inactive)
+    GPIO_Set_High(GPIOA, PIN_LCD_CS); 
+    GPIO_Set_High(GPIOB, PIN_FLASH_CS);
+
+    // 4. Initialize Peripherals
+    SPI1_Init(); // LCD
+    SPI2_Init(); // Flash
+    ADC_Init();  // Battery Monitor
+    
+    // 5. Setup Timers
+    TIM3_PWM_Init(); // Backlight control
+}

@@ -1,0 +1,58 @@
+/* * Original: feed_iwtchdg_AAAA_FUN_08006094 / feed_iwtchdg_AAAA_FUN_08002ec4
+ * Address: 0x08006094 / 0x08002ec4
+ * Description: Reloads the watchdog counter with 0xAAAA to prevent system reset.
+ */
+void Watchdog_Reload(void) {
+    // Write key 0xAAAA to IWDG_KR to reload counter
+    IWDG->KR = 0xAAAA; 
+}
+
+/* * Original: FUN_08003084
+ * Address: 0x08003084
+ * Description: Configures and starts the Independent Watchdog.
+ */
+void Watchdog_Init_And_Start(void) {
+    IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable); // Unlock IWDG registers (0x5555)
+    IWDG_SetPrescaler(IWDG_Prescaler_32);         // Set clock divider
+    IWDG_SetReload(0x398);                        // Set countdown value (approx 1-2 seconds)
+    Watchdog_Reload();                            // Load initial value
+    IWDG_Enable();                                // Start the watchdog (0xCCCC)
+}
+
+/* * Original: turn_off_prepFUN_08004120
+ * Address: 0x08004120
+ * Description: Prepares GPIOs for sleep mode to minimize leakage current.
+ * Disables backlight, sensor power, and LCD pins.
+ */
+void System_Prepare_Shutdown(void) {
+    // Configure PA6 (Backlight), PA5 (Sensor Power?), PB8 (Audio?) as Analog/Input
+    GPIO_Config_LowPower(GPIOA, GPIO_Pin_5 | GPIO_Pin_6);
+    GPIO_Config_LowPower(GPIOB, GPIO_Pin_8);
+
+    // Explicitly turn off gates
+    GPIO_SetBits(GPIOA, GPIO_Pin_6);  // Turn off Backlight (Active Low?)
+    GPIO_ResetBits(GPIOA, GPIO_Pin_5); // Turn off Sensor Power
+    GPIO_ResetBits(GPIOB, GPIO_Pin_8); // Turn off Audio Amp
+}
+
+/* * Original: SLEEP_
+ * Address: 0x080041dc (approx context)
+ * Description: Enters the MCU's deep sleep (STOP) mode and waits for an interrupt/event to wake up.
+ */
+void System_Enter_Sleep(uint8_t mode) {
+    // Set Deep Sleep bit in Cortex System Control Register
+    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+    
+    // Clear Wakeup Flags in Power Control Register
+    PWR->CR |= PWR_CR_CWUF;
+
+    if (mode == 1) {
+        __WFI(); // Wait For Interrupt
+    } else {
+        __WFE(); // Wait For Event (called twice to flush pending events)
+        __WFE();
+    }
+    
+    // Clear Sleep Deep bit after waking
+    SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
+}

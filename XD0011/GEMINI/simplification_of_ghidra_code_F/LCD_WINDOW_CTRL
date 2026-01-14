@@ -1,0 +1,24 @@
+/*
+ * Original: lcd_send_row_col_FUN_08001808
+ * Refactored Name: LCD_Set_Address_Window
+ * Description: Sets the rectangular area (X, Y, Width, Height) for the next drawing operation.
+ * Uses 0x2A (Column Address Set) and 0x2B (Row Address Set) commands.
+ */
+void LCD_Set_Address_Window(uint8_t x_start, uint8_t y_start, uint8_t width, uint8_t height) {
+    // 1. Column Address Set (X-Axis)
+    LCD_Write_Command_Byte(0x2A); 
+    LCD_Write_Data_Byte(0);
+    LCD_Write_Data_Byte(x_start);            // Start Column
+    LCD_Write_Data_Byte(0);
+    LCD_Write_Data_Byte(x_start + width - 1); // End Column
+
+    // 2. Row Address Set (Y-Axis)
+    LCD_Write_Command_Byte(0x2B);
+    LCD_Write_Data_Byte(0);
+    LCD_Write_Data_Byte(y_start);            // Start Row
+    LCD_Write_Data_Byte(0);
+    LCD_Write_Data_Byte(y_start + height - 1); // End Row
+
+    // 3. Memory Write (Prepare for pixel data)
+    LCD_Write_Command_Byte(0x2C);
+}

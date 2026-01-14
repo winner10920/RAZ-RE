@@ -1,0 +1,65 @@
+Original Addr,Refactored Name,Usage Description
+DAT_080070e8,System_State,"Main state variable (0=Init, 1=Menu, 2=Game, 4=Sleep)."
+DAT_080070bc,Input_Flags,Bitmask of currently pressed buttons.
+DAT_080070f0,Idle_Timer,Increments every tick. Reset on button press. Used for auto-sleep.
+DAT_080070ec,LCD_Brightness,Target brightness value for the PWM backlight.
+DAT_080053fc,DMA_Buffer_Ptr,Pointer to the RAM buffer used for Flash->LCD streaming.
+
+
+/*
+ * Original: FUN_08006b60
+ * Refactored Name: Application_State_Machine
+ * Description: The main "brain" of the device. Switches between modes.
+ */
+void Application_State_Machine(void) {
+    
+    // 1. Initialize System
+    System_Init_All();
+    
+    // 2. Infinite Loop
+    while (true) {
+        // Handle Global Events (Watchdog, Timers)
+        Watchdog_Feed();
+        
+        // Switch based on current state
+        switch (System_State) {
+            
+            case STATE_BOOT: // 0
+                // Check if we need to stay in boot or go to menu
+                if (Check_Boot_Buttons()) {
+                   Enter_Test_Mode();
+                } else {
+                   System_State = STATE_MENU;
+                }
+                break;
+
+            case STATE_MENU: // 1
+                // Draw Menu UI
+                UI_Draw_Menu();
+                // Wait for user input
+                if (Input_Button_Pressed(BTN_START)) {
+                    System_State = STATE_GAME; // Start the game/app
+                }
+                break;
+
+            case STATE_SLEEP: // 4
+                // Turn off LCD Backlight
+                PWM_Set_Backlight(0);
+                // Enter Low Power Stop Mode
+                PWR_EnterSTOPMode();
+                
+                // ... (Wake up logic) ...
+                
+                // Restore System
+                System_Init_Clocks();
+                System_State = STATE_MENU;
+                break;
+        }
+        
+        // Handle Auto-Sleep
+        // If Idle_Timer > 30000 (30 seconds?), go to sleep
+        if (Idle_Timer > 30000) {
+            System_State = STATE_SLEEP;
+        }
+    }
+}

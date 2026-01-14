@@ -1,0 +1,45 @@
+/*
+ * Original: FUN_080019b4
+ * Refactored Name: DMA_Clear_Global_Flags
+ * Description: Clears the Interrupt Status flags for a specific DMA Channel.
+ * The N32G031 has a global DMA interrupt clear register (DMA_INTCLR).
+ * This function determines which channel (1-5) is passed and writes the correct bit pattern.
+ */
+void DMA_Clear_Global_Flags(uint32_t* dma_channel_regs) {
+    // Mask out specific bits in the configuration register
+    *dma_channel_regs &= DMA_CFG_MASK; 
+    
+    // Clear length and address registers
+    dma_channel_regs[0] = 0; // CNDTR
+    dma_channel_regs[1] = 0; // CPAR
+    dma_channel_regs[2] = 0; // CMAR
+
+    // Check which channel pointer was passed and write to the Global Clear Register
+    // The DMA base + offset 0x04 is usually DMA_INTCLR
+    if (dma_channel_regs == DMA1_Channel1) {
+        DMA1->INTCLR |= 0xF;      // Clear GIF1, TCIF1, HTIF1, TEIF1
+    }
+    else if (dma_channel_regs == DMA1_Channel2) {
+        DMA1->INTCLR |= 0xF0;     // Clear GIF2, etc.
+    }
+    else if (dma_channel_regs == DMA1_Channel3) {
+        DMA1->INTCLR |= 0xF00;    // Clear GIF3...
+    }
+    // ... handles channels 4 and 5 similarly
+}
+
+/*
+ * Original: DMA_CHX_ENABLE_DISABLEFUN_0800192c
+ * Refactored Name: DMA_Channel_Cmd
+ * Description: Enables or Disables a DMA Channel.
+ */
+void DMA_Channel_Cmd(uint32_t* dma_channel_regs, int enable) {
+    if (enable == 0) {
+        // Clear Bit 0 (EN)
+        *dma_channel_regs &= ~0x01; 
+    }
+    else {
+        // Set Bit 0 (EN)
+        *dma_channel_regs |= 0x01;
+    }
+}

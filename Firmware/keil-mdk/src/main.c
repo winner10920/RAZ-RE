@@ -3,58 +3,55 @@
 #include "main.h"
 #include <stdio.h>
 #include <stdint.h>
+#include "n32g031_rcc.h"
 #include "nv3029.h"
 #include "spi_flash.h"
+#include "dma.h"
+#include "pwm.h"
+#include "sleep_wake.h"
+#include "voltage_monitor.h"
+
+
+#define TV1_VOLTAGE_SENSE_PIN GPIOA,GPIO_PIN_1
+
+#define TV2_VOLTAGE_SENSE_PIN GPIOA,GPIO_PIN_2
+
+#define MIC_PIN GPIOA,GPIO_PIN_3
+
+#define GPIO_PA4 GPIOA,GPIO_PIN_4
+
+#define TV1_PIN GPIOA,GPIO_PIN_5
+
+#define LCD_BACKLIGHT_PIN GPIOA,GPIO_PIN_6
+
+#define BUTTON_PIN GPIOA,GPIO_PIN_7
+
+#define UNKNOWN_OUTPUT_PIN GPIOA,GPIO_PIN_12
+
+#define LCD_SPI_CS_PIN GPIOA,GPIO_PIN_15
 
 
 
-#define LCD_BACKLIGHT_PIN GPIO_PIN_6
-#define LCD_BACKLIGHT_GPIO GPIOA
 
-#define LCD_SPI_CS_PIN GPIO_PIN_15
-#define LCD_SPI_CS_GPIO GPIOA
 
-#define LCD_RST_PIN GPIO_PIN_6
-#define LCD_RST_GPIO GPIOB
+#define LP4086_ISET_PIN GPIOB,GPIO_PIN_0
 
-#define LCD_DC_PIN GPIO_PIN_7
-#define LCD_DC_GPIO GPIOB
+#define LP4086_CHRG_PIN GPIOB,GPIO_PIN_1
 
-#define ELEMENT_PIN GPIO_PIN_5
-#define ELEMENT_GPIO GPIOA
+#define UNKNOWN_INPUT_PIN GPIOB,GPIO_PIN_2
 
-#define LCD_FLASH_PWR_EN_PIN GPIO_PIN_4
-#define LCD_FLASH_PWR_EN_GPIO GPIOB
+#define LCD_SCLK_PIN GPIOB,GPIO_PIN_3
 
-#define ELEMENT_TV2_PIN GPIO_PIN_8
-#define ELEMENT_TV2_GPIO GPIOB
+#define LCD_FLASH_PWR_EN_PIN GPIOB,GPIO_PIN_4
 
-#define MIC_ENABLE_PIN GPIO_PIN_3
-#define MIC_ENABLE_GPIO GPIOA	
+#define LCD_MOSI_PIN GPIOB,GPIO_PIN_5
 
-#define LP4086_CHRG_PIN GPIO_PIN_1
-#define LP4086_CHRG_GPIO GPIOB
+#define LCD_RST_PIN GPIOB,GPIO_PIN_6
 
-#define LP4086_ISET_PIN GPIO_PIN_0
-#define LP4086_ISET_GPIO GPIOB
+#define LCD_DC_PIN GPIOB,GPIO_PIN_7
 
-#define UNKNOWN_INPUT_PIN GPIO_PIN_2
-#define UNKNOWN_INPUT_GPIO GPIOB
+#define TV2_PIN GPIOB,GPIO_PIN_8
 
-#define UNKNOWN_OUTPUT_PIN GPIO_PIN_12
-#define UNKNOWN_OUTPUT_GPIO GPIOB
-
-#define BUTTON_PIN GPIO_PIN_7
-#define BUTTON_GPIO GPIOA
-
-#define TV1_VOLTAGE_SENSE_PIN GPIO_PIN_1
-#define TV1_VOLTAGE_SENSE_GPIO GPIOA
-
-#define TV2_VOLTAGE_SENSE_PIN GPIO_PIN_2
-#define TV2_VOLTAGE_SENSE_GPIO GPIOA
-
-#define  COIL_PIN        GPIO_PIN_8
-#define  COIL_GPIO       GPIOB	
 
 
 /*
@@ -82,7 +79,7 @@ GPIOA
 GPIOB
 0	            OUTPUT  PP,LOW      LP4086_ISET
 1               INPUT   PULLUP      LP4086_CHRG (PULLED LOW ACTIVE) ext1 interupt
-2			    INPUT   PULLUP      UNKOWN_INPUT
+2			    INPUT   PULLUP      UNKOWN_INPUT maybe batt v?
 3               OUTPUT  PP,LOW      SPI1_SCLK, LCD_SPI_SCLK
 4               OUTPUT  OD,LOW      LCD_FLASH_PWR_EN 
 5			    OUTPUT  PP,LOW      SPI1_MOSI, LCD_SPI_MOSI
@@ -103,10 +100,21 @@ GPIOF
 7              ANALOG  HSR         UNKOWN_ANALOG
 */
 
+extern char __heap_start__;
+extern char __heap_end__;
+extern char __stack_start__;
+extern char __stack_end__;
+
+void check_memory_boundaries(void) {
+    volatile char *heap_start = &__heap_start__;
+	volatile char *heap_end = &__heap_end__;
+	// ... use these pointers for monitoring
+	}
 
 
-volatile uint8_t mainran = 1;
+volatile uint8_t mainran = 0;
 
+volatile uint32_t* SPI1DATA = (uint32_t*)0x4001200C;
 
 #define BUFFER_SIZE 4096
 volatile int page[1];
@@ -114,6 +122,7 @@ volatile int lvl_reset_flag[1];
 volatile int continue_flag[1];
 volatile int write_flag[1];
 volatile int status[1];
+volatile bool RunError = false;
 uint8_t lvl_buffer[5];
 uint8_t lvl_buffer_read[5];
 uint8_t buffer[BUFFER_SIZE];
@@ -140,79 +149,67 @@ uint8_t sFLASH_ReadRegister(uint8_t reg)
 
 int main(void)
 {
-	
-	/* pin Setup */
-	GPIO_Init(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN, GPIO_MODE_OUTPUT_PP);
+    RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB | RCC_APB2_PERIPH_GPIOC, ENABLE);
+    RCC_ConfigAdcHclk(RCC_ADCHCLK_DIV6);
+	RCC_EnableAHBPeriphClk(RCC_AHBPCLKEN_ADCEN, ENABLE);
 
-	Delay(100);
-	GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
-	GPIO_On(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
+	/* Initialize voltage monitoring on analog inputs */
+	VoltageMonitor_Init();
 
-	GPIO_Init(LCD_SPI_CS_GPIO, LCD_SPI_CS_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On(LCD_SPI_CS_GPIO, LCD_SPI_CS_PIN);
-
-	GPIO_Init(LCD_RST_GPIO, LCD_RST_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On(LCD_RST_GPIO, LCD_RST_PIN);
-
-	GPIO_Init(LCD_DC_GPIO, LCD_DC_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On(LCD_DC_GPIO, LCD_DC_PIN);
-
-	
-
-    GPIO_Init(ELEMENT_GPIO, ELEMENT_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On(ELEMENT_GPIO, ELEMENT_PIN);
-	
-	GPIO_Init(LCD_FLASH_PWR_EN_GPIO, LCD_FLASH_PWR_EN_PIN, GPIO_MODE_OUTPUT_OD);
-	GPIO_Off(LCD_FLASH_PWR_EN_GPIO, LCD_FLASH_PWR_EN_PIN);
-
-	GPIO_Init(UNKNOWN_OUTPUT_GPIO, UNKNOWN_OUTPUT_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On(UNKNOWN_OUTPUT_GPIO, UNKNOWN_OUTPUT_PIN);
-
-	GPIO_Init(ELEMENT_TV2_GPIO, ELEMENT_TV2_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On(ELEMENT_TV2_GPIO, ELEMENT_TV2_PIN);
+	/* Initialize PWM for LCD backlight (PA6) - 500Hz, 85% duty cycle */
+	PWM_Init(20000);
+	PWM_SetDutyCycle(35);  /* Set initial brightness */
 
 
-	GPIO_Init(LP4086_ISET_GPIO, LP4086_ISET_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On(LP4086_ISET_GPIO, LP4086_ISET_PIN);
+	GPIO_Init(LCD_FLASH_PWR_EN_PIN, GPIO_MODE_OUTPUT_PP);
+	GPIO_On(LCD_FLASH_PWR_EN_PIN);
+
+	GPIO_Init(UNKNOWN_OUTPUT_PIN, GPIO_MODE_OUTPUT_PP);
+	GPIO_On( UNKNOWN_OUTPUT_PIN);
+
+    GPIO_Init(TV1_PIN, GPIO_MODE_OUTPUT_PP);
+	GPIO_Off(TV1_PIN);
+
+	GPIO_Init(TV2_PIN, GPIO_MODE_OUTPUT_PP);
+	GPIO_Off(TV2_PIN);
+
+
+	GPIO_Init(LP4086_ISET_PIN, GPIO_MODE_OUTPUT_PP);
+	GPIO_Off(LP4086_ISET_PIN);
     // leave above on to enable charging
 
 
-	GPIO_Init(COIL_GPIO, COIL_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On(COIL_GPIO, COIL_PIN);
-	
 	// inputs
 
-	GPIO_Init(BUTTON_GPIO, BUTTON_PIN, GPIO_MODE_INPUT);
-    GPIO_Init(LP4086_CHRG_GPIO, LP4086_CHRG_PIN, GPIO_MODE_INPUT);
-	GPIO_Init(MIC_ENABLE_GPIO, MIC_ENABLE_PIN, GPIO_MODE_INPUT);
-    GPIO_Init(UNKNOWN_INPUT_GPIO, UNKNOWN_INPUT_PIN, GPIO_MODE_INPUT);
+	GPIO_Init(BUTTON_PIN, GPIO_MODE_INPUT);
+    GPIO_Init(LP4086_CHRG_PIN, GPIO_MODE_INPUT);
+	 GPIO_Init(MIC_PIN, GPIO_MODE_INPUT);
+    GPIO_Init(UNKNOWN_INPUT_PIN, GPIO_MODE_INPUT);
 
     // ANALOG
 
-	GPIO_Init(TV1_VOLTAGE_SENSE_GPIO, TV1_VOLTAGE_SENSE_PIN, GPIO_MODE_ANALOG);
-	GPIO_Init(TV2_VOLTAGE_SENSE_GPIO, TV2_VOLTAGE_SENSE_PIN, GPIO_MODE_ANALOG);
+	GPIO_Init(TV1_VOLTAGE_SENSE_PIN, GPIO_MODE_ANALOG);
+	GPIO_Init(TV2_VOLTAGE_SENSE_PIN, GPIO_MODE_ANALOG);
+    
 
 
-    Delay(1000);
+
+    // Not connected
+	GPIO_Init(GPIO_PA4, GPIO_MODE_OUTPUT_PP);
+	GPIO_Off(GPIO_PA4);
+
+    Delay(1200);
 	
-	
+	LCD_init();
+		
+	LCD_diag();
 
-
+	/* Initialize sleep/wake system - 30 second inactivity timeout */
+	SleepWake_Init(30);
 	
-		nv3029_init();
-		Delay(1000);
-		nv3029_fill_screen(NV3029_COLOR565(255,255,255));
-		Delay(1000);
-		nv3029_fill_screen(NV3029_COLOR565(125,125,125));
-		Delay(1000);
-		nv3029_fill_screen(NV3029_COLOR565(0,0,0));
-		Delay(1000);
-		nv3029_fill_screen(NV3029_COLOR565(125,125,125));
-		nv3029_draw_string(8, 8, "Hello World 123123123456456456789789789", NV3029_COLOR565(255,255,255), NV3029_COLOR565(0,0,0));
-		nv3029_draw_string(24, 24, "Hello World 123123123456456456789789789", NV3029_COLOR565(255,255,255), NV3029_COLOR565(0,0,0));
-		nv3029_draw_string(60, 60, "Hello World 123123123456456456789789789", NV3029_COLOR565(255,255,255), NV3029_COLOR565(0,0,0));
-	/* Run NV3029 diagnostic: fill screen with test colors */
-			//nv3029_diag();
+	/* Variables for button debouncing and activity tracking */
+	static uint8_t button_prev_state = 0;
+	static uint32_t activity_timer = 0;
 
 	
     
@@ -220,19 +217,19 @@ int main(void)
 	
 
 	/* Simple PA7 test: toggle LED on each rising edge (short startup test) */
-	{
-		uint8_t prev = GPIO_ReadInputDataBit(BUTTON_GPIO, BUTTON_PIN);
-		uint8_t led_state = GPIO_ReadOutputDataBit(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);; // currently LED was turned on earlier
-		for (int i = 0; i < 500; ++i) {
-			uint8_t cur = GPIO_ReadInputDataBit(BUTTON_GPIO, BUTTON_PIN);
-			if (cur && !prev) {
-				led_state = !led_state;
-				if (led_state) GPIO_On(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN); else GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
-			}
-			prev = cur;
-			Delay(100);
-		}
-	}
+	// {
+	// 	uint8_t prev = GPIO_ReadInputDataBit(BUTTON_PIN);
+	// 	uint8_t led_state = GPIO_ReadOutputDataBit(LCD_BACKLIGHT_PIN);; // currently LED was turned on earlier
+	// 	for (int i = 0; i < 500; ++i) {
+	// 		uint8_t cur = GPIO_ReadInputDataBit(BUTTON_PIN);
+	// 		if (cur && !prev) {
+	// 			led_state = !led_state;
+	// 			if (led_state) GPIO_On(LCD_BACKLIGHT_PIN); else GPIO_Off(LCD_BACKLIGHT_PIN);
+	// 		}
+	// 		prev = cur;
+	// 		Delay(100);
+	// 	}
+	// }
 
 
 	if( mainran == 0){
@@ -244,10 +241,40 @@ int main(void)
 		FlashID = sFLASH_ReadID();
 		if(FlashID != 0) break;
 	}
+    mainran++;
+	/* Main loop - includes sleep/wake and button handling */
+	while(mainran == 1 && !RunError) {
+		/* Check button for wake-up or activity */
+		uint8_t button_cur_state = GPIO_ReadInputDataBit(BUTTON_PIN);
+		if (button_cur_state && !button_prev_state)  /* Button pressed */
+		{
+			if (SleepWake_IsSleeping())
+			{
+				/* Wake up from sleep */
+				SleepWake_WakeUp();
+			}
+			/* Reset inactivity timer on button press */
+			SleepWake_ResetTimer();
+		}
+		button_prev_state = button_cur_state;
 
+		/* Check if timeout for sleep has expired */
+		if (SleepWake_CheckTimeout())
+		{
+			/* Go to sleep */
+			SleepWake_GoToSleep();
+		}
 
+		/* Update voltage readings periodically */
+		VoltageMonitor_UpdateReadings();
 
+		/* Normal device operation code here */
+		/* (Flash operations, display updates, etc.) */
+		
+		Delay(100);  /* 100ms delay in main loop */
+	}
 
+	/* Original flash check loop */
 	// Check Flash ID
 	if(FlashID == 8740886){      //sFLASH_PD32S_ID){
 		status[0] = 1;
@@ -322,31 +349,30 @@ int main(void)
 		}
 	}else{
 		// If there is an error reading the Flash ID, pulse the light 3 times for 1 second delay
-		GPIO_On(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
+		PWM_SetDutyCycle(50); 
 		Delay(1000);
-		GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
+		PWM_SetDutyCycle(20); 
 		Delay(1000);
-		GPIO_On(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
+		PWM_SetDutyCycle(50); 
 		Delay(1000);
-		GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
+		PWM_SetDutyCycle(20); 
 		Delay(1000);
-		GPIO_On(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
+		PWM_SetDutyCycle(50); 
 		Delay(1000);
-		GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
+		PWM_SetDutyCycle(20); 
 		Delay(1000);
-		GPIO_Off(LCD_BACKLIGHT_GPIO, LCD_BACKLIGHT_PIN);
-	
+		PWM_SetDutyCycle(50); 
+	    RunError = true;
 		//while(1)
-		mainran = 1
-			;
+		mainran = 1;
 	}
-	mainran = 1;
 	}
 	else{
 
 
 
 	}
+
 }
 
 
@@ -360,8 +386,8 @@ void Delay(volatile uint32_t count)
 	volatile uint32_t t_delay = count * 0x500;
 	for (; t_delay >0; t_delay--);
 }
-void GPIO_Off(GPIO_Module *GPIOx, uint16_t Pin) {  GPIO_SetBits(GPIOx, Pin); }
-void GPIO_On(GPIO_Module* GPIOx, uint16_t Pin) { GPIO_ResetBits(GPIOx, Pin); }
+void GPIO_Off(GPIO_Module *GPIOx, uint16_t Pin) {  GPIO_ResetBits(GPIOx, Pin); }
+void GPIO_On(GPIO_Module* GPIOx, uint16_t Pin) { GPIO_SetBits(GPIOx, Pin); }
 void GPIO_Init(GPIO_Module* GPIOx, uint16_t Pin, uint32_t GpioMode) {
     GPIO_InitType GPIO_InitStructure;
 

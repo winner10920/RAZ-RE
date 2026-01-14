@@ -1,0 +1,45 @@
+/* * Original: FUN_08001d30
+ * Address: 0x08001d30
+ * Description: Draws a bitmap/character from the firmware resource area in Flash.
+ * Uses a fixed offset (0x38 = 56 bytes) which suggests a specific icon or font format.
+ */
+void UI_Draw_Bitmap_Index(int index) {
+    uint32_t base_addr = Firmware_Resource_Base;
+    uint32_t offset = index * 56; // 56 bytes per entry in the lookup table?
+    
+    uint16_t x_pos = Flash_Read_Short(base_addr + offset + 0);
+    uint16_t y_pos = Flash_Read_Short(base_addr + offset + 2);
+    uint32_t bmp_addr = Flash_Read_Word(base_addr + offset + 4);
+    uint16_t width = Flash_Read_Short(base_addr + offset + 8);
+    uint16_t height = Flash_Read_Short(base_addr + offset + 10);
+
+    // Call the memory-to-screen draw function
+    LCD_Draw_Flash_Image(x_pos, y_pos, width, height, bmp_addr);
+}
+
+/* * Original: Draw_From_Memory_FUN_0800666c
+ * Address: 0x0800666c
+ * Description: Generic function to stream data from an external SPI Flash address directly to the LCD.
+ * Sets the LCD window, then uses SPI DMA to pipe data from Flash to LCD.
+ */
+void LCD_Draw_Flash_Image(uint8_t caset, uint8_t raset, short height, short width, uint32_t flash_address) {
+    // 1. Select LCD and Set Window
+    GPIO_ResetBits(GPIOA, GPIO_Pin_15); // CS Low
+    LCD_Set_Address_Window(caset, raset, width, height);
+    
+    // 2. Setup SPI/DMA Transfer
+    // The length is width * height * 2 (for 16-bit color)
+    SPI_DMA_Transfer_From_Flash(flash_address, width * height * 2);
+    
+    // 3. Deselect LCD
+    GPIO_SetBits(GPIOA, GPIO_Pin_15); // CS High
+}
+
+/* * Original: FUN_08006640
+ * Address: 0x08006640
+ * Description: Wrapper function for drawing a full screen image or specific UI element.
+ */
+void UI_Draw_Element_Wrapper(uint32_t param_1, uint32_t param_2, uint32_t width, uint32_t height, uint32_t addr) {
+    // Calls the actual draw function (FUN_08001948 in original)
+    LCD_Engine_Draw(param_1, param_2, width, height, &addr); 
+}

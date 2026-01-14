@@ -77,9 +77,16 @@ project:
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_gpio.c
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_spi.c
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_rcc.c
+        - file: ../firmware/n32g031_std_periph_driver/src/n32g031_dma.c
+        - file: ../firmware/n32g031_std_periph_driver/src/n32g031_tim.c
+        - file: ../firmware/n32g031_std_periph_driver/src/n32g031_adc.c
     - group: USER
       files:
         - file: ../src/main.c
         - file: ../src/n32g031_it.c
         - file: ../src/spi_flash.c
         - file: ../src/nv3029.c
+        - file: ../src/dma.c
+        - file: ../src/pwm.c
+        - file: ../src/sleep_wake.c
+        - file: ../src/voltage_monitor.c

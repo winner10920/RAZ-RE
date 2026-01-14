@@ -1,0 +1,28 @@
+/* * Original: complicated_afio_FUN_08005f20
+ * Address: 0x08005f20
+ * Description: Configures Alternate Function I/O (AFIO) and Remaps.
+ * This is critical for routing internal peripherals (SPI/TIM) to specific pins.
+ */
+void System_IO_Remap_Init(void) {
+    // Enable AFIO Clock
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+
+    // Initialize Port A
+    // PA5, PA6, PA7 (SPI1/LCD)
+    GPIO_Init_Pin(GPIOA, 0x00E0, GPIO_Mode_AF_PP); 
+    
+    // Initialize Port B
+    // PB3, PB4, PB5 (SPI3/JTAG)
+    GPIO_Init_Pin(GPIOB, 0x0038, GPIO_Mode_AF_PP);
+
+    // Remap JTAG to release pins for GPIO usage (PB3, PB4, PA15)
+    // This allows using the JTAG pins as standard SPI/GPIO for the LCD
+    GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+
+    // Remap SPI1 if necessary (to PB3/PB4/PB5)
+    GPIO_PinRemapConfig(GPIO_Remap_SPI1, ENABLE);
+    
+    // Configure Chip Selects (CS)
+    GPIO_Init_Pin(GPIOA, GPIO_Pin_15, GPIO_Mode_Out_PP); // LCD CS
+    GPIO_Init_Pin(GPIOA, GPIO_Pin_8, GPIO_Mode_Out_PP);  // Flash CS
+}

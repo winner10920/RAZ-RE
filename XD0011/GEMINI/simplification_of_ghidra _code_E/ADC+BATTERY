@@ -1,0 +1,46 @@
+/* * Original: some_adc_stuff__FUN_08000e70
+ * Address: 0x08000e70
+ * Description: Initializes the ADC peripheral, runs calibration, and sets up DMA for readings.
+ */
+void ADC_System_Init(void) {
+    // Enable ADC Clock
+    RCC_EnableAPB2(RCC_APB2_ADC1);
+    
+    // Calibrate ADC
+    ADC_Run_Calibration();
+    
+    // Configure Channels (Battery, etc.)
+    // Original calls FUN_08000a64 which sets up scan mode and injected channels
+    ADC_Configure_Channels(ADC1, ADC_Channel_Battery, ADC_SampleTime_55Cycles5);
+    
+    // Enable Internal Reference Voltage (VREFINT) for accurate measurements
+    ADC_TempSensorVrefintCmd(ENABLE);
+}
+
+/* * Original: FUN_08000a64
+ * Address: 0x08000a64
+ * Description: Configures specific ADC channels and injected sequences (high priority reads).
+ */
+void ADC_Configure_Channels(uint32_t adc_base, uint8_t rank, uint8_t channel, uint8_t sample_time) {
+    // Logic to write to ADC_SQR (Regular Sequence) or ADC_JSQR (Injected Sequence) registers
+    ADC_SetRegularSequence(adc_base, channel, rank, sample_time);
+    
+    // Trigger initial conversion
+    ADC_SoftwareStartConvCmd(adc_base, ENABLE);
+}
+
+/* * Original: FUN_08000c7c
+ * Address: 0x08000c7c
+ * Description: Processes ADC readings. Checks thresholds (e.g., Low Battery).
+ * Likely updates a global state variable if voltage drops too low.
+ */
+void Battery_Check_Thresholds(int raw_adc_value) {
+    int voltage_mv = (raw_adc_value * VREF_VOLTAGE) / 4096;
+    
+    // Check against thresholds stored in RAM/Flash
+    if (voltage_mv < BATTERY_CRITICAL_LEVEL) {
+        System_Set_State(SYSTEM_STATE_LOW_POWER);
+    } else if (voltage_mv < BATTERY_WARNING_LEVEL) {
+        UI_Show_Low_Batt_Icon();
+    }
+}

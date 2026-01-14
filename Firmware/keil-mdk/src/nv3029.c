@@ -7,25 +7,16 @@
  */
 
 #include "nv3029.h"
+#include "n32g031.h"
+#include "n32g031_gpio.h"
+#include <stdlib.h>
 #include <string.h>
 
-// --- The Initialization Sequence (From your dump) ---
-const uint8_t NV3029_Init_Sequence[] = {
-    0xFF, 0xA5, // Unlock
-    0x3E, 0x08, 0x3A, 0x65, 0x82, 0x00, 0x98, 0x00, 0x63, 0x0F, 0x64, 0x0F,
-    0xB4, 0x34, 0xB5, 0x30, 0x83, 0x13, 0x86, 0x04, 0x87, 0x16, 0x88, 0x25,
-    0x89, 0x2F, 0x93, 0x63, 0x96, 0x81, 0xC3, 0x10, 0xE6, 0x00, 0x99, 0x01,
-    0x44, 0x00,
-    // Positive Gamma (0x70-0x7F)
-    0x70, 0x07, 0x71, 0x19, 0x72, 0x1A, 0x73, 0x13, 0x74, 0x19, 0x75, 0x1D,
-    0x76, 0x47, 0x77, 0x0A, 0x78, 0x07, 0x79, 0x47, 0x7A, 0x05, 0x7B, 0x09,
-    0x7C, 0x0D, 0x7D, 0x0C, 0x7E, 0x0C, 0x7F, 0x08,
-    // Negative Gamma (0xA0-0xAF)
-    0xA0, 0x0B, 0xA1, 0x36, 0xA2, 0x09, 0xA3, 0x0D, 0xA4, 0x08, 0xA5, 0x23,
-    0xA6, 0x3B, 0xA7, 0x04, 0xA8, 0x07, 0xA9, 0x38, 0xAA, 0x0A, 0xAB, 0x12,
-    0xAC, 0x0C, 0xAD, 0x07, 0xAE, 0x2F, 0xAF, 0x07,
-    0xFF, 0x00 // Lock
-};
+volatile uint16_t peek_value[] = {0,0,0,0,0,0,0,0,0,0,0};
+volatile uint32_t peek_len = 0;
+volatile uint8_t spi_rx_data[3] = {0, 0, 0};
+volatile uint8_t spi_rx_data_d3[3] = {0, 0, 0};
+
 
 // Standard 5x8 font (ASCII 32-127), 5 bytes per character
 const uint8_t font5x8[][5] = {
@@ -127,105 +118,460 @@ const uint8_t font5x8[][5] = {
 {0x00,0x00,0x00,0x00,0x00}  //127 DEL
 };
 
+static const LcdPacket screen_init_seq_0[] = {
+    {CMD_LOW, 0xFF}, {DATA_HIGH, 0xA5},
+    {CMD_LOW, 0x3E}, {DATA_HIGH, 0x08},
+    {CMD_LOW, LCD_CMD_COLMOD}, {DATA_HIGH, 0x65},
+    {CMD_LOW, 0x82}, {DATA_HIGH, 0x00},
+    {CMD_LOW, 0x98}, {DATA_HIGH, 0x00},
+    {CMD_LOW, 0x63}, {DATA_HIGH, 0x0F}, // 99 -> 0x63
+    {CMD_LOW, 0x64}, {DATA_HIGH, 0x0F}, // 100 -> 0x64
+    {CMD_LOW, LCD_CMD_INVCTR}, {DATA_HIGH, 0x34},
+    {CMD_LOW, 0xB5}, {DATA_HIGH, 0x30},
+    {CMD_LOW, 0x83}, {DATA_HIGH, 0x13},
+    {CMD_LOW, 0x86}, {DATA_HIGH, 0x04},
+    {CMD_LOW, 0x87}, {DATA_HIGH, 0x16},
+    {CMD_LOW, 0x88}, {DATA_HIGH, 0x25},
+    {CMD_LOW, 0x89}, {DATA_HIGH, 0x2F},
+    {CMD_LOW, 0x93}, {DATA_HIGH, 0x63}, // 99 -> 0x63
+    {CMD_LOW, 0x96}, {DATA_HIGH, 0x81},
+    {CMD_LOW, LCD_CMD_PWCTR4}, {DATA_HIGH, 0x10},
+    {CMD_LOW, 0xE6}, {DATA_HIGH, 0x00},
+    {CMD_LOW, 0x99}, {DATA_HIGH, 0x01},
+    {CMD_LOW, 0x44}, {DATA_HIGH, 0x00},
+    {CMD_LOW, 0x70}, {DATA_HIGH, 0x07},
+    {CMD_LOW, 0x71}, {DATA_HIGH, 0x19},
+    {CMD_LOW, 0x72}, {DATA_HIGH, 0x1A},
+    {CMD_LOW, 0x73}, {DATA_HIGH, 0x13},
+    {CMD_LOW, 0x74}, {DATA_HIGH, 0x19},
+    {CMD_LOW, 0x75}, {DATA_HIGH, 0x1D},
+    {CMD_LOW, 0x76}, {DATA_HIGH, 0x47},
+    {CMD_LOW, 0x77}, {DATA_HIGH, 0x0A}, // 10 -> 0x0A
+    {CMD_LOW, 0x78}, {DATA_HIGH, 0x07},
+    {CMD_LOW, 0x79}, {DATA_HIGH, 0x47},
+    {CMD_LOW, 0x7A}, {DATA_HIGH, 0x05},
+    {CMD_LOW, 0x7B}, {DATA_HIGH, 0x09},
+    {CMD_LOW, 0x7C}, {DATA_HIGH, 0x0D},
+    {CMD_LOW, 0x7D}, {DATA_HIGH, 0x0C},
+    {CMD_LOW, 0x7E}, {DATA_HIGH, 0x0C},
+    {CMD_LOW, 0x7F}, {DATA_HIGH, 0x08},
+    {CMD_LOW, 0xA0}, {DATA_HIGH, 0x0B},
+    {CMD_LOW, 0xA1}, {DATA_HIGH, 0x36},
+    {CMD_LOW, 0xA2}, {DATA_HIGH, 0x09},
+    {CMD_LOW, 0xA3}, {DATA_HIGH, 0x0D},
+    {CMD_LOW, 0xA4}, {DATA_HIGH, 0x08},
+    {CMD_LOW, 0xA5}, {DATA_HIGH, 0x23},
+    {CMD_LOW, 0xA6}, {DATA_HIGH, 0x3B},
+    {CMD_LOW, 0xA7}, {DATA_HIGH, 0x04},
+    {CMD_LOW, 0xA8}, {DATA_HIGH, 0x07},
+    {CMD_LOW, 0xA9}, {DATA_HIGH, 0x38},
+    {CMD_LOW, 0xAA}, {DATA_HIGH, 0x0A}, // 10 -> 0x0A
+    {CMD_LOW, 0xAB}, {DATA_HIGH, 0x12},
+    {CMD_LOW, 0xAC}, {DATA_HIGH, 0x0C},
+    {CMD_LOW, 0xAD}, {DATA_HIGH, 0x07},
+    {CMD_LOW, 0xAE}, {DATA_HIGH, 0x2F},
+    {CMD_LOW, 0xAF}, {DATA_HIGH, 0x07},
+    {CMD_LOW, 0xFF}, {DATA_HIGH, 0x00}
+};
+
+// Alternative sequence from decompiled firmware (cVar1 == 1)
+static const LcdPacket screen_init_seq_1_alt[] = {
+    {CMD_LOW, 0xFF}, {DATA_HIGH, 0xA5},
+    {CMD_LOW, 0x3E}, {DATA_HIGH, 0x08},
+    {CMD_LOW, LCD_CMD_COLMOD}, {DATA_HIGH, 0x65},
+    {CMD_LOW, 0x82}, {DATA_HIGH, 0x00},
+    {CMD_LOW, 0x98}, {DATA_HIGH, 0x00},
+    {CMD_LOW, 0x63}, {DATA_HIGH, 0x0F},
+    {CMD_LOW, 0x64}, {DATA_HIGH, 0x0F},
+    {CMD_LOW, LCD_CMD_INVCTR}, {DATA_HIGH, 0x34},
+    {CMD_LOW, 0xB5}, {DATA_HIGH, 0x30},
+    {CMD_LOW, 0x83}, {DATA_HIGH, 0x13},
+    {CMD_LOW, 0x86}, {DATA_HIGH, 0x04},
+    {CMD_LOW, 0x87}, {DATA_HIGH, 0x19},  // Different from seq_0 (0x16)
+    {CMD_LOW, 0x88}, {DATA_HIGH, 0x2F},  // Different from seq_0 (0x25)
+    {CMD_LOW, 0x89}, {DATA_HIGH, 0x36},  // Different from seq_0 (0x2F)
+    {CMD_LOW, 0x93}, {DATA_HIGH, 0x63},
+    {CMD_LOW, 0x96}, {DATA_HIGH, 0x81},
+    {CMD_LOW, LCD_CMD_PWCTR4}, {DATA_HIGH, 0x10},
+    {CMD_LOW, 0xE6}, {DATA_HIGH, 0x00},
+    {CMD_LOW, 0x99}, {DATA_HIGH, 0x01},
+    {CMD_LOW, 0x44}, {DATA_HIGH, 0x00},
+    {CMD_LOW, 0x70}, {DATA_HIGH, 0x07},
+    {CMD_LOW, 0x71}, {DATA_HIGH, 0x19},
+    {CMD_LOW, 0x72}, {DATA_HIGH, 0x1A},
+    {CMD_LOW, 0x73}, {DATA_HIGH, 0x13},
+    {CMD_LOW, 0x74}, {DATA_HIGH, 0x19},
+    {CMD_LOW, 0x75}, {DATA_HIGH, 0x1D},
+    {CMD_LOW, 0x76}, {DATA_HIGH, 0x47},
+    {CMD_LOW, 0x77}, {DATA_HIGH, 0x0A},
+    {CMD_LOW, 0x78}, {DATA_HIGH, 0x07},
+    {CMD_LOW, 0x79}, {DATA_HIGH, 0x47},
+    {CMD_LOW, 0x7A}, {DATA_HIGH, 0x05},
+    {CMD_LOW, 0x7B}, {DATA_HIGH, 0x09},
+    {CMD_LOW, 0x7C}, {DATA_HIGH, 0x0D},
+    {CMD_LOW, 0x7D}, {DATA_HIGH, 0x0C},
+    {CMD_LOW, 0x7E}, {DATA_HIGH, 0x0C},
+    {CMD_LOW, 0x7F}, {DATA_HIGH, 0x08},
+    {CMD_LOW, 0xA0}, {DATA_HIGH, 0x0B},
+    {CMD_LOW, 0xA1}, {DATA_HIGH, 0x36},
+    {CMD_LOW, 0xA2}, {DATA_HIGH, 0x09},
+    {CMD_LOW, 0xA3}, {DATA_HIGH, 0x0D},
+    {CMD_LOW, 0xA4}, {DATA_HIGH, 0x08},
+    {CMD_LOW, 0xA5}, {DATA_HIGH, 0x23},
+    {CMD_LOW, 0xA6}, {DATA_HIGH, 0x3B},
+    {CMD_LOW, 0xA7}, {DATA_HIGH, 0x04},
+    {CMD_LOW, 0xA8}, {DATA_HIGH, 0x07},
+    {CMD_LOW, 0xA9}, {DATA_HIGH, 0x38},
+    {CMD_LOW, 0xAA}, {DATA_HIGH, 0x0A},
+    {CMD_LOW, 0xAB}, {DATA_HIGH, 0x12},
+    {CMD_LOW, 0xAC}, {DATA_HIGH, 0x0C},
+    {CMD_LOW, 0xAD}, {DATA_HIGH, 0x07},
+    {CMD_LOW, 0xAE}, {DATA_HIGH, 0x2F},
+    {CMD_LOW, 0xAF}, {DATA_HIGH, 0x07},
+    {CMD_LOW, 0xFF}, {DATA_HIGH, 0x00}
+};
+
+static const LcdPacket screen_init_seq_1[] = {
+    {CMD_LOW, 0xFF},  {DATA_HIGH, 0xA5},  
+    {CMD_LOW, 0x3E},  {DATA_HIGH, 0x08},  
+    {CMD_LOW, 0x3A},  {DATA_HIGH, 0x65},  
+    {CMD_LOW, 0x82},  {DATA_HIGH, 0x00},  
+    {CMD_LOW, 0x98},  {DATA_HIGH, 0x00},  
+    {CMD_LOW, 0x63}, {DATA_HIGH, 0x0F}, 
+    {CMD_LOW, 0x64}, {DATA_HIGH, 0x0F}, 
+    {CMD_LOW, 0xB4}, {DATA_HIGH, 0x34}, 
+    {CMD_LOW, 0xB5},  {DATA_HIGH, 0x30},  
+    {CMD_LOW, 0x83}, {DATA_HIGH, 0x13}, 
+    {CMD_LOW, 0x86}, {DATA_HIGH, 0x04}, 
+    {CMD_LOW, 0x87},  {DATA_HIGH, 0x16},  
+    {CMD_LOW, 0x88},  {DATA_HIGH, 0x25},  
+    {CMD_LOW, 0x89}, {DATA_HIGH, 0x2F}, 
+    {CMD_LOW, 0x93},  {DATA_HIGH, 0x63}, 
+    {CMD_LOW, 0x96},  {DATA_HIGH, 0x81},  
+    {CMD_LOW, 0xC3}, {DATA_HIGH, 0x10}, 
+    {CMD_LOW, 0xE6},  {DATA_HIGH, 0x00},  
+    {CMD_LOW, 0x99},   {DATA_HIGH, 0x01},
+    {CMD_LOW, 0x44},  {DATA_HIGH, 0x00},  
+    {CMD_LOW, 0x70},  {DATA_HIGH, 0x07},  
+    {CMD_LOW, 0x71},  {DATA_HIGH, 0x19},  
+    {CMD_LOW, 0x72},   {DATA_HIGH, 0x1A},
+    {CMD_LOW, 0x73},   {DATA_HIGH, 0x13},
+    {CMD_LOW, 0x74},  {DATA_HIGH, 0x19},
+    {CMD_LOW, 0x75},  {DATA_HIGH, 0x1D},  
+    {CMD_LOW, 0x76},  {DATA_HIGH, 0x47},  
+    {CMD_LOW, 0x77},  {DATA_HIGH, 0x0A},  
+    {CMD_LOW, 0x78},  {DATA_HIGH, 0x07},  
+    {CMD_LOW, 0x79},  {DATA_HIGH, 0x47},  
+    {CMD_LOW, 0x7A},  {DATA_HIGH, 0x05},  
+    {CMD_LOW, 0x7B},  {DATA_HIGH, 0x09},  
+    {CMD_LOW, 0x7C},  {DATA_HIGH, 0x0D},  
+    {CMD_LOW, 0x7D},  {DATA_HIGH, 0x0C},  
+    {CMD_LOW, 0x7E},   {DATA_HIGH, 0x0C},
+    {CMD_LOW, 0x7F},  {DATA_HIGH, 0x08},  
+    {CMD_LOW, 0xA0},  {DATA_HIGH, 0x0B},  
+    {CMD_LOW, 0xA1},  {DATA_HIGH, 0x36},  
+    {CMD_LOW, 0xA2},  {DATA_HIGH, 0x09},  
+    {CMD_LOW, 0xA3},  {DATA_HIGH, 0x0D},  
+    {CMD_LOW, 0xA4},  {DATA_HIGH, 0x08},  
+    {CMD_LOW, 0xA5},  {DATA_HIGH, 0x23},  
+    {CMD_LOW, 0xA6},  {DATA_HIGH, 0x3B},  
+    {CMD_LOW, 0xA7},  {DATA_HIGH, 0x04},  
+    {CMD_LOW, 0xA8},  {DATA_HIGH, 0x07},  
+    {CMD_LOW, 0xA9},  {DATA_HIGH, 0x38},  
+    {CMD_LOW, 0xAA},  {DATA_HIGH, 0x0A},  
+    {CMD_LOW, 0xAB},  {DATA_HIGH, 0x12},  
+    {CMD_LOW, 0xAC},  {DATA_HIGH, 0x0C},  
+    {CMD_LOW, 0xAD},   {DATA_HIGH, 0x07},
+    {CMD_LOW, 0xAE},  {DATA_HIGH, 0x2F},  
+    {CMD_LOW, 0xAF},   {DATA_HIGH, 0x07},
+    {CMD_LOW, 0xFF},  {DATA_HIGH, 0x00}
+};
+
+// static const LcdPacket screen_init_seq_1[] = {
+//     {CMD_LOW, 0xFF}, {DELAY_TIME, 15}, {DATA_HIGH, 0xA5}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x3E}, {DELAY_TIME, 45}, {DATA_HIGH, 0x08}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, LCD_CMD_COLMOD}, {DELAY_TIME, 15}, {DATA_HIGH, 0x65}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0x82}, {DELAY_TIME, 15}, {DATA_HIGH, 0x00}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x98}, {DELAY_TIME, 45}, {DATA_HIGH, 0x00}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x63},{DELAY_TIME, 45}, 
+//     {DATA_HIGH, 0x0F}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x64},{DELAY_TIME, 15}, {DATA_HIGH, 0x0F}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, LCD_CMD_INVCTR},{DELAY_TIME, 15}, {DATA_HIGH, 0x34}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xB5}, {DELAY_TIME, 45}, {DATA_HIGH, 0x30}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x83}, {DELAY_TIME, 45},
+//     {DATA_HIGH, 0x13}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x86}, {DELAY_TIME, 15},{DATA_HIGH, 0x04}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0x87}, {DELAY_TIME, 15}, {DATA_HIGH, 0x16}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x88}, {DELAY_TIME, 45}, {DATA_HIGH, 0x25}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x89}, {DELAY_TIME, 15},{DATA_HIGH, 0x2F}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0x93}, {DELAY_TIME, 15}, {DATA_HIGH, 0x63}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x96}, {DELAY_TIME, 45}, {DATA_HIGH, 0x81}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, LCD_CMD_PWCTR4}, {DELAY_TIME, 15},{DATA_HIGH, 0x10}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0xE6}, {DELAY_TIME, 65}, {DATA_HIGH, 0x00}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x99}, {DELAY_TIME, 15},  {DATA_HIGH, 0x01}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x44}, {DELAY_TIME, 45}, {DATA_HIGH, 0x00}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x70}, {DELAY_TIME, 15}, {DATA_HIGH, 0x07}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0x71}, {DELAY_TIME, 15}, {DATA_HIGH, 0x19}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x72}, {DELAY_TIME, 45},  {DATA_HIGH, 0x1A}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x73}, {DELAY_TIME, 15},  {DATA_HIGH, 0x13}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0x74}, {DELAY_TIME, 15}, {DATA_HIGH, 0x19},{DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x75}, {DELAY_TIME, 45}, {DATA_HIGH, 0x1D}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x76}, {DELAY_TIME, 15}, {DATA_HIGH, 0x47}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0x77}, {DELAY_TIME, 15}, {DATA_HIGH, 0x0A}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0x78}, {DELAY_TIME, 15}, {DATA_HIGH, 0x07}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x79}, {DELAY_TIME, 45}, {DATA_HIGH, 0x47}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x7A}, {DELAY_TIME, 15}, {DATA_HIGH, 0x05}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0x7B}, {DELAY_TIME, 15}, {DATA_HIGH, 0x09}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x7C}, {DELAY_TIME, 45}, {DATA_HIGH, 0x0D}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x7D}, {DELAY_TIME, 45}, {DATA_HIGH, 0x0C}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0x7E}, {DELAY_TIME, 15},  {DATA_HIGH, 0x0C}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0x7F}, {DELAY_TIME, 15}, {DATA_HIGH, 0x08}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xA0}, {DELAY_TIME, 70}, {DATA_HIGH, 0x0B}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xA1}, {DELAY_TIME, 45}, {DATA_HIGH, 0x36}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xA2}, {DELAY_TIME, 45}, {DATA_HIGH, 0x09}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xA3}, {DELAY_TIME, 15}, {DATA_HIGH, 0x0D}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0xA4}, {DELAY_TIME, 15}, {DATA_HIGH, 0x08}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xA5}, {DELAY_TIME, 45}, {DATA_HIGH, 0x23}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xA6}, {DELAY_TIME, 15}, {DATA_HIGH, 0x3B}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0xA7}, {DELAY_TIME, 15}, {DATA_HIGH, 0x04}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xA8}, {DELAY_TIME, 45}, {DATA_HIGH, 0x07}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xA9}, {DELAY_TIME, 45}, {DATA_HIGH, 0x38}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xAA}, {DELAY_TIME, 15}, {DATA_HIGH, 0x0A}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0xAB}, {DELAY_TIME, 15}, {DATA_HIGH, 0x12}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xAC}, {DELAY_TIME, 45}, {DATA_HIGH, 0x0C}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xAD}, {DELAY_TIME, 15},  {DATA_HIGH, 0x07}, {DELAY_TIME, 45}, 
+//     {CMD_LOW, 0xAE}, {DELAY_TIME, 15}, {DATA_HIGH, 0x2F}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xAF}, {DELAY_TIME, 45},  {DATA_HIGH, 0x07}, {DELAY_TIME, 15}, 
+//     {CMD_LOW, 0xFF}, {DELAY_TIME, 15}, {DATA_HIGH, 0x00}, {DELAY_TIME, 45}
+// };
+
+
+static const LcdPacket screen_init_seq_2[] = {
+    {CMD_LOW, LCD_CMD_FRMCTR1}, {DATA_HIGH, 0x05}, {DATA_HIGH, 0x3C}, {DATA_HIGH, 0x3C},
+    {CMD_LOW, LCD_CMD_FRMCTR2}, {DATA_HIGH, 0x05}, {DATA_HIGH, 0x3C}, {DATA_HIGH, 0x3C},
+    {CMD_LOW, LCD_CMD_FRMCTR3}, {DATA_HIGH, 0x05}, {DATA_HIGH, 0x3C}, {DATA_HIGH, 0x3C}, {DATA_HIGH, 0x05}, {DATA_HIGH, 0x3C}, {DATA_HIGH, 0x3C},
+    {CMD_LOW, LCD_CMD_INVCTR}, {DATA_HIGH, 0x03},
+    {CMD_LOW, LCD_CMD_PWCTR1}, {DATA_HIGH, 0xA4}, {DATA_HIGH, 0x04}, {DATA_HIGH, 0x84},
+    {CMD_LOW, LCD_CMD_PWCTR2}, {DATA_HIGH, 0xC1},
+    {CMD_LOW, LCD_CMD_PWCTR3}, {DATA_HIGH, 0x0D}, {DATA_HIGH, 0x00},
+    {CMD_LOW, LCD_CMD_PWCTR4}, {DATA_HIGH, 0x8D}, {DATA_HIGH, 0x2A},
+    {CMD_LOW, LCD_CMD_PWCTR5}, {DATA_HIGH, 0x8D}, {DATA_HIGH, 0xEE},
+    {CMD_LOW, LCD_CMD_VMCTR1}, {DATA_HIGH, 0x0C},
+    // Gamma Correction positive polarity
+    {CMD_LOW, LCD_CMD_GMCTRP1}, {DATA_HIGH, 0x0B}, {DATA_HIGH, 0x21}, {DATA_HIGH, 0x0C}, {DATA_HIGH, 0x16}, {DATA_HIGH, 0x2E}, {DATA_HIGH, 0x27}, {DATA_HIGH, 0x1F}, {DATA_HIGH, 0x25}, {DATA_HIGH, 0x25}, {DATA_HIGH, 0x24}, {DATA_HIGH, 0x2C}, {DATA_HIGH, 0x38}, {DATA_HIGH, 0x00}, {DATA_HIGH, 0x03}, {DATA_HIGH, 0x00}, {DATA_HIGH, 0x10},
+    // Gamma Correction negative polarity
+    {CMD_LOW, LCD_CMD_GMCTRN1}, {DATA_HIGH, 0x0E}, {DATA_HIGH, 0x1E}, {DATA_HIGH, 0x0E}, {DATA_HIGH, 0x18}, {DATA_HIGH, 0x33}, {DATA_HIGH, 0x2D}, {DATA_HIGH, 0x28}, {DATA_HIGH, 0x2A}, {DATA_HIGH, 0x28}, {DATA_HIGH, 0x26}, {DATA_HIGH, 0x2F}, {DATA_HIGH, 0x3C}, {DATA_HIGH, 0x00}, {DATA_HIGH, 0x05}, {DATA_HIGH, 0x05}, {DATA_HIGH, 0x10},
+    {CMD_LOW, LCD_CMD_TEON}, {DATA_HIGH, 0x00},
+    {CMD_LOW, LCD_CMD_COLMOD}, {DATA_HIGH, 0x55}
+};
+
+static void LCD_cs_low(void)  { GPIO_ResetBits(NV3029_CS_GPIO_PORT, NV3029_CS_PIN); }
+static void LCD_cs_high(void) { GPIO_SetBits(NV3029_CS_GPIO_PORT, NV3029_CS_PIN); }
+static void LCD_dc_cmd(void)  { GPIO_ResetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN); }
+static void LCD_dc_data(void) { GPIO_SetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN); }
+static void LCD_rst_low(void) { GPIO_ResetBits(NV3029_RST_GPIO_PORT, NV3029_RST_PIN); }
+static void LCD_rst_high(void){ GPIO_SetBits(NV3029_RST_GPIO_PORT, NV3029_RST_PIN); }
+static void LCD_sclk_high(void){ GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN); }
+static void LCD_sclk_low(void) { GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN); }
+static void LCD_mosi_high(void){ GPIO_SetBits(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN); }
+static void LCD_mosi_low(void) { GPIO_ResetBits(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN); }  
+
+
 
 // Transmit buffer using hardware SPI (SPI1 configured for display)
-static void nv3029_spi_tx(const uint8_t* buff, uint32_t len)
+static void SPI1_tx(const uint8_t* buff, uint32_t len)
 {
+    
+    SPI_Enable(NV3029_SPI, ENABLE);
     for (uint32_t i = 0; i < len; ++i) {
-        // wait until transmit buffer empty
-        while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_BUSY_FLAG) == SET) ;
+        peek_value[0] = buff[i];
+        peek_len = len;
+        
+        while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_TE_FLAG) == RESET);
         SPI_I2S_TransmitData(NV3029_SPI, buff[i]);
-        //while (SPI_I2S_GetFlagStatus(NV3029_SPI, SPI_I2S_FLAG_BUSY) == SET);
+    }
 
-        // RX data is ignored for display writes; read if required by peripheral
-        // (void)SPI_I2S_ReceiveData(NV3029_SPI);
+    while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_BUSY_FLAG) == SET);
+    SPI_Enable(NV3029_SPI, DISABLE);
+
+}
+
+// Transmit buffer using hardware SPI (SPI1 configured for display)
+static void SPI1_tx16(const uint16_t* buff, uint32_t len)
+{
+    
+    SPI_Enable(NV3029_SPI, ENABLE);
+    for (uint32_t i = 0; i < len; ++i) {
+        peek_value[0] = buff[i];
+        peek_len = len;
+        
+        while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_TE_FLAG) == RESET);
+        SPI_I2S_TransmitData(NV3029_SPI, buff[i]);
+    }
+
+    while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_BUSY_FLAG) == SET);
+    SPI_Enable(NV3029_SPI, DISABLE);
+
+}
+
+
+static void LCD_WriteCommand(uint8_t cmd)
+{
+    //LCD_cs_low();
+    LCD_dc_cmd();
+    SPI1_tx(&cmd, 1);
+    //LCD_cs_high();
+
+}
+
+static void LCD_WriteData(const uint8_t* buff, uint32_t len)
+{
+    //LCD_cs_low();
+    LCD_dc_data();
+    SPI1_tx(buff, len);
+    //LCD_cs_high();
+}
+
+static void LCD_WriteData16(const uint16_t* buff, uint32_t len)
+{
+    //LCD_cs_low();
+    LCD_dc_data();
+
+    SPI1_tx16(buff, len);
+    //LCD_cs_high();
+}
+
+static void LCD_SetWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1) {
+
+    // todo: change to 16 bit spi mode here
+    //spi1_init_8();
+    uint16_t data[2];
+
+    // column addr
+    spi1_init_8();
+    LCD_WriteCommand(LCD_CMD_CASET);
+    spi1_init_16();
+    data[0] = x0; data[1] = x1;
+    LCD_WriteData16(data, 2);
+    //Delay(10);
+
+    // row addr
+    spi1_init_8();
+    LCD_WriteCommand(LCD_CMD_RASET);
+    spi1_init_16();
+    data[0] = y0; data[1] = y1; 
+    LCD_WriteData16(data, 2);
+    //Delay(10);
+
+    //write to RAM
+    spi1_init_8();
+    LCD_WriteCommand(LCD_CMD_RAMWR);
+    spi1_init_16();
+    //Delay(10);
+    //spi1_init_16();
+}
+
+void LCD_DrawPixel(uint8_t x, uint8_t y, uint16_t color) {
+    LCD_SetWindow(x, y, x, y);
+    LCD_WriteData16(&color, 1);
+}
+
+void LCD_FillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color) {
+    LCD_SetWindow(x, y, x + w - 1, y + h - 1);
+    
+    uint32_t pixels = w * h;
+
+    
+    for (uint32_t i = 0; i < pixels; i++) {
+        SPI1_tx16((uint16_t *)&color, 1);
+
+    }
+    
+}
+
+/**
+ * @brief Iterates through an LcdPacket array and sends it to the display
+ * @param packet_array Pointer to the LcdPacket structure array
+ * @param length Number of elements in the array
+ */
+void LCD_Send_Sequence(const LcdPacket* packet_array, uint32_t length) {
+
+    for (uint32_t i = 0; i < length; i++) {
+        // 1. Set the DC pin based on the packet type
+        if (packet_array[i].type == CMD_LOW) {
+            LCD_WriteCommand(packet_array[i].value);
+        } else if(packet_array[i].type == DATA_HIGH){
+            LCD_WriteData(&packet_array[i].value, 1);
+        } else if(packet_array[i].type == DELAY_TIME){
+            Delay(packet_array[i].value);
+        }
     }
 }
 
-static void nv3029_cs_low(void)  { GPIO_ResetBits(NV3029_CS_GPIO_PORT, NV3029_CS_PIN); }
-static void nv3029_cs_high(void) { GPIO_SetBits(NV3029_CS_GPIO_PORT, NV3029_CS_PIN); }
-static void nv3029_dc_cmd(void)  { GPIO_ResetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN); }
-static void nv3029_dc_data(void) { GPIO_SetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN); }
-static void nv3029_rst_low(void) { GPIO_ResetBits(NV3029_RST_GPIO_PORT, NV3029_RST_PIN); }
-static void nv3029_rst_high(void){ GPIO_SetBits(NV3029_RST_GPIO_PORT, NV3029_RST_PIN); }
+void screen_Init(uint8_t screen_type) {
+    switch (screen_type) {
+        case 0:
+            LCD_Send_Sequence(screen_init_seq_0, sizeof(screen_init_seq_0) / sizeof(LcdPacket));
+            break;
+            
+        case 1:
+            LCD_Send_Sequence(screen_init_seq_1, sizeof(screen_init_seq_1) / sizeof(LcdPacket));
+            break;
 
-static void nv3029_write_command(uint8_t cmd)
-{
-    nv3029_dc_cmd();
-    nv3029_cs_low();
-
-    nv3029_spi_tx(&cmd, 1);
-
-    nv3029_cs_high();
+         case 2:
+            LCD_Send_Sequence(screen_init_seq_1_alt, sizeof(screen_init_seq_1_alt) / sizeof(LcdPacket));
+            break;
+            
+        case 3:
+            LCD_Send_Sequence(screen_init_seq_2, sizeof(screen_init_seq_2) / sizeof(LcdPacket));
+            break;
+            
+        default:
+            // Error handling or HardFault
+            break;
+    }
 }
 
-static void nv3029_write_data(const uint8_t* buff, uint32_t len)
-{
-    nv3029_dc_data();
-    nv3029_cs_low();
+#define SPI_MODE 3
 
-    nv3029_spi_tx(buff, len);
-
-    nv3029_cs_high();
-}
-
-static void nv3029_set_addr_window(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
-{
-    uint8_t data[4];
-    // column addr
-    nv3029_write_command(NV3029_CASET);
-    data[0] = 0x00; data[1] = x0; data[2] = 0x00; data[3] = x1;
-    nv3029_write_data(data, 4);
-    // row addr
-    nv3029_write_command(NV3029_RASET);
-    data[0] = 0x00; data[1] = y0; data[2] = 0x00; data[3] = y1;
-    nv3029_write_data(data, 4);
-    // write to RAM
-    nv3029_write_command(NV3029_RAMWR);
-}
-
-void nv3029_init(void)
-{
-    GPIO_InitType GPIO_InitStructure;
-
-    GPIO_InitStruct(&GPIO_InitStructure);
-    // Enable GPIO clocks for used ports (explicit, do not depend on sFLASH macros)
-    RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB, ENABLE);
-
-    // Enable SPI clock and AFIO
-    RCC_EnableAPB2PeriphClk(NV3029_SPI_CLK | RCC_APB2_PERIPH_AFIO, ENABLE);
-
-    // init CS, DC, RST pins as outputs
-    GPIO_InitStructure.Pin = NV3029_CS_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitPeripheral(NV3029_CS_GPIO_PORT, &GPIO_InitStructure);
-
-    GPIO_InitStructure.Pin = NV3029_DC_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitPeripheral(NV3029_DC_GPIO_PORT, &GPIO_InitStructure);
-
-    GPIO_InitStructure.Pin = NV3029_RST_PIN;
-    GPIO_InitPeripheral(NV3029_RST_GPIO_PORT, &GPIO_InitStructure);
-
-    // Configure SCLK (PB3) and MOSI (PB5) as SPI1 alternate-function outputs
-    GPIO_InitStructure.Pin = NV3029_SCLK_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStructure.GPIO_Alternate = NV3029_SPI_AF;
-    GPIO_InitPeripheral(NV3029_SCLK_GPIO_PORT, &GPIO_InitStructure);
-
-    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStructure.GPIO_Alternate = NV3029_SPI_AF;
-    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
-
-    // Initialize SPI peripheral (master, 8-bit, MSB)
+void spi1_init_8(void) {
+    SPI_Enable(NV3029_SPI, DISABLE);
     {
         SPI_InitType SPI_InitStructure;
-        SPI_InitStructure.DataDirection = SPI_DIR_SINGLELINE_TX;
+        SPI_InitStructure.DataDirection = SPI_DIR_DOUBLELINE_FULLDUPLEX;
         SPI_InitStructure.SpiMode       = SPI_MODE_MASTER;
         SPI_InitStructure.DataLen       = SPI_DATA_SIZE_8BITS;
+        #if SPI_MODE == 3
         SPI_InitStructure.CLKPOL        = SPI_CLKPOL_HIGH;
         SPI_InitStructure.CLKPHA        = SPI_CLKPHA_SECOND_EDGE;
+        #else
+        SPI_InitStructure.CLKPOL        = SPI_CLKPOL_LOW;
+        SPI_InitStructure.CLKPHA        = SPI_CLKPHA_FIRST_EDGE;
+        #endif
+        SPI_InitStructure.NSS           = SPI_NSS_SOFT;
+        SPI_InitStructure.BaudRatePres  = SPI_BR_PRESCALER_4;
+        SPI_InitStructure.FirstBit      = SPI_FB_MSB;
+        SPI_InitStructure.CRCPoly       = 7;
+        SPI_Init(NV3029_SPI, &SPI_InitStructure);
+        SPI_Enable(NV3029_SPI, ENABLE);
+
+    }
+}
+
+void spi1_init_16(void) {
+    SPI_Enable(NV3029_SPI, DISABLE);
+    {
+        SPI_InitType SPI_InitStructure;
+        SPI_InitStructure.DataDirection = SPI_DIR_DOUBLELINE_FULLDUPLEX;
+        SPI_InitStructure.SpiMode       = SPI_MODE_MASTER;
+        SPI_InitStructure.DataLen       = SPI_DATA_SIZE_16BITS;
+        #if SPI_MODE == 3
+        SPI_InitStructure.CLKPOL        = SPI_CLKPOL_HIGH;
+        SPI_InitStructure.CLKPHA        = SPI_CLKPHA_SECOND_EDGE;
+        #else
+        SPI_InitStructure.CLKPOL        = SPI_CLKPOL_LOW;
+        SPI_InitStructure.CLKPHA        = SPI_CLKPHA_FIRST_EDGE;
+        #endif
         SPI_InitStructure.NSS           = SPI_NSS_SOFT;
         SPI_InitStructure.BaudRatePres  = SPI_BR_PRESCALER_4;
         SPI_InitStructure.FirstBit      = SPI_FB_MSB;
@@ -233,59 +579,417 @@ void nv3029_init(void)
         SPI_Init(NV3029_SPI, &SPI_InitStructure);
         SPI_Enable(NV3029_SPI, ENABLE);
     }
+}
 
+/**
+ * @brief One-wire SPI protocol: send 0x04, then receive 3 bytes using bit-banging
+ * Manually toggles SCLK and reads/writes MOSI pin for deterministic timing
+ */
+static void spi1_onewire_tx_rx(void) {
+    uint8_t tx_byte = 0x04;
+    uint8_t byte_idx, bit_idx;
+    uint8_t bit_val;
     
+    // ========== TRANSMIT: Send 0x04 ==========
+    // Set MOSI to output mode
+    GPIO_InitType GPIO_InitStructure;
+    GPIO_InitStruct(&GPIO_InitStructure);
+    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
+    
+    LCD_cs_high();
+    GPIO_SetBits(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN);
+    LCD_mosi_high();
+    LCD_dc_data();
+    LCD_cs_low();
+    LCD_dc_cmd();
+    LCD_mosi_low();
+    GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
+
+    // Send 0x04 MSB first (0000 0100)
+    for (bit_idx = 0; bit_idx < 8; ++bit_idx) {
+        // Extract bit from MSB to LSB
+        bit_val = (tx_byte >> (7 - bit_idx)) & 0x01;
+        
+        // Set MOSI to bit value
+        if (bit_val) {
+            GPIO_SetBits(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN);
+        } else {
+            GPIO_ResetBits(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN);
+        }
+        
+        // Clock pulse: toggle SCLK
+        GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
+        Delay(1);
+        GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
+
+    }
+    
+    // ========== RECEIVE: Get 3 bytes ==========
+    // Set MOSI to input mode (read-only)
+    GPIO_InitStruct(&GPIO_InitStructure);
+    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_INPUT;
+    GPIO_InitStructure.GPIO_Pull = GPIO_NO_PULL;
+    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
+    
+    // Receive 3 bytes
+    for (byte_idx = 0; byte_idx < 3; ++byte_idx) {
+        spi_rx_data[byte_idx] = 0x00;
+        
+        // Receive 8 bits MSB first
+        for (bit_idx = 0; bit_idx < 8; ++bit_idx) {
+            // Clock pulse: SCLK high (sample on rising edge)
+            GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
+            //Delay(100);
+            
+            // Read bit from MOSI
+            bit_val = (GPIO_ReadInputDataBit(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN) != 0) ? 1 : 0;
+            
+            // Shift bit into byte (MSB first)
+            spi_rx_data[byte_idx] = (spi_rx_data[byte_idx] << 1) | bit_val;
+            
+            // Clock pulse: SCLK low
+            GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
+            Delay(100);
+        }
+    }
+    
+    // Set MOSI back to output mode for normal operation
+    GPIO_InitStruct(&GPIO_InitStructure);
+    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
+}
+
+/**
+ * @brief One-wire SPI protocol: send 0xD3, then receive 3 bytes using bit-banging
+ * DC pin is set LOW. Manually toggles SCLK and reads/writes MOSI pin for deterministic timing
+ */
+static void spi1_onewire_tx_rx_d3(void) {
+    uint8_t tx_byte = 0xD3;
+    uint8_t byte_idx, bit_idx;
+    uint8_t bit_val;
+    
+    // Set DC pin LOW
+    GPIO_ResetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN);
+    
+    // ========== TRANSMIT: Send 0xD3 ==========
+    // Set MOSI to output mode
+    GPIO_InitType GPIO_InitStructure;
+    GPIO_InitStruct(&GPIO_InitStructure);
+    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
+    
+    // Send 0xD3 MSB first (1101 0011)
+    for (bit_idx = 0; bit_idx < 8; ++bit_idx) {
+        // Extract bit from MSB to LSB
+        bit_val = (tx_byte >> (7 - bit_idx)) & 0x01;
+        
+        // Set MOSI to bit value
+        if (bit_val) {
+            GPIO_SetBits(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN);
+        } else {
+            GPIO_ResetBits(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN);
+        }
+        
+        // Clock pulse: toggle SCLK
+        GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
+        Delay(100);
+        GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
+        Delay(100);
+    }
+    
+    // ========== RECEIVE: Get 3 bytes ==========
+    // Set MOSI to input mode (read-only)
+    GPIO_InitStruct(&GPIO_InitStructure);
+    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_INPUT;
+    GPIO_InitStructure.GPIO_Pull = GPIO_NO_PULL;
+    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
+    
+    // Receive 3 bytes
+    for (byte_idx = 0; byte_idx < 3; ++byte_idx) {
+        spi_rx_data_d3[byte_idx] = 0x00;
+        
+        // Receive 8 bits MSB first
+        for (bit_idx = 0; bit_idx < 8; ++bit_idx) {
+            // Clock pulse: SCLK high (sample on rising edge)
+            GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
+            //Delay(100);
+            
+            // Read bit from MOSI
+            bit_val = (GPIO_ReadInputDataBit(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN) != 0) ? 1 : 0;
+            
+            // Shift bit into byte (MSB first)
+            spi_rx_data_d3[byte_idx] = (spi_rx_data_d3[byte_idx] << 1) | bit_val;
+            
+            // Clock pulse: SCLK low
+            GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
+            Delay(100);
+        }
+    }
+    
+    // Set MOSI back to output mode for normal operation
+    GPIO_InitStruct(&GPIO_InitStructure);
+    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
+    
+    // Set DC pin back HIGH
+    GPIO_SetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN);
+}
+
+void spi1_pin_init(void)
+{
+ GPIO_InitType GPIO_InitStructure;
+
+    GPIO_InitStruct(&GPIO_InitStructure);
+    // Enable GPIO clocks for used ports (explicit, do not depend on sFLASH macros)
+    RCC_EnableAPB2PeriphClk(NV3029_SPI_CLK | RCC_APB2_PERIPH_AFIO | RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB, ENABLE);
+
+    // init CS, DC, RST pins as outputs
+    GPIO_InitStructure.Pin = NV3029_CS_PIN ;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitPeripheral(NV3029_CS_GPIO_PORT, &GPIO_InitStructure);
+        // init CS, DC, RST pins as outputs
+    GPIO_InitStructure.Pin = NV3029_DC_PIN | NV3029_RST_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitPeripheral(NV3029_DC_GPIO_PORT, &GPIO_InitStructure);
+    
+    GPIO_InitStruct(&GPIO_InitStructure);
+    // Configure SCLK (PB3) and MOSI (PB5) as SPI1 alternate-function outputs
+    GPIO_InitStructure.Pin = NV3029_SCLK_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStructure.GPIO_Alternate = NV3029_SPI_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitPeripheral(NV3029_SCLK_GPIO_PORT, &GPIO_InitStructure);
+
+    GPIO_InitStruct(&GPIO_InitStructure);
+    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStructure.GPIO_Alternate = NV3029_SPI_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
+}
+
+void LCD_init(void)
+{
+    LCD_rst_low();
+    Delay(500);
+    LCD_rst_high();
+    Delay(500);
+    LCD_rst_low();
+    Delay(500);
+ 
+
+    // One-wire SPI protocol: send 0x04 and receive 3 bytes
+    spi1_onewire_tx_rx();
+    
+    // One-wire SPI protocol: send 0xD3 (with DC low) and receive 3 bytes
+    spi1_onewire_tx_rx_d3();
+
+    spi1_pin_init();
+    
+    spi1_init_8();
+
+
 
     // hardware reset
-    nv3029_rst_high();
-    Delay(10);
-    nv3029_rst_low();
-    Delay(10);
-    nv3029_rst_high();
-    Delay(120);
+    LCD_cs_high();
+    LCD_dc_cmd();
+    LCD_rst_high();
 
-    nv3029_write_command(NV3029_SLPOUT);
-    Delay(120);
-    // Use the reverse-engineered NV3029_Init_Sequence array to initialize the panel.
-    // The array contains pairs {cmd, data}
-    const uint16_t len = sizeof(NV3029_Init_Sequence);
-    for (uint16_t i = 0; i + 1 < len; i += 2) {
-        uint8_t cmd = NV3029_Init_Sequence[i];
-        uint8_t data = NV3029_Init_Sequence[i + 1];
-        nv3029_write_command(cmd);
-        nv3029_write_data(&data, 1);
-        // small delay between commands may be required for some entries; add if necessary
+    Delay(1000);
+    LCD_rst_low();
+    Delay(500);
+    LCD_rst_high();
+    Delay(500);
+    LCD_cs_low();
+    Delay(100);
+    LCD_WriteCommand(LCD_CMD_SWRESET); // 0x01
+    Delay(150);
+    LCD_WriteCommand(LCD_CMD_SLPOUT);
+    Delay(255);
+
+   
+     //Send the initialization sequence
+     uint8_t screen_type = 2; // Set the desired screen type here (0, 1, 2, or 3)
+     screen_Init(screen_type); 
+    //LCD_WriteCommand(LCD_CMD_COLMOD); // 0x3A
+    //Delay(1);
+    LCD_WriteData((uint8_t*)0x55, 1); // 16 bits per pixel
+    Delay(10);
+    LCD_WriteCommand(LCD_CMD_MADCTL); // 0x36
+    Delay(10);
+    if(screen_type == 0) {
+        uint8_t madctl = 0x80; // MADCTL for screen type 
+        LCD_WriteData(&madctl, 1);
+    } else if(screen_type == 1) {
+        uint8_t madctl = 0x80; // MADCTL for screen type 
+        LCD_WriteData(&madctl, 1);
+    } else if(screen_type == 2) {
+        uint8_t madctl = 0x80; // MADCTL for screen type 
+        LCD_WriteData(&madctl, 1);
+    } else if(screen_type == 3) {
+        uint8_t madctl = 0xC0; // MADCTL for screen type 
+        LCD_WriteData(&madctl, 1);
     }
-
-    nv3029_write_command(NV3029_MADCTL);
-    nv3029_write_data((uint8_t*)"\x80", 1); // MADCTL: MY=1, MX=0, MV=0, ML=0, RGB=0, MH=0
-    // Finally, ensure display on
-    nv3029_write_command(NV3029_DISPON);
+    Delay(5);
+    //LCD_WriteCommand(LCD_CMD_NORON); // 0x13
     Delay(10);
-    nv3029_write_command(NV3029_RAMWR);
+    //LCD_WriteCommand(LCD_CMD_IDMOFF); // 0x29
+    Delay(10);
+    //LCD_WriteCommand(LCD_CMD_INVON); // 0x20
+    Delay(10);
+    LCD_WriteCommand(LCD_CMD_DISPON); // 0x29
+    Delay(1000);
 
+
+    Delay(11);
+    LCD_WriteCommand(LCD_CMD_CASET); // 0x2A
+    spi1_init_16();
+
+    uint16_t data[2] = {0x0000, 0x007F};
+    LCD_WriteData16(data, 2);
+    spi1_init_8();
+    LCD_WriteCommand(LCD_CMD_RASET); // 0x2B
+    spi1_init_16();
+    data[1] = 0x009F;
+    LCD_WriteData16(data, 2);
+    spi1_init_8();
+    LCD_WriteCommand(LCD_CMD_RAMWR);
+    spi1_init_16();
+    LCD_cs_high();
+    Delay(10);
+    LCD_cs_low();
+    // Send 54ms of 0x00 data
+    data[1] = 0x0000;
+    for (uint32_t i = 0; i < (128*160); ++i) { 
+        LCD_WriteData16(data, 2);
+    }
+    LCD_cs_high();
+    Delay(700);
+    LCD_cs_low();
+    Delay(1000);
+
+
+
+
+    /*
+    Remaining Commands before data from sigrok pulseview implemented above
+
+    CMD:   0xAC
+    DELAY: 71uS
+    CMD:   0x2A
+    DELAY: 15uS
+    DATA:  0x00
+    DELAY: 15uS
+    DATA:  0x00
+    DELAY: 45uS
+    DATA:  0x00
+    DELAY: 15uS
+    DATA:  0x7F
+    DELAY: 15uS
+    CMD:   0x2B
+    DELAY: 45uS
+    DATA:  0x00
+    DELAY: 15uS
+    DATA:  0x00
+    DELAY: 15uS
+    DATA:  0x00
+    DELAY: 45uS
+    DATA:  0x9F
+    DELAY: 15uS
+    CMD:   0x2C
+    DELAY: 15uS
+    DATA:  0x00
+    CS:    HIGH
+    DELAY: 10uS
+    CS:    LOW
+    DATA:  54mS OF 0X00
+    CS:    HIGH
+    DELAY: 700uS
+    CS:    LOW
+    */
+
+     /*
+    Remaining Commands AFTER NULL DATA TRAIN from sigrok pulseview
+    CMD:   0x2A
+    DELAY: 15uS
+    CMD:   0x00
+    DELAY: 15uS
+    CMD:   0x54
+    DELAY: 45uS
+    DATA:  0x00
+    DELAY: 15uS
+    DATA:  0x7B
+    DELAY: 15uS
+    CMD:   0x2B
+    DELAY: 45uS
+    DATA:  0x00
+    DELAY: 15uS
+    DATA:  0x03
+    DELAY: 50uS
+    DATA:  0x00
+    DELAY: 15uS
+    DATA:  0x28
+    DELAY: 15uS
+    CMD:   0x2C
+    DELAY: 438uS
+    DATA:  2.234mS OF DATA
+    CS:    HIGH
+    DELAY: 80uS
+    CS:    LOW
+
+    */
+
+
+
+
+
+
+    LCD_cs_high();
+    Delay(100);
+    
 }
 
 
-void nv3029_fill_screen(uint16_t color)
+void LCD_fill_screen(uint16_t color)
 {
+    LCD_cs_low();
+    Delay(10);
     // fill entire screen with a single color
-    nv3029_set_addr_window(0, 0, NV3029_WIDTH-1, NV3029_HEIGHT-1);
+    LCD_SetWindow(0, 0, NV3029_WIDTH-1, NV3029_HEIGHT-1);
     // send color data as high byte then low byte repeatedly using hardware SPI
-    nv3029_dc_data();
-    nv3029_cs_low();
-    uint8_t hi = color >> 8;
-    uint8_t lo = color & 0xFF;
-    uint8_t pix[2];
-    pix[0] = hi; pix[1] = lo;
+    
+    peek_value[0] = color;
+
     for (int i = 0; i < (NV3029_WIDTH * NV3029_HEIGHT); ++i) {
-        nv3029_spi_tx(pix, 2);
+        LCD_WriteData16(&color, 1);
     }
-    nv3029_cs_high();
+    Delay(10);
+    LCD_cs_high();
 }
 
 // Draw a single 5x8 character (x,y in pixels)
-void nv3029_draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint16_t bgcolor)
+void LCD_draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint16_t bgcolor)
 {
     if (c < 32 || c > 127) c = '?';
     uint8_t index = c - 32;
@@ -297,51 +1001,60 @@ void nv3029_draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint16_t b
         for (uint8_t row = 0; row < 8; ++row){
             uint16_t px = x + col;
             uint16_t py = y + row;
-            nv3029_set_addr_window(px, py, px, py);
+            LCD_SetWindow(px, py, px, py);
+            
             uint8_t hi = (line & (1<<row)) ? (color >> 8) : (bgcolor >> 8);
             uint8_t lo = (line & (1<<row)) ? (color & 0xFF) : (bgcolor & 0xFF);
-            uint8_t tmp[2] = { hi, lo };
-            nv3029_write_data(tmp, 2);
+            uint16_t tmp = (hi << 8) | lo;
+            LCD_WriteData16(&tmp, 1);
         }
     }
     // one column spacing
     for (uint8_t row = 0; row < 8; ++row){
         uint16_t px = x + 5; uint16_t py = y + row;
-        nv3029_set_addr_window(px, py, px, py);
+        LCD_SetWindow(px, py, px, py);
         uint8_t hi = bgcolor >> 8; uint8_t lo = bgcolor & 0xFF;
-        uint8_t tmpb[2] = { hi, lo };
-        nv3029_write_data(tmpb, 2);
+        uint16_t tmpb = (hi << 8) | lo;
+        LCD_WriteData16(&tmpb, 1);
     }
 }
 
-void nv3029_draw_string(uint16_t x, uint16_t y, const char* s, uint16_t color, uint16_t bgcolor)
+void LCD_draw_string(uint16_t x, uint16_t y, const char* s, uint16_t color, uint16_t bgcolor)
 {
     uint16_t cx = x;
     while (*s){
-        nv3029_draw_char(cx, y, *s, color, bgcolor);
+        LCD_draw_char(cx, y, *s, color, bgcolor);
         cx += 6; // 5px + 1 spacing
         s++;
     }
 }
 
 // Diagnostic routine: reset display, then fill with a series of colors
-void nv3029_diag(void)
+void LCD_diag(void)
 {
     // Hardware reset sequence
-    nv3029_rst_low();
-    Delay(20000);
-    nv3029_rst_high();
-    Delay(20000);
 
+    //LCD_dc_data();
+    //LCD_rst_low();
+    //Delay(200);
+    //LCD_rst_high();
+    //Delay(200);
+   // LCD_cs_high();
+    //Delay(10);
+    //LCD_cs_low();
+    //Delay(10);
+
+    //LCD_init();
     // A few colors to verify SPI and LCD functioning
-    nv3029_fill_screen(NV3029_COLOR565(255,0,0)); // red
-    Delay(5000);
-    nv3029_fill_screen(NV3029_COLOR565(0,255,0)); // green
-    Delay(5000);
-    nv3029_fill_screen(NV3029_COLOR565(0,0,255)); // blue
-    Delay(5000);
-    nv3029_fill_screen(NV3029_COLOR565(255,255,255)); // white
-    Delay(5000);
-    nv3029_fill_screen(NV3029_COLOR565(0,0,0)); // black
-    Delay(2000);
+    LCD_fill_screen(COLOR_BLACK); // red
+    Delay(100);
+    LCD_fill_screen(COLOR_GREEN); // green
+    Delay(100);
+    LCD_fill_screen(COLOR_BLUE); // blue
+    Delay(100);
+    LCD_fill_screen(COLOR_WHITE); // white
+    Delay(100);
+    LCD_fill_screen(COLOR_BLUE); // black
+    Delay(200);
+
 }

@@ -1,0 +1,49 @@
+/*
+ * Original: FUN_08000a64
+ * Refactored Name: ADC_Configure_Channels
+ * Description: Sets up the ADC sequence registers (SQR1, SQR2, SQR3) to scan specific pins.
+ */
+void ADC_Configure_Channels(void) {
+    // 1. Configure Injected Channels (High Priority)
+    // JSEQ register: Sequence of channels to read automatically
+    // It sets length = 4 conversions
+    ADC1->JSQR = (1 << 15) | (2 << 10) | (3 << 5) | (4 << 0); // Scan Ch1, Ch2, Ch3, Ch4
+    
+    // 2. Configure Regular Channels
+    // SQR1 register
+    ADC1->SQR1 = (1 << 0); // Length = 1 conversion?
+    
+    // 3. Enable ADC and Calibration
+    ADC_Enable(ADC1);
+    ADC_Start_Calibration(ADC1);
+    
+    // 4. Wait for completion loop
+    while(ADC_Is_Busy(ADC1));
+}
+
+/*
+ * Original: FUN_08007908
+ * Refactored Name: Battery_Monitor_Task
+ * Description: Checks the raw ADC value from the battery pin against specific thresholds.
+ */
+void Battery_Monitor_Task(void) {
+    // 0x08007a40 is a threshold constant (likely 500 or similar raw ADC value)
+    uint16_t low_batt_threshold = *Global_Low_Batt_Threshold_Ptr; 
+    
+    // Check Current ADC Reading (likely stored in a global array by DMA)
+    // DAT_08007a3c + 2 is the offset for the Battery Channel reading
+    uint16_t current_voltage_raw = ADC_DMA_Buffer[1]; 
+
+    // State Machine for Low Battery Warning
+    if (current_voltage_raw < low_batt_threshold) {
+        // Debounce counter
+        Battery_Debounce_Counter++; 
+        
+        if (Battery_Debounce_Counter > 500) {
+            // Confirmed Low Battery
+            System_State = STATE_LOW_BATTERY;
+        }
+    } else {
+        Battery_Debounce_Counter = 0;
+    }
+}

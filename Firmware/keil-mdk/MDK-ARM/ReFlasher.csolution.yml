@@ -14,7 +14,6 @@ solution:
             name: J-Link Server
             port: 3333
             protocol: swd
-            
 
   projects:
     - project: ReFlasher.cproject.yml

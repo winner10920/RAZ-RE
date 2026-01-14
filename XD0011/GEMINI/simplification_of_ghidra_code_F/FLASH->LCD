@@ -1,0 +1,58 @@
+/*
+ * Original: _actual_lcd_draw__FUN_00001a70
+ * Refactored Name: GFX_Stream_Flash_To_LCD
+ * Description: Draws an image stored in external Flash directly to the LCD.
+ * Inputs:
+ * x, y: Screen coordinates
+ * width, height: Image dimensions
+ * flash_addr: Address of the image data in the SPI2 Flash chip
+ */
+void GFX_Stream_Flash_To_LCD(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint32_t flash_addr) {
+    uint32_t total_pixels;
+    
+    // Calculate total bytes (16-bit color = 2 bytes per pixel)
+    total_pixels = (uint32_t)width * (uint32_t)height * 2;
+
+    // 1. Setup Flash Read Command (SPI2)
+    // CS Low for Flash (Pin 8 / 0x100)
+    GPIO_Set_Low(PTR_GPIOA_FLASH_CS, 0x100); 
+    
+    // Send "Fast Read" command to Flash (0x03 or 0x0B)
+    SPI2_Send_Byte(0x03); 
+    SPI2_Send_Byte((flash_addr >> 16) & 0xFF);
+    SPI2_Send_Byte((flash_addr >> 8) & 0xFF);
+    SPI2_Send_Byte(flash_addr & 0xFF);
+    
+    // CS High for Flash (Deselct momentarily?) - This part of the trace is odd, 
+    // usually you keep CS low to read data. The code might be resetting state.
+    GPIO_Set_High(PTR_GPIOA_FLASH_CS, 0x8000); 
+
+    // 2. Setup LCD Window (SPI1)
+    LCD_Set_Address_Window(x, y, width, height);
+    
+    // 3. Configure DMA Cross-Triggering
+    // This connects SPI2 RX (Flash Data) directly to SPI1 TX (LCD Data) via RAM buffer
+    // or initializes the read buffer.
+    SPI2_DMA_RX_Config(global_buffer, 0x200, DMA_Mode_Circular);
+    SPI1_DMA_Transmit_LCD(global_buffer, 0x200, DMA_Mode_Circular);
+
+    // 4. Start the Transfer Loop
+    // Loop until 'total_pixels' have been transferred
+    while (total_pixels > 0) {
+        // Wait for SPI2 to fill the buffer
+        while (!SPI_Status_RXNE(SPI2)); 
+        
+        // Wait for SPI1 to be ready to transmit
+        while (!SPI_Status_TXE(SPI1));  
+        
+        // (The hardware DMA handles the actual byte movement here)
+        
+        // Decrement counter logic (simplified from decompilation)
+        total_pixels--;
+    }
+    
+    // 5. Cleanup
+    SPI_Wait_Busy();
+    // CS High for LCD
+    GPIO_Set_High(PTR_GPIOB_LCD_CS, 0x8000); 
+}

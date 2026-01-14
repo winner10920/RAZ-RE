@@ -19,5 +19,13 @@
         }
     ],
     "peripheral-inspector.periodicRefreshMode": "while running",
-    "peripheral-inspector.periodicRefreshInterval": 500
+    "peripheral-inspector.periodicRefreshInterval": 500,
+    "memory-inspector.columns.ascii": true,
+    "memory-inspector.columns.variables": true,
+    "memory-inspector.debugTypes": [
+        "gdb",
+        "embedded-debug",
+        "arm-debugger",
+        "JLink"
+    ]
 }

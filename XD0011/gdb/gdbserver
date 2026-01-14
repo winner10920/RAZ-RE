@@ -1,0 +1,1 @@
+JLinkGDBServer -device N32G031K8 -if swd -speed 4000 -port 3333 -noir -vd -endian little

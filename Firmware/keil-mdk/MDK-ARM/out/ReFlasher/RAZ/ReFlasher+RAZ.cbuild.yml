@@ -121,6 +121,12 @@ build:
           category: sourceC
         - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_rcc.c
           category: sourceC
+        - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_dma.c
+          category: sourceC
+        - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_tim.c
+          category: sourceC
+        - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_adc.c
+          category: sourceC
     - group: USER
       files:
         - file: ../../../../src/main.c
@@ -130,6 +136,14 @@ build:
         - file: ../../../../src/spi_flash.c
           category: sourceC
         - file: ../../../../src/nv3029.c
+          category: sourceC
+        - file: ../../../../src/dma.c
+          category: sourceC
+        - file: ../../../../src/pwm.c
+          category: sourceC
+        - file: ../../../../src/sleep_wake.c
+          category: sourceC
+        - file: ../../../../src/voltage_monitor.c
           category: sourceC
   licenses:
     - license: <unknown>

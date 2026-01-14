@@ -1,0 +1,64 @@
+/*
+ * Original: screen_long_init_params_FUN_08002234
+ * Refactored Name: LCD_Send_Panel_Config
+ * Description: Sends the vendor-specific "magic" sequence to configure voltages,
+ * gamma curves, and frame rates for this specific physical panel.
+ */
+void LCD_Send_Panel_Config(void) {
+    char screen_type = Global_Screen_Type_Var; // *DAT_08002928
+
+    // Common sequence for Type 0 and Type 1 screens
+    if (screen_type == 0 || screen_type == 1) {
+        
+        // 1. Power Control
+        // 0xFF: Extended Command Set? (Specific to this clone chip)
+        LCD_Write_Command_Byte(0xFF); LCD_Write_Data_Byte(0xA5); 
+        
+        // 0x3A: Pixel Format (16-bit RGB565)
+        LCD_Write_Command_Byte(0x3A); LCD_Write_Data_Byte(0x55); // 0x55 = 16-bit
+
+        // 2. Frame Rate Control (Standard ILI9341 Commands)
+        // 0xB1: Frame Rate Control (Normal Mode)
+        LCD_Write_Command_Byte(0xB1); 
+        LCD_Write_Data_Byte(0x00);
+        LCD_Write_Data_Byte(0x1B); // Frame Rate setting
+
+        // 3. Power Control
+        // 0xC0: Power Control 1 (GVDD level)
+        LCD_Write_Command_Byte(0xC0); 
+        LCD_Write_Data_Byte(0x10); // 4.60V
+
+        // 0xC1: Power Control 2 (Step-up factor)
+        LCD_Write_Command_Byte(0xC1); 
+        LCD_Write_Data_Byte(0x10); 
+
+        // 4. VCOM Control
+        // 0xC5: VCOM Control 1
+        LCD_Write_Command_Byte(0xC5); 
+        LCD_Write_Data_Byte(0x30); 
+        LCD_Write_Data_Byte(0x30); // VCOMH/VCOML levels
+
+        // 5. Gamma Correction (Positive Polarity) - 0xE0
+        // This defines the brightness curve for the pixels
+        LCD_Write_Command_Byte(0xE0);
+        LCD_Write_Data_Byte(0x0F); LCD_Write_Data_Byte(0x31);
+        LCD_Write_Data_Byte(0x2B); LCD_Write_Data_Byte(0x0C);
+        LCD_Write_Data_Byte(0x0E); LCD_Write_Data_Byte(0x08);
+        LCD_Write_Data_Byte(0x4E); LCD_Write_Data_Byte(0xF1);
+        LCD_Write_Data_Byte(0x37); LCD_Write_Data_Byte(0x07);
+        LCD_Write_Data_Byte(0x10); LCD_Write_Data_Byte(0x03);
+        LCD_Write_Data_Byte(0x0E); LCD_Write_Data_Byte(0x09);
+        LCD_Write_Data_Byte(0x00);
+
+        // 6. Gamma Correction (Negative Polarity) - 0xE1
+        LCD_Write_Command_Byte(0xE1);
+        LCD_Write_Data_Byte(0x00); LCD_Write_Data_Byte(0x0E);
+        LCD_Write_Data_Byte(0x14); LCD_Write_Data_Byte(0x03);
+        LCD_Write_Data_Byte(0x11); LCD_Write_Data_Byte(0x07);
+        LCD_Write_Data_Byte(0x31); LCD_Write_Data_Byte(0xC1);
+        LCD_Write_Data_Byte(0x48); LCD_Write_Data_Byte(0x08);
+        LCD_Write_Data_Byte(0x0F); LCD_Write_Data_Byte(0x0C);
+        LCD_Write_Data_Byte(0x31); LCD_Write_Data_Byte(0x36);
+        LCD_Write_Data_Byte(0x0F);
+    }
+}

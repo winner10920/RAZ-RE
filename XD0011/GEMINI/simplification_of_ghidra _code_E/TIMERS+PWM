@@ -1,0 +1,40 @@
+/* * Original: FUN_08005520
+ * Address: 0x08005520
+ * Description: Initializes Timer 3. Used for LCD Backlight PWM control.
+ */
+void Backlight_Timer_Init(void) {
+    TIM_TimeBaseInitTypeDef timer_init;
+    
+    // Period = 4000 (roughly 20-25kHz depending on clock)
+    timer_init.TIM_Period = 4000; 
+    timer_init.TIM_Prescaler = 8;
+    timer_init.TIM_ClockDivision = 0;
+    timer_init.TIM_CounterMode = TIM_CounterMode_Up;
+    
+    TIM_TimeBaseInit(TIM3, &timer_init);
+    
+    // Configure Channel 1 as PWM Output
+    TIM_OC1Init(TIM3, TIM_OCMode_PWM1, TIM_OutputState_Enable, 0, TIM_OCPolarity_High);
+    
+    TIM_Cmd(TIM3, ENABLE);
+}
+
+/* * Original: FUN_08001360
+ * Address: 0x08001360
+ * Description: Adjusts the LCD Backlight brightness.
+ * Contains a smooth transition logic (fading) or specific step logic.
+ */
+void Backlight_Update_Brightness(void) {
+    uint16_t current_pwm = TIM_GetCapture1(TIM3);
+    uint16_t target_pwm = Global_Target_Brightness;
+    
+    // Smoothly ramp current PWM towards target
+    if (current_pwm < target_pwm) {
+        current_pwm++;
+    } else if (current_pwm > target_pwm) {
+        current_pwm--;
+    }
+    
+    // Update Hardware Register (TIMx_CCDAT1)
+    TIM_SetCompare1(TIM3, current_pwm);
+}
