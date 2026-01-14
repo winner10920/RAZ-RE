@@ -28,7 +28,10 @@ typedef struct {
     uint16_t pa0_analog;         /* PA0 - Analog input */
     uint16_t pa1_tv1_sense;      /* PA1 - TV1 voltage sense */
     uint16_t pa2_tv2_sense;      /* PA2 - TV2 voltage sense */
-    uint16_t temp_sensor;        /* Internal temperature sensor */
+    uint16_t ch3_unused;        /* Unused channel */
+    uint16_t pb2_analog;        /* Unused channel */
+    int16_t temp_sensor;        /* Internal temperature sensor */
+
 } VoltageReadings;
 
 /**

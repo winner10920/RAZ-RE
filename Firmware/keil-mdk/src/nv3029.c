@@ -703,9 +703,7 @@ static void spi1_onewire_tx_rx_d3(void) {
         
         // Clock pulse: toggle SCLK
         GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
-        Delay(100);
         GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
-        Delay(100);
     }
     
     // ========== RECEIVE: Get 3 bytes ==========
@@ -724,7 +722,6 @@ static void spi1_onewire_tx_rx_d3(void) {
         for (bit_idx = 0; bit_idx < 8; ++bit_idx) {
             // Clock pulse: SCLK high (sample on rising edge)
             GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
-            //Delay(100);
             
             // Read bit from MOSI
             bit_val = (GPIO_ReadInputDataBit(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN) != 0) ? 1 : 0;
@@ -734,7 +731,6 @@ static void spi1_onewire_tx_rx_d3(void) {
             
             // Clock pulse: SCLK low
             GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
-            Delay(100);
         }
     }
     

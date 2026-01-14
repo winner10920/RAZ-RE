@@ -21,12 +21,20 @@ extern "C" {
  * Voltage can be calculated as: V = (ADC_value / 4095) * 3.3V
  */
 typedef struct {
-    uint16_t pa1_tv1_sense;      /* PA1 - TV1 voltage sense */
-    uint16_t pa2_tv2_sense;      /* PA2 - TV2 voltage sense */
-    uint16_t pc13_unknown;       /* PC13 - Unknown analog */
-    uint16_t pc14_fslp;          /* PC14 - FSLP */
-    uint16_t pc15_vpsw;          /* PC15 - VPSW */
+    uint16_t ch1_batt;      /* ch1 - Battery Monitor */
+    uint16_t ch2_tv2_sense;      /* ch - TV2 voltage sense */
+    uint16_t ch3_unknown;       /*ch3 - Unknown analog */
+    uint16_t ch4_tempVref;          /* ch4- ? */
+    uint16_t ch12_intTemp;          /* Internal Temperature analog */
 } ADC_MeasurementsType;
+
+/*
+ADC1: The primary Analog-to-Digital Converter.
+​Pin mapping:
+​Channel 1 (PA1): Battery Voltage Monitor. (Inferred from usage in FUN_08007908 checking threshold 500).
+​Channel 2 (PA2): Unknown Sensor (Joystick X?).
+​Channel 3 (PA3): Unknown Sensor (Joystick Y?).
+​Channel 4 (PA4): VREF / Temperature?*/
 
 /**
  * @brief Global volatile ADC measurements (accessible by debugger)

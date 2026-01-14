@@ -1,0 +1,178 @@
+/**
+ * XD0011_F_execution_flow.mmd
+ * 
+ * Mermaid diagram showing main execution flow and state transitions
+ * 
+ * FLOW OVERVIEW:
+ * 1. Power-On Self-Test (verify hardware)
+ * 2. Measurement Loop (continuous ADC reads)
+ * 3. Display Update (LCD refresh)
+ * 4. Power Management (sleep on inactivity)
+ * 
+ * This can be rendered with Mermaid live editor:
+ * https://mermaid.live/
+ * 
+ * Or converted to SVG with:
+ * mmdc -i XD0011_F_execution_flow.mmd -o XD0011_F_execution_flow.svg
+ */
+
+flowchart TD
+    Start([Power On<br/>N32G031K8 Boot]) --> ResetVector[Reset Vector<br/>Initialize Stack &<br/>SP]
+    
+    ResetVector --> VectorTable[Vector Table<br/>Copy/Relocate if needed]
+    
+    VectorTable --> main_entry["main()<br/>Entry Point"]
+    
+    main_entry --> POST["<b>device_power_on_test</b><br/>━━━━━━━━━━━━━━━<br/>Debounce power button<br/>Count transitions<br/>Check flash accessible"]
+    
+    POST --> POST_Flash{Flash<br/>Communication<br/>OK?}
+    
+    POST_Flash -->|Fail| POST_Error["Hang Loop<br/>Watchdog Reset"]
+    POST_Error --> Start
+    
+    POST_Flash -->|OK| POST_LCD["Initialize LCD<br/>hardware_reset()<br/>100+ init commands"]
+    
+    POST_LCD --> POST_Calib["Load Calibration<br/>sensor_load_calibration()<br/>from Flash 0x001000"]
+    
+    POST_Calib --> POST_ADC["Initialize ADC<br/>adc_initialize()<br/>Enable Vref &<br/>Temp Sensor"]
+    
+    POST_ADC --> STATE_IDLE["State = IDLE"]
+    
+    STATE_IDLE --> MAIN_LOOP["<b>device_main_loop</b><br/>━━━━━━━━━━━━━━━<br/>Continuous measurement<br/>and display update"]
+    
+    MAIN_LOOP --> BUTTON_CHECK["Check Button Input<br/>device_handle_button_press()<br/>━━━━━━━━━━━━━━━<br/>GPIO Pin Read (debounce)"]
+    
+    BUTTON_CHECK --> BUTTON_PRESSED{Button<br/>Pressed?}
+    
+    BUTTON_PRESSED -->|No| MEASURE
+    BUTTON_PRESSED -->|Yes| STATE_MEASURING["State = MEASURING<br/>Update activity timer"]
+    
+    STATE_MEASURING --> MEASURE["<b>Measure Light Sensor</b><br/>━━━━━━━━━━━━━━━"]
+    
+    MEASURE --> ADC_TRIGGER["Trigger ADC<br/>adc_trigger_conversion(ch0)<br/>━━━━━━━━━━━━━━━<br/>Set RSEQ1 register<br/>Set ADON bit"]
+    
+    ADC_TRIGGER --> ADC_WAIT["Wait for Conversion<br/>adc_wait_conversion(1000us)<br/>━━━━━━━━━━━━━━━<br/>Poll ADON bit<br/>timeout 1000 microseconds"]
+    
+    ADC_WAIT --> ADC_READ["Read Raw Value<br/>adc_read_raw_value()<br/>━━━━━━━━━━━━━━━<br/>Read DAT register<br/>12-bit result"]
+    
+    ADC_READ --> CALIBRATE["Apply Calibration<br/>sensor_adc_to_lux()<br/>━━━━━━━━━━━━━━━<br/>Offset subtraction<br/>Scale multiplication<br/>Temp compensation"]
+    
+    CALIBRATE --> CONVERSION["ADC → Lux Conversion<br/>━━━━━━━━━━━━━━━<br/>Piecewise linear<br/>Lookup table or formula"]
+    
+    CONVERSION --> TEMP_MEAS["Measure Temperature<br/>adc_measure_temperature()<br/>━━━━━━━━━━━━━━━<br/>Channel 16 = Internal<br/>Temp Sensor"]
+    
+    TEMP_MEAS --> LUX_VALUE["Lux Value Calculated<br/>Store in<br/>last_measurement.<br/>lux_value"]
+    
+    LUX_VALUE --> STATE_DISPLAY["State = DISPLAY"]
+    
+    STATE_DISPLAY --> DISPLAY_UPDATE["<b>Update Display</b><br/>━━━━━━━━━━━━━━━<br/>Check if value<br/>changed > 5%"]
+    
+    DISPLAY_UPDATE --> DISPLAY_CHANGED{Value<br/>Changed<br/>>5%?}
+    
+    DISPLAY_CHANGED -->|No| SKIP_RENDER["Skip LCD Update<br/>Reduce wear &<br/>power consumption"]
+    
+    DISPLAY_CHANGED -->|Yes| RENDER["Render to LCD<br/>━━━━━━━━━━━━━━━<br/>1. Fill black background<br/>2. Render lux value<br/>3. Update timestamp"]
+    
+    RENDER --> LCD_FILL["lcd_fill_color(0x0000)<br/>━━━━━━━━━━━━━━━<br/>Set window 0→159,0→127<br/>Repeat color 20K times<br/>via SPI"]
+    
+    LCD_FILL --> LCD_RENDER["Render Measurement<br/>━━━━━━━━━━━━━━━<br/>If font data available:<br/>Draw numeric lux value<br/>Else: bar graph"]
+    
+    SKIP_RENDER --> STATE_IDLE_2["State = IDLE"]
+    LCD_RENDER --> STATE_IDLE_2
+    
+    STATE_IDLE_2 --> ACTIVITY_CHECK["Check Activity<br/>device_check_activity()<br/>━━━━━━━━━━━━━━━<br/>Compare current vs<br/>last lux (delta > 5%)"]
+    
+    ACTIVITY_CHECK --> ACTIVITY_DETECTED{Activity<br/>Detected?}
+    
+    ACTIVITY_DETECTED -->|Yes| UPDATE_TIMER["Update Activity Timer<br/>last_activity_ticks =<br/>get_system_tick()"]
+    
+    ACTIVITY_DETECTED -->|No| CHECK_TIMEOUT{Idle Time<br/>><br/>6 seconds?}
+    
+    UPDATE_TIMER --> CHECK_TIMEOUT
+    
+    CHECK_TIMEOUT -->|No| WATCHDOG["Pet Watchdog<br/>watchdog_pet()<br/>━━━━━━━━━━━━━━━<br/>Reset watchdog timer<br/>prevents reset"]
+    
+    CHECK_TIMEOUT -->|Yes| ENTER_SLEEP["<b>Enter Sleep Mode</b><br/>━━━━━━━━━━━━━━━"]
+    
+    ENTER_SLEEP --> SLEEP_LCD["Disable LCD<br/>lcd_enter_sleep()<br/>Send 0x10 command<br/>Wait 120ms"]
+    
+    SLEEP_LCD --> SLEEP_ADC["Disable ADC<br/>Clear ADCEN bit in<br/>CTRL1 register"]
+    
+    SLEEP_ADC --> SLEEP_STATE["State = SLEEP"]
+    
+    SLEEP_STATE --> SLEEP_LOOP["Sleep Loop<br/>━━━━━━━━━━━━━━━<br/>Wait for interrupt<br/>Button press wakes"]
+    
+    SLEEP_LOOP --> BUTTON_WAKES{Button<br/>Interrupt?}
+    
+    BUTTON_WAKES -->|Yes| EXIT_SLEEP["<b>Exit Sleep Mode</b><br/>━━━━━━━━━━━━━━━"]
+    
+    EXIT_SLEEP --> WAKE_LCD["Re-enable LCD<br/>lcd_exit_sleep()<br/>Send 0x11 command<br/>Wait 120ms"]
+    
+    WAKE_LCD --> WAKE_LCD_ON["lcd_display_on()<br/>Send 0x29 command"]
+    
+    WAKE_LCD_ON --> WAKE_ADC["Re-enable ADC<br/>Set ADCEN bit in<br/>CTRL1 register"]
+    
+    WAKE_ADC --> WAKE_STATE["State = IDLE"]
+    
+    WAKE_STATE --> WATCHDOG_CONT["Pet Watchdog<br/>watchdog_pet()"]
+    
+    WATCHDOG --> DELAY_CYCLE["Delay Before<br/>Next Cycle<br/>━━━━━━━━━━━━━━━<br/>delay_milliseconds(200)<br/>Display refresh rate: 5Hz"]
+    
+    WATCHDOG_CONT --> DELAY_CYCLE
+    
+    DELAY_CYCLE --> LOOP_BACK["↻ Return to<br/>Button Check"]
+    
+    LOOP_BACK --> BUTTON_CHECK
+    
+    %% Calibration mode alternate path
+    BUTTON_PRESSED -->|Hold 2s| CAL_MODE["<b>Enter Calibration</b><br/>━━━━━━━━━━━━━━━<br/>State = CALIBRATION"]
+    
+    CAL_MODE --> CAL_PROMPT["Display Calibration<br/>Prompt on LCD<br/>━━━━━━━━━━━━━━━<br/>'Place at 100 Lux'"]
+    
+    CAL_PROMPT --> CAL_SAMPLE1["Sample Light Sensor<br/>━━━━━━━━━━━━━━━<br/>Multiple reads<br/>Average result"]
+    
+    CAL_SAMPLE1 --> CAL_OFFSET["Calculate Offset<br/>━━━━━━━━━━━━━━━<br/>offset = ADC_raw -<br/>expected_lux"]
+    
+    CAL_OFFSET --> CAL_PROMPT2["Display Second<br/>Calibration Prompt<br/>━━━━━━━━━━━━━━━<br/>'Place at 1000 Lux'"]
+    
+    CAL_PROMPT2 --> CAL_SAMPLE2["Sample Light Sensor<br/>━━━━━━━━━━━━━━━<br/>Multiple reads<br/>Average result"]
+    
+    CAL_SAMPLE2 --> CAL_SCALE["Calculate Scale<br/>━━━━━━━━━━━━━━━<br/>scale = (ADC2-ADC1) /<br/>(1000-100)"]
+    
+    CAL_SCALE --> CAL_SAVE["Save Calibration<br/>sensor_save_calibration()<br/>━━━━━━━━━━━━━━━<br/>1. Erase flash sector<br/>2. Write calibration<br/>3. Verify checksum"]
+    
+    CAL_SAVE --> CAL_DONE["Calibration Complete<br/>Return to<br/>State = IDLE"]
+    
+    CAL_DONE --> MEASURE
+    
+    %% Test pattern mode
+    BUTTON_PRESSED -->|Hold 5s| TEST_MODE["<b>Test Pattern</b><br/>━━━━━━━━━━━━━━━"]
+    
+    TEST_MODE --> TEST_BLACK["Fill Black<br/>lcd_fill_color(0x0000)<br/>Delay 1000ms"]
+    
+    TEST_BLACK --> TEST_WHITE["Fill White<br/>lcd_fill_color(0xFFFF)<br/>Delay 1000ms"]
+    
+    TEST_WHITE --> TEST_RED["Fill Red<br/>lcd_fill_color(0xF800)<br/>Delay 500ms"]
+    
+    TEST_RED --> TEST_GREEN["Fill Green<br/>lcd_fill_color(0x07E0)<br/>Delay 500ms"]
+    
+    TEST_GREEN --> TEST_BLUE["Fill Blue<br/>lcd_fill_color(0x001F)<br/>Delay 500ms"]
+    
+    TEST_BLUE --> MEASURE
+    
+    %% Styling
+    classDef stateNode fill:#FF6B6B,stroke:#8B0000,color:#fff,font-weight:bold
+    classDef sensorNode fill:#4ECDC4,stroke:#008B8B,color:#000
+    classDef lcdNode fill:#45B7D1,stroke:#00688B,color:#fff
+    classDef utilNode fill:#45B7D1,stroke:#00688B,color:#fff
+    classDef decisionNode fill:#FFD700,stroke:#FF8C00,color:#000,font-weight:bold
+    classDef startNode fill:#90EE90,stroke:#228B22,color:#000,font-weight:bold
+    classDef errorNode fill:#FF6B6B,stroke:#8B0000,color:#fff
+    
+    class Start,ResetVector,main_entry,MAIN_LOOP startNode
+    class BUTTON_PRESSED,POST_Flash,DISPLAY_CHANGED,ACTIVITY_DETECTED,CHECK_TIMEOUT,BUTTON_WAKES decisionNode
+    class STATE_IDLE,STATE_MEASURING,STATE_DISPLAY,SLEEP_STATE,WAKE_STATE stateNode
+    class ADC_TRIGGER,ADC_WAIT,ADC_READ,MEASURE sensorNode
+    class LCD_FILL,RENDER,SKIP_RENDER lcdNode
+    class DELAY_CYCLE,WATCHDOG,UPDATE_TIMER utilNode
+    class POST_Error errorNode

@@ -15,8 +15,17 @@
 #define MONITOR_CHANNEL_PA0      0   /* PA0 - Analog input */
 #define MONITOR_CHANNEL_PA1      1   /* PA1 - TV1 voltage sense */
 #define MONITOR_CHANNEL_PA2      2   /* PA2 - TV2 voltage sense */
+#define MONITOR_CHANNEL_CH3      3   /* Unused */
+#define MONITOR_CHANNEL_CH4      10   /* Unused */
 #define MONITOR_CHANNEL_TEMP    12   /* Internal temperature sensor */
 
+/*
+ADC1: The primary Analog-to-Digital Converter.
+​Pin mapping:
+​Channel 1 (PA1): Battery Voltage Monitor. (Inferred from usage in FUN_08007908 checking threshold 500).
+​Channel 2 (PA2): Unknown Sensor (Joystick X?).
+​Channel 3 (PA3): Unknown Sensor (Joystick Y?).
+​Channel 4 (PA4): VREF / Temperature?*/
 /* Global volatile voltage readings */
 volatile VoltageReadings g_voltage_readings = {0};
 
@@ -30,12 +39,24 @@ void VoltageMonitor_Init(void)
 
     /* Enable GPIO clocks for analog input pins */
     RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA, ENABLE);
+    RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOC, ENABLE);
+    RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOB, ENABLE);
 
-    /* Configure PA0, PA1, PA2 as analog inputs */
+    /* Configure PA0, PA1, PA2,  as analog inputs */
     GPIO_InitStruct(&gpio_init_struct);
     gpio_init_struct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2;
     gpio_init_struct.GPIO_Mode = GPIO_MODE_ANALOG;
     GPIO_InitPeripheral(GPIOA, &gpio_init_struct);
+
+    GPIO_InitStruct(&gpio_init_struct);
+    gpio_init_struct.Pin = GPIO_PIN_2;
+    gpio_init_struct.GPIO_Mode = GPIO_MODE_ANALOG;
+    GPIO_InitPeripheral(GPIOB, &gpio_init_struct);
+
+    GPIO_InitStruct(&gpio_init_struct);
+    gpio_init_struct.Pin = GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+    gpio_init_struct.GPIO_Mode = GPIO_MODE_ANALOG;
+    GPIO_InitPeripheral(GPIOC, &gpio_init_struct);
 
     /* Enable ADC clock */
     RCC_EnableAHBPeriphClk(RCC_AHBPCLKEN_ADCEN, ENABLE);
@@ -92,20 +113,22 @@ uint16_t VoltageMonitor_ReadChannel(uint8_t channel)
 void VoltageMonitor_UpdateReadings(void)
 {
     /* Read all 4 channels and update the struct */
-    g_voltage_readings.pa0_analog = VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA0);
+    g_voltage_readings.pa0_analog = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA0));
     
     GPIO_On(TV1_PIN);  /* Power on voltage sense circuitry if needed */
-    g_voltage_readings.pa1_tv1_sense = VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA1);
+    g_voltage_readings.pa1_tv1_sense = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA1));
     GPIO_Off(TV1_PIN); /* Power off to save energy */
     
     GPIO_On(TV2_PIN);  /* Power on voltage sense circuitry if needed */
-    g_voltage_readings.pa2_tv2_sense = VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA2);
+    g_voltage_readings.pa2_tv2_sense = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA2));
     GPIO_Off(TV2_PIN); /* Power off to save energy */
     
-    g_voltage_readings.temp_sensor = VoltageMonitor_ReadChannel(MONITOR_CHANNEL_TEMP);
-    /* Read temperature sensor with stabilization delay (temperature sensor needs settling time) */
-    Delay(10);
-    g_voltage_readings.temp_sensor = VoltageMonitor_ReadChannel(MONITOR_CHANNEL_TEMP);
+    
+    g_voltage_readings.temp_sensor = ((1300-VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_TEMP)))/39)+2500; /* Convert to °C using typical formula */
+    //g_voltage_readings.temp_sensor = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_TEMP)); /* Convert to °C using typical formula */
+
+    g_voltage_readings.ch3_unused = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_CH3)); /* Unused channel placeholder */
+    g_voltage_readings.pb2_analog = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_CH4)); /* Unused channel placeholder */
 }
 
 /**

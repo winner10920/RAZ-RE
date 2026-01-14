@@ -1,0 +1,386 @@
+/**
+ * XD0011_F_function_dependency.dot
+ * 
+ * Graphviz DOT format visualization of function call relationships
+ * 
+ * NODE COLORS:
+ * - Red (#FF6B6B): Core business logic (state machine, measurements)
+ * - Blue (#4ECDC4): Hardware drivers (GPIO, SPI, LCD, ADC, DMA)
+ * - Green (#45B7D1): Utility functions (delays, conversions, calibration)
+ * - Yellow (#FFA502): Math library (FPU emulation)
+ * - Purple (#9B59B6): Power management and ISRs
+ * 
+ * EDGE LABELS indicate relationship type:
+ * - calls: Direct function call
+ * - interrupts: Interrupt handler relationship
+ * - depends on: Data dependency (not code call)
+ * 
+ * CLUSTERS group related functionality:
+ * - Cluster Main: Core state machine
+ * - Cluster Hardware: All hardware drivers
+ * - Cluster Sensors: ADC and sensor processing
+ * - Cluster Display: LCD driver
+ * - Cluster Flash: SPI flash interface
+ */
+
+digraph XD0011_F_Function_Dependency {
+    // Graph attributes
+    rankdir = TB;
+    nodesep = 0.5;
+    ranksep = 1.0;
+    bgcolor = "#F5F5F5";
+    fontname = "Courier";
+    fontsize = 10;
+    
+    // Node defaults
+    node [shape = box, style = "rounded,filled", fontsize = 9, fontname = "Courier"];
+    edge [fontsize = 8];
+    
+    // ============================================================================
+    // MAIN CONTROL FLOW
+    // ============================================================================
+    
+    subgraph cluster_main {
+        label = "Main Control Flow (State Machine)";
+        style = "filled";
+        fillcolor = "#F0F0F0";
+        color = "#333333";
+        
+        main [label = "main()", fillcolor = "#FF6B6B", fontcolor = "white"];
+        power_on_test [label = "device_power_on_test()", fillcolor = "#FF6B6B"];
+        main_loop [label = "device_main_loop()", fillcolor = "#FF6B6B"];
+        handle_button [label = "device_handle_button_press()", fillcolor = "#FF6B6B"];
+        update_display [label = "device_update_display()", fillcolor = "#FF6B6B"];
+        check_activity [label = "device_check_activity()", fillcolor = "#FF6B6B"];
+        enter_sleep [label = "device_enter_sleep_mode()", fillcolor = "#9B59B6"];
+        exit_sleep [label = "device_exit_sleep_mode()", fillcolor = "#9B59B6"];
+        select_screen [label = "device_select_display_screen()", fillcolor = "#FF6B6B"];
+        calibration_mode [label = "device_enter_calibration_mode()", fillcolor = "#FF6B6B"];
+        test_pattern [label = "device_run_test_pattern()", fillcolor = "#FF6B6B"];
+    }
+    
+    // Main flow connections
+    main -> power_on_test [label = "calls"];
+    main -> main_loop [label = "calls"];
+    
+    power_on_test -> gpio_config [label = "calls"];
+    power_on_test -> lcd_init [label = "calls"];
+    power_on_test -> sensor_load_calib [label = "calls"];
+    power_on_test -> flash_read [label = "calls"];
+    power_on_test -> adc_init [label = "calls"];
+    
+    main_loop -> handle_button [label = "calls"];
+    main_loop -> adc_measure_light [label = "calls"];
+    main_loop -> update_display [label = "calls"];
+    main_loop -> check_activity [label = "calls"];
+    main_loop -> enter_sleep [label = "calls"];
+    main_loop -> exit_sleep [label = "calls"];
+    main_loop -> watchdog_pet [label = "calls"];
+    main_loop -> delay_ms [label = "calls"];
+    
+    handle_button -> gpio_read_pin [label = "calls"];
+    handle_button -> delay_ms [label = "calls"];
+    
+    check_activity -> adc_measure_light [label = "depends on"];
+    
+    enter_sleep -> lcd_enter_sleep [label = "calls"];
+    enter_sleep -> adc_disable [label = "calls"];
+    
+    exit_sleep -> lcd_exit_sleep [label = "calls"];
+    exit_sleep -> lcd_display_on [label = "calls"];
+    exit_sleep -> adc_enable [label = "calls"];
+    
+    update_display -> lcd_fill_color [label = "calls"];
+    
+    select_screen -> lcd_fill_color [label = "calls"];
+    
+    calibration_mode -> lcd_fill_color [label = "calls"];
+    calibration_mode -> adc_measure_light [label = "calls"];
+    calibration_mode -> sensor_save_calib [label = "calls"];
+    
+    test_pattern -> lcd_fill_color [label = "calls"];
+    test_pattern -> delay_ms [label = "calls"];
+    
+    // ============================================================================
+    // SENSOR MEASUREMENT CHAIN
+    // ============================================================================
+    
+    subgraph cluster_sensors {
+        label = "Sensor & ADC Interface";
+        style = "filled";
+        fillcolor = "#F0F0F0";
+        color = "#333333";
+        
+        adc_measure_light [label = "adc_measure_light_sensor()", fillcolor = "#45B7D1"];
+        adc_measure_temp [label = "adc_measure_temperature()", fillcolor = "#45B7D1"];
+        adc_measure_vref [label = "adc_measure_vref()", fillcolor = "#45B7D1"];
+        adc_read_raw [label = "adc_read_raw_value()", fillcolor = "#4ECDC4"];
+        adc_trigger [label = "adc_trigger_conversion()", fillcolor = "#4ECDC4"];
+        adc_wait [label = "adc_wait_conversion()", fillcolor = "#4ECDC4"];
+        adc_init [label = "adc_initialize()", fillcolor = "#4ECDC4"];
+        
+        sensor_adc_to_lux [label = "sensor_adc_to_lux()", fillcolor = "#45B7D1"];
+        sensor_load_calib [label = "sensor_load_calibration()", fillcolor = "#45B7D1"];
+        sensor_save_calib [label = "sensor_save_calibration()", fillcolor = "#45B7D1"];
+        sensor_default_calib [label = "sensor_get_default_calibration()", fillcolor = "#45B7D1"];
+    }
+    
+    adc_measure_light -> adc_read_raw [label = "calls"];
+    adc_measure_light -> sensor_adc_to_lux [label = "calls"];
+    
+    adc_measure_temp -> adc_read_raw [label = "calls"];
+    adc_measure_vref -> adc_read_raw [label = "calls"];
+    
+    adc_read_raw -> adc_trigger [label = "calls"];
+    adc_read_raw -> adc_wait [label = "calls"];
+    
+    adc_trigger -> spi_write_byte [label = "depends on"];
+    
+    adc_wait -> delay_us [label = "calls"];
+    
+    sensor_adc_to_lux -> fp_mult [label = "calls"];
+    
+    sensor_load_calib -> flash_read [label = "calls"];
+    sensor_load_calib -> sensor_default_calib [label = "calls"];
+    
+    sensor_save_calib -> flash_erase [label = "calls"];
+    sensor_save_calib -> flash_write [label = "calls"];
+    
+    // ============================================================================
+    // LCD DISPLAY DRIVER
+    // ============================================================================
+    
+    subgraph cluster_display {
+        label = "LCD Display Driver (ST7735R/NV3029)";
+        style = "filled";
+        fillcolor = "#F0F0F0";
+        color = "#333333";
+        
+        lcd_init [label = "lcd_initialize()", fillcolor = "#4ECDC4"];
+        lcd_cmd [label = "lcd_send_command()", fillcolor = "#4ECDC4"];
+        lcd_data [label = "lcd_send_data()", fillcolor = "#4ECDC4"];
+        lcd_window [label = "lcd_set_window()", fillcolor = "#4ECDC4"];
+        lcd_draw [label = "lcd_draw_image()", fillcolor = "#4ECDC4"];
+        lcd_fill [label = "lcd_fill_color()", fillcolor = "#4ECDC4"];
+        lcd_on [label = "lcd_display_on()", fillcolor = "#4ECDC4"];
+        lcd_off [label = "lcd_display_off()", fillcolor = "#4ECDC4"];
+        lcd_sleep [label = "lcd_enter_sleep()", fillcolor = "#4ECDC4"];
+        lcd_wake [label = "lcd_exit_sleep()", fillcolor = "#4ECDC4"];
+    }
+    
+    lcd_init -> lcd_reset [label = "calls"];
+    lcd_init -> lcd_cmd [label = "calls"];
+    lcd_init -> lcd_data [label = "calls"];
+    lcd_init -> lcd_on [label = "calls"];
+    lcd_init -> delay_ms [label = "calls"];
+    
+    lcd_cmd -> gpio_dc_low [label = "calls"];
+    lcd_cmd -> gpio_cs_low [label = "calls"];
+    lcd_cmd -> spi_write_byte [label = "calls"];
+    lcd_cmd -> gpio_cs_high [label = "calls"];
+    
+    lcd_data -> gpio_dc_high [label = "calls"];
+    lcd_data -> gpio_cs_low [label = "calls"];
+    lcd_data -> spi_write_byte [label = "calls"];
+    lcd_data -> gpio_cs_high [label = "calls"];
+    
+    lcd_window -> lcd_cmd [label = "calls"];
+    lcd_window -> lcd_data [label = "calls"];
+    
+    lcd_draw -> lcd_window [label = "calls"];
+    lcd_draw -> lcd_cmd [label = "calls"];
+    lcd_draw -> gpio_dc_high [label = "calls"];
+    lcd_draw -> spi_write_large_block [label = "calls"];
+    
+    lcd_fill -> lcd_window [label = "calls"];
+    lcd_fill -> lcd_cmd [label = "calls"];
+    lcd_fill -> gpio_dc_high [label = "calls"];
+    lcd_fill -> spi_write_byte [label = "calls (repeated)"];
+    
+    lcd_on -> lcd_cmd [label = "calls"];
+    lcd_off -> lcd_cmd [label = "calls"];
+    
+    lcd_sleep -> lcd_cmd [label = "calls"];
+    lcd_sleep -> delay_ms [label = "calls"];
+    
+    lcd_wake -> lcd_cmd [label = "calls"];
+    lcd_wake -> delay_ms [label = "calls"];
+    
+    // ============================================================================
+    // SPI & FLASH MEMORY
+    // ============================================================================
+    
+    subgraph cluster_flash {
+        label = "SPI & Flash Memory Interface";
+        style = "filled";
+        fillcolor = "#F0F0F0";
+        color = "#333333";
+        
+        spi_config [label = "spi_configure()", fillcolor = "#4ECDC4"];
+        spi_write [label = "spi_write_byte()", fillcolor = "#4ECDC4"];
+        spi_read [label = "spi_read_status()", fillcolor = "#4ECDC4"];
+        spi_dma [label = "spi_dma_setup()", fillcolor = "#4ECDC4"];
+        spi_write_large [label = "spi_write_large_block()", fillcolor = "#4ECDC4"];
+        spi_read_large [label = "spi_read_large_block()", fillcolor = "#4ECDC4"];
+        
+        flash_we [label = "flash_write_enable()", fillcolor = "#4ECDC4"];
+        flash_status [label = "flash_read_status()", fillcolor = "#4ECDC4"];
+        flash_verify [label = "flash_verify_checksum()", fillcolor = "#4ECDC4"];
+        flash_erase [label = "flash_erase_sector()", fillcolor = "#4ECDC4"];
+        flash_write [label = "flash_page_write()", fillcolor = "#4ECDC4"];
+        flash_read [label = "flash_read_data()", fillcolor = "#4ECDC4"];
+        flash_write_large [label = "flash_write_large_block()", fillcolor = "#4ECDC4"];
+    }
+    
+    spi_write -> spi_read [label = "polls status"];
+    
+    spi_write_large -> spi_write [label = "calls (loop)"];
+    spi_read_large -> spi_write [label = "calls (loop)"];
+    
+    flash_we -> spi_write [label = "calls"];
+    flash_we -> flash_cs_low [label = "calls"];
+    flash_we -> flash_cs_high [label = "calls"];
+    
+    flash_status -> spi_write [label = "calls"];
+    flash_status -> flash_cs_low [label = "calls"];
+    flash_status -> flash_cs_high [label = "calls"];
+    
+    flash_verify -> flash_status [label = "calls"];
+    
+    flash_erase -> flash_we [label = "calls"];
+    flash_erase -> flash_cs_low [label = "calls"];
+    flash_erase -> spi_write [label = "calls"];
+    flash_erase -> flash_cs_high [label = "calls"];
+    flash_erase -> flash_status [label = "calls (polling)"];
+    
+    flash_write -> flash_we [label = "calls"];
+    flash_write -> flash_cs_low [label = "calls"];
+    flash_write -> spi_write [label = "calls"];
+    flash_write -> flash_cs_high [label = "calls"];
+    flash_write -> flash_status [label = "calls (polling)"];
+    
+    flash_read -> flash_cs_low [label = "calls"];
+    flash_read -> spi_write [label = "calls"];
+    flash_read -> flash_cs_high [label = "calls"];
+    
+    flash_write_large -> flash_write [label = "calls (loop)"];
+    
+    // ============================================================================
+    // GPIO INTERFACE
+    // ============================================================================
+    
+    subgraph cluster_gpio {
+        label = "GPIO & Interrupt Control";
+        style = "filled";
+        fillcolor = "#F0F0F0";
+        color = "#333333";
+        
+        gpio_config [label = "gpio_configure_pins()", fillcolor = "#4ECDC4"];
+        gpio_set_out [label = "gpio_set_output_pins()", fillcolor = "#4ECDC4"];
+        gpio_clr_out [label = "gpio_clear_output_pins()", fillcolor = "#4ECDC4"];
+        gpio_read_in [label = "gpio_read_input_pins()", fillcolor = "#4ECDC4"];
+        gpio_read_pin [label = "gpio_read_specific_pin()", fillcolor = "#4ECDC4"];
+        exti_setup [label = "exti_setup_interrupt()", fillcolor = "#4ECDC4"];
+    }
+    
+    gpio_config -> exti_setup [label = "calls"];
+    gpio_read_pin -> gpio_read_in [label = "calls"];
+    
+    // Helper functions
+    gpio_dc_low [label = "lcd_dc_command()", fillcolor = "#45B7D1"];
+    gpio_dc_high [label = "lcd_dc_data()", fillcolor = "#45B7D1"];
+    gpio_cs_low [label = "flash/lcd_cs_low()", fillcolor = "#45B7D1"];
+    gpio_cs_high [label = "flash/lcd_cs_high()", fillcolor = "#45B7D1"];
+    gpio_reset [label = "lcd_reset_*()", fillcolor = "#45B7D1"];
+    flash_cs_low [label = "flash_cs_low()", fillcolor = "#45B7D1"];
+    flash_cs_high [label = "flash_cs_high()", fillcolor = "#45B7D1"];
+    
+    gpio_dc_low -> gpio_clr_out [label = "calls"];
+    gpio_dc_high -> gpio_set_out [label = "calls"];
+    gpio_cs_low -> gpio_clr_out [label = "calls"];
+    gpio_cs_high -> gpio_set_out [label = "calls"];
+    gpio_reset -> gpio_set_out [label = "calls"];
+    gpio_reset -> gpio_clr_out [label = "calls"];
+    flash_cs_low -> gpio_clr_out [label = "calls"];
+    flash_cs_high -> gpio_set_out [label = "calls"];
+    
+    // ============================================================================
+    // DMA CONTROLLER
+    // ============================================================================
+    
+    subgraph cluster_dma {
+        label = "DMA Controller";
+        style = "filled";
+        fillcolor = "#F0F0F0";
+        color = "#333333";
+        
+        dma_config [label = "dma_configure_channel()", fillcolor = "#4ECDC4"];
+        dma_enable [label = "dma_enable_channel()", fillcolor = "#4ECDC4"];
+        dma_check [label = "dma_is_transfer_complete()", fillcolor = "#4ECDC4"];
+        dma_intr [label = "dma_setup_interrupt()", fillcolor = "#4ECDC4"];
+    }
+    
+    dma_enable -> dma_check [label = "polling"];
+    
+    // ============================================================================
+    // FLOATING-POINT MATH LIBRARY
+    // ============================================================================
+    
+    subgraph cluster_math {
+        label = "Floating-Point Math Library (FPU Emulation)";
+        style = "filled";
+        fillcolor = "#F0F0F0";
+        color = "#333333";
+        
+        fp_add [label = "fp32_add()", fillcolor = "#FFA502", fontcolor = "white"];
+        fp_sub [label = "fp32_subtract()", fillcolor = "#FFA502"];
+        fp_mult [label = "fp32_multiply()", fillcolor = "#FFA502"];
+        fp_div [label = "fp32_divide()", fillcolor = "#FFA502"];
+        fp_to_int [label = "fp32_to_int()", fillcolor = "#FFA502"];
+        fp_to_fp64 [label = "fp32_to_fp64()", fillcolor = "#FFA502"];
+        
+        fp64_add [label = "fp64_add()", fillcolor = "#FFA502"];
+        fp64_mult [label = "fp64_multiply()", fillcolor = "#FFA502"];
+        fp64_div [label = "fp64_divide()", fillcolor = "#FFA502"];
+        fp64_to_int [label = "fp64_to_int()", fillcolor = "#FFA502"];
+    }
+    
+    fp_sub -> fp_add [label = "calls"];
+    
+    // ============================================================================
+    // UTILITY FUNCTIONS
+    // ============================================================================
+    
+    subgraph cluster_utils {
+        label = "Utility & System Functions";
+        style = "filled";
+        fillcolor = "#F0F0F0";
+        color = "#333333";
+        
+        delay_us [label = "delay_microseconds()", fillcolor = "#45B7D1"];
+        delay_ms [label = "delay_milliseconds()", fillcolor = "#45B7D1"];
+        watchdog_pet [label = "watchdog_pet()", fillcolor = "#9B59B6"];
+        sys_tick [label = "get_system_tick()", fillcolor = "#45B7D1"];
+        adc_enable [label = "adc_enable()", fillcolor = "#45B7D1"];
+        adc_disable [label = "adc_disable()", fillcolor = "#45B7D1"];
+    }
+    
+    delay_ms -> delay_us [label = "calls"];
+    
+    // ============================================================================
+    // LEGEND
+    // ============================================================================
+    
+    subgraph cluster_legend {
+        label = "Legend";
+        style = "filled";
+        fillcolor = "#FFFFFF";
+        color = "#CCCCCC";
+        
+        leg_main [label = "State Machine", fillcolor = "#FF6B6B", fontcolor = "white"];
+        leg_hw [label = "Hardware Driver", fillcolor = "#4ECDC4"];
+        leg_util [label = "Utility/Helper", fillcolor = "#45B7D1"];
+        leg_math [label = "Math Library", fillcolor = "#FFA502"];
+        leg_power [label = "Power Management", fillcolor = "#9B59B6"];
+    }
+}
