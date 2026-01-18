@@ -1,8 +1,8 @@
 
 
 #include "main.h"
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 #include "n32g031_rcc.h"
 #include "nv3029.h"
 #include "spi_flash.h"
@@ -26,7 +26,7 @@
 
 #define BUTTON_PIN GPIOA,GPIO_PIN_7
 
-#define UNKNOWN_OUTPUT_PIN GPIOA,GPIO_PIN_12
+#define lV_CUTOFF_EN GPIOA,GPIO_PIN_12
 
 #define LCD_SPI_CS_PIN GPIOA,GPIO_PIN_15
 
@@ -38,7 +38,7 @@
 
 #define LP4086_CHRG_PIN GPIOB,GPIO_PIN_1
 
-#define UNKNOWN_INPUT_PIN GPIOB,GPIO_PIN_2
+#define LV_CUTOFF_FEEDBACK GPIOB,GPIO_PIN_2
 
 #define LCD_SCLK_PIN GPIOB,GPIO_PIN_3
 
@@ -71,7 +71,7 @@ GPIOA
 9               OUTPUT  PP,LOW      SPI2_SCLK, FLASH_SPI_SCLK
 10 			    OUTPUT  PP,LOW      SPI2_MISO, FLASH_SPI_MISO
 11 			    INPUT   PULLUP      SPI2_MOSI, FLASH_SPI_MOSI
-12              OUTPUT  PP,HIGH     UNKNOWN_OUTPUT
+12              OUTPUT  PP,HIGH     Low Voltage Cutoff Enable?
 13				INPUT   PULLUP      SWCLK
 14              INPUT   PULLDOWN    SWDIO
 15              OUTPUT  PP,HIGH     LCD_SPI_CS
@@ -79,7 +79,7 @@ GPIOA
 GPIOB
 0	            OUTPUT  PP,LOW      LP4086_ISET
 1               INPUT   PULLUP      LP4086_CHRG (PULLED LOW ACTIVE) ext1 interupt
-2			    INPUT   PULLUP      UNKOWN_INPUT maybe batt v?
+2			    INPUT   PULLUP      Low Voltage Signal, when enabled by pin A12, low when low voltage detected
 3               OUTPUT  PP,LOW      SPI1_SCLK, LCD_SPI_SCLK
 4               OUTPUT  OD,LOW      LCD_FLASH_PWR_EN 
 5			    OUTPUT  PP,LOW      SPI1_MOSI, LCD_SPI_MOSI
@@ -114,7 +114,6 @@ void check_memory_boundaries(void) {
 
 volatile uint8_t mainran = 0;
 
-volatile uint32_t* SPI1DATA = (uint32_t*)0x4001200C;
 
 #define BUFFER_SIZE 4096
 volatile int page[1];
@@ -156,16 +155,14 @@ int main(void)
 	/* Initialize voltage monitoring on analog inputs */
 	VoltageMonitor_Init();
 
-	/* Initialize PWM for LCD backlight (PA6) - 500Hz, 85% duty cycle */
-	PWM_Init(20000);
-	PWM_SetDutyCycle(35);  /* Set initial brightness */
+	
 
-
+{ // gpio init
 	GPIO_Init(LCD_FLASH_PWR_EN_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On(LCD_FLASH_PWR_EN_PIN);
+	GPIO_Off(LCD_FLASH_PWR_EN_PIN);
 
-	GPIO_Init(UNKNOWN_OUTPUT_PIN, GPIO_MODE_OUTPUT_PP);
-	GPIO_On( UNKNOWN_OUTPUT_PIN);
+	GPIO_Init(lV_CUTOFF_EN, GPIO_MODE_OUTPUT_PP);
+	GPIO_Off( lV_CUTOFF_EN);
 
     GPIO_Init(TV1_PIN, GPIO_MODE_OUTPUT_PP);
 	GPIO_Off(TV1_PIN);
@@ -184,13 +181,13 @@ int main(void)
 	GPIO_Init(BUTTON_PIN, GPIO_MODE_INPUT);
     GPIO_Init(LP4086_CHRG_PIN, GPIO_MODE_INPUT);
 	GPIO_Init(MIC_PIN, GPIO_MODE_INPUT);
-    //GPIO_Init(UNKNOWN_INPUT_PIN, GPIO_MODE_INPUT);
+    GPIO_Init(LV_CUTOFF_FEEDBACK, GPIO_MODE_INPUT);
 
     // ANALOG
 
 	GPIO_Init(TV1_VOLTAGE_SENSE_PIN, GPIO_MODE_ANALOG);
 	GPIO_Init(TV2_VOLTAGE_SENSE_PIN, GPIO_MODE_ANALOG);
-    GPIO_Init(UNKNOWN_INPUT_PIN, GPIO_MODE_ANALOG);
+    //GPIO_Init(LV_CUTOFF_FEEDBACK, GPIO_MODE_ANALOG);
 
 
 
@@ -198,11 +195,16 @@ int main(void)
 	GPIO_Init(GPIO_PA4, GPIO_MODE_OUTPUT_PP);
 	GPIO_Off(GPIO_PA4);
 
-    Delay(1200);
-	
+}
+	dma_init();
 	LCD_init();
-		
-	LCD_diag();
+	/* Initialize PWM for LCD backlight (PA6) - 500Hz, 85% duty cycle */
+	PWM_Init(20000);
+    PWM_SetDutyCycle(50);  /* Set initial brightness */
+	//LCD_diag();
+	
+
+	
 
 	/* Initialize sleep/wake system - 30 second inactivity timeout */
 	SleepWake_Init(30);
@@ -230,7 +232,8 @@ int main(void)
 	// 		Delay(100);
 	// 	}
 	// }
-
+    bool micInput = false;
+	bool unknownInput = false;	
 
 	if( mainran == 0){
 
@@ -267,11 +270,36 @@ int main(void)
 
 		/* Update voltage readings periodically */
 		VoltageMonitor_UpdateReadings();
-
-		/* Normal device operation code here */
-		/* (Flash operations, display updates, etc.) */
+        micInput = GPIO_ReadInputDataBit(MIC_PIN);
+	    unknownInput = GPIO_ReadInputDataBit(LV_CUTOFF_FEEDBACK);
+		LCD_draw_string(0, 120, micInput ? "MIC IN" : "NO MIC", COLOR_YELLOW, COLOR_BLACK, 2);
+		LCD_draw_string(0, 140, unknownInput ? "UNK IN" : "NO UNK", COLOR_YELLOW, COLOR_BLACK, 2);
 		
-		Delay(100);  /* 100ms delay in main loop */
+		// draw voltage values at x=0, and y =0, y=20, y=40 etc...
+		char voltage_str[20];
+		uint16_t tv1_voltage = g_voltage_readings.pa1_tv1_sense ;
+		uint16_t tv2_voltage = g_voltage_readings.pa2_tv2_sense ;
+		uint16_t pa0_voltage = g_voltage_readings.pa0_analog ;
+		uint16_t temp_celsius = g_voltage_readings.temp_sensor ;
+		uint16_t pb2_voltage = g_voltage_readings.pb2_analog ;
+		uint16_t ch3_voltage = g_voltage_readings.ch3_unused ;
+		snprintf(voltage_str, sizeof(voltage_str), "TV1: %i mV", tv1_voltage);
+		LCD_draw_string(0, 0, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+		snprintf(voltage_str, sizeof(voltage_str), "TV2: %i mV", tv2_voltage);
+		LCD_draw_string(0, 20, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+		snprintf(voltage_str, sizeof(voltage_str), "PA0: %i mV", pa0_voltage);
+		LCD_draw_string(0, 40, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+		snprintf(voltage_str, sizeof(voltage_str), "TEMP: %i mC", temp_celsius);
+		LCD_draw_string(0, 60, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+		snprintf(voltage_str, sizeof(voltage_str), "PB2: %i mV", pb2_voltage);
+		LCD_draw_string(0, 80, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+		snprintf(voltage_str, sizeof(voltage_str), "CH3: %i mV", ch3_voltage);
+		LCD_draw_string(0, 100, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+
+
+
+		Delay(200);  /* 100ms delay in main loop */
+
 	}
 
 	/* Original flash check loop */

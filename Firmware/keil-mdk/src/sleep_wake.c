@@ -133,7 +133,7 @@ void SleepWake_GoToSleep(void)
     /* Turn off non-essential output loads using GPIO library directly */
     GPIO_ResetBits(GPIOA, GPIO_PIN_5);   /* TV1 off */
     GPIO_ResetBits(GPIOB, GPIO_PIN_8);   /* TV2 off */
-    GPIO_ResetBits(GPIOB, GPIO_PIN_0);   /* LP4086_ISET off */
+    //GPIO_ResetBits(GPIOB, GPIO_PIN_0);   /* LP4086_ISET off */
 
     /* Optional: Disable non-essential clocks here if needed */
     /* RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA, DISABLE); etc */
@@ -167,7 +167,7 @@ void SleepWake_WakeUp(void)
         GPIO_ResetBits(GPIOB, GPIO_PIN_8);
 
     /* Restore charging control if it was enabled */
-    GPIO_SetBits(GPIOB, GPIO_PIN_0);
+    //GPIO_SetBits(GPIOB, GPIO_PIN_0);
 
     g_is_sleeping = false;
 

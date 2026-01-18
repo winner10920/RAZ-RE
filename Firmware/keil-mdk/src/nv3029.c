@@ -9,13 +9,14 @@
 #include "nv3029.h"
 #include "n32g031.h"
 #include "n32g031_gpio.h"
-#include <stdlib.h>
+#include "n32g031_spi.h"
+#include "dma.h"
 #include <string.h>
 
 volatile uint16_t peek_value[] = {0,0,0,0,0,0,0,0,0,0,0};
 volatile uint32_t peek_len = 0;
-volatile uint8_t spi_rx_data[3] = {0, 0, 0};
-volatile uint8_t spi_rx_data_d3[3] = {0, 0, 0};
+volatile uint8_t spi_rx_data[4] = {0, 0, 0, 0};
+volatile uint8_t spi_rx_data_d3[4] = {0,0, 0, 0};
 
 
 // Standard 5x8 font (ASCII 32-127), 5 bytes per character
@@ -80,7 +81,7 @@ const uint8_t font5x8[][5] = {
 {0x03,0x04,0x78,0x04,0x03}, // 89 Y
 {0x61,0x51,0x49,0x45,0x43}, // 90 Z
 {0x00,0x7F,0x41,0x41,0x00}, // 91 [
-{0x02,0x04,0x08,0x10,0x20}, // 92 \
+{0x02,0x04,0x08,0x10,0x20}, // 92 backslash
 {0x00,0x41,0x41,0x7F,0x00}, // 93 ]
 {0x04,0x02,0x01,0x02,0x04}, // 94 ^
 {0x40,0x40,0x40,0x40,0x40}, // 95 _
@@ -414,79 +415,205 @@ static void SPI1_tx16(const uint16_t* buff, uint32_t len)
 
 }
 
-
-static void LCD_WriteCommand(uint8_t cmd)
+/**
+ * DMA-based SPI1 transmit with mode support
+ * mode: 0 = 8-bit standard, 1 = 16-bit (pixel data), 3 = 8-bit with async/interrupt
+ */
+bool SPI1_tx_dma_mode(const uint8_t* buff, uint16_t len, uint32_t timeout_ms, uint8_t mode)
 {
-    //LCD_cs_low();
+    if (buff == NULL || len == 0)
+        return false;
+
+    /* Configure DMA channel 3 for SPI1_TX */
+    DMA_RequestRemap(DMA_REMAP_SPI1_TX, DMA, DMA_CH3, ENABLE);
+
+    /* Clear any lingering flags for channel 3 (SPI1_TX) */
+    dma_clear_flags(DMA_FLAG_TC3 | DMA_FLAG_HT3 | DMA_FLAG_TE3, DMA);
+
+    
+    /* Configure DMA data size based on mode */
+    uint32_t mem_size   = DMA_MemoryDataSize_Byte;      /* default 8-bit */
+    uint32_t peri_size  = DMA_PERIPH_DATA_SIZE_BYTE;    /* default 8-bit */
+    if (mode == 1) {
+        mem_size  = DMA_MemoryDataSize_HalfWord;        /* 16-bit for pixel data */
+        peri_size = DMA_PERIPH_DATA_SIZE_HALFWORD;      /* SPI DAT in 16-bit frame */
+    }
+/* Enable SPI peripheral */
+    SPI_Enable(NV3029_SPI, ENABLE);
+    
+    /* Enable SPI DMA request */
+    SPI_I2S_EnableDma(NV3029_SPI, SPI_I2S_DMA_TX, ENABLE);
+
+    /* Start DMA transfer */
+    dma_start_transfer(DMA_CH3,
+                       (uint32_t)&(NV3029_SPI->DAT),
+                       (uint32_t)buff,
+                       len,
+                       DMA_DIR_PERIPH_DST,
+                       DMA_PERIPH_INC_DISABLE,
+                       DMA_MEM_INC_ENABLE,
+                       peri_size,
+                       mem_size,
+                       DMA_MODE_NORMAL,
+                       DMA_PRIORITY_HIGH,
+                       DMA_M2M_DISABLE);
+
+                       
+
+    /* Wait for DMA transfer complete */
+    bool ok = dma_wait_complete(DMA_CH3, timeout_ms);
+
+    /* Wait for SPI to finish transmitting the last byte */
+    uint32_t wait_count = 10000;
+    while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_BUSY_FLAG) == SET && wait_count--)
+        ;
+
+    return ok;
+}
+
+/* Backward compatibility wrapper for mode 0 (8-bit standard) */
+bool SPI1_tx_dma(const uint8_t* buff, uint16_t len, uint32_t timeout_ms)
+{
+    return SPI1_tx_dma_mode(buff, len, timeout_ms, 0);
+}
+
+/* Mode 1: 16-bit transfers (pixel data) */
+bool SPI1_tx_dma_16bit(const uint16_t* buff, uint16_t count, uint32_t timeout_ms)
+{
+    return SPI1_tx_dma_mode((const uint8_t*)buff, count, timeout_ms, 1);
+}
+
+/* Mode 3: 8-bit with interrupt/callback support (future async enhancement) */
+bool SPI1_tx_dma_async(const uint8_t* buff, uint16_t len, uint32_t timeout_ms)
+{
+    return SPI1_tx_dma_mode(buff, len, timeout_ms, 3);
+}
+
+/**
+ * DMA-based SPI1 fill operation with fixed-address read
+ * Repeatedly reads from single memory location to fill area
+ */
+bool SPI1_tx_dma_fill(const uint16_t* pattern, uint32_t total_count, uint32_t timeout_ms)
+{
+    if (pattern == NULL || total_count == 0)
+        return false;
+
+    /* Configure DMA channel 3 for SPI1_TX */
+    DMA_RequestRemap(DMA_REMAP_SPI1_TX, DMA, DMA_CH3, ENABLE);
+
+    /* Clear any lingering flags for channel 3 (SPI1_TX) */
+    dma_clear_flags(DMA_FLAG_TC3 | DMA_FLAG_HT3 | DMA_FLAG_TE3, DMA);
+
+    /* SPI should already be enabled and configured by caller */
+    /* Enable SPI DMA request */
+    SPI_I2S_EnableDma(NV3029_SPI, SPI_I2S_DMA_TX, ENABLE);
+
+    /* Start DMA transfer with MEM_INC_DISABLE to read same address repeatedly */
+    dma_start_transfer(DMA_CH3,
+                       (uint32_t)&(NV3029_SPI->DAT),
+                       (uint32_t)pattern,
+                       total_count,
+                       DMA_DIR_PERIPH_DST,
+                       DMA_PERIPH_INC_DISABLE,
+                       DMA_MEM_INC_DISABLE,    /* Read from same address repeatedly */
+                       DMA_PERIPH_DATA_SIZE_HALFWORD,
+                       DMA_MemoryDataSize_HalfWord,
+                       DMA_MODE_NORMAL,
+                       DMA_PRIORITY_HIGH,
+                       DMA_M2M_DISABLE);
+
+    /* Wait for DMA transfer complete */
+    bool ok = dma_wait_complete(DMA_CH3, timeout_ms);
+
+    /* Wait for SPI to finish transmitting the last byte */
+    uint32_t wait_count = 10000;
+    while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_BUSY_FLAG) == SET && wait_count--)
+        ;
+
+    return ok;
+}
+
+
+/**
+ * Cleaner DMA-based LCD I/O helpers with explicit CS/DC control
+ */
+
+void LCD_SendCommand_DMA(uint8_t cmd)
+{
     LCD_dc_cmd();
-    SPI1_tx(&cmd, 1);
-    //LCD_cs_high();
-
+    SPI1_tx_dma(&cmd, 1, 100);
 }
 
-static void LCD_WriteData(const uint8_t* buff, uint32_t len)
+void LCD_SendData_DMA(const uint8_t* data, uint16_t len)
 {
-    //LCD_cs_low();
     LCD_dc_data();
-    SPI1_tx(buff, len);
-    //LCD_cs_high();
+    SPI1_tx_dma(data, len, 100);
 }
 
-static void LCD_WriteData16(const uint16_t* buff, uint32_t len)
+void LCD_SendPixels_DMA(const uint16_t* pixels, uint16_t count)
 {
-    //LCD_cs_low();
     LCD_dc_data();
-
-    SPI1_tx16(buff, len);
-    //LCD_cs_high();
+    SPI1_tx_dma_16bit(pixels, count, 100);  /* Mode 1: efficient 16-bit transfers */
 }
 
-static void LCD_SetWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1) {
+void LCD_SetWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1) {
 
-    // todo: change to 16 bit spi mode here
-    //spi1_init_8();
-    uint16_t data[2];
+    
+    uint8_t data[4];
 
     // column addr
-    spi1_init_8();
-    LCD_WriteCommand(LCD_CMD_CASET);
-    spi1_init_16();
-    data[0] = x0; data[1] = x1;
-    LCD_WriteData16(data, 2);
-    //Delay(10);
+    spi1_config(0); // 8-bit mode
+    LCD_SendCommand_DMA(LCD_CMD_CASET);
+    data[0] = 0x00; data[1] = x0; data[2] = 0x00; data[3] = x1;
+    LCD_SendData_DMA(data, 4);
 
     // row addr
-    spi1_init_8();
-    LCD_WriteCommand(LCD_CMD_RASET);
-    spi1_init_16();
-    data[0] = y0; data[1] = y1; 
-    LCD_WriteData16(data, 2);
-    //Delay(10);
+    LCD_SendCommand_DMA(LCD_CMD_RASET);
+    data[0] = 0x00; data[1] = y0; data[2] = 0x00; data[3] = y1; 
+    LCD_SendData_DMA(data, 4);
 
     //write to RAM
-    spi1_init_8();
-    LCD_WriteCommand(LCD_CMD_RAMWR);
-    spi1_init_16();
-    //Delay(10);
-    //spi1_init_16();
+    LCD_SendCommand_DMA(LCD_CMD_RAMWR);
+   
 }
 
 void LCD_DrawPixel(uint8_t x, uint8_t y, uint16_t color) {
+    LCD_cs_low();
     LCD_SetWindow(x, y, x, y);
-    LCD_WriteData16(&color, 1);
+    spi1_config(true); // Switch to 16-bit mode for pixel data
+    LCD_SendPixels_DMA(&color, 1);
+    LCD_cs_high();
 }
 
 void LCD_FillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color) {
+    uint32_t total_pixels = w * h;
+    LCD_cs_low();
     LCD_SetWindow(x, y, x + w - 1, y + h - 1);
     
-    uint32_t pixels = w * h;
-
+    LCD_dc_data();
     
-    for (uint32_t i = 0; i < pixels; i++) {
-        SPI1_tx16((uint16_t *)&color, 1);
-
+    // Switch to 16-bit mode for efficient pixel data transfer
+    spi1_config(true);
+    
+    // Use DMA fill (reads same color repeatedly)
+    // DMA counter is 16-bit max, so chunk if needed
+    if (total_pixels <= 0xFFFF) {
+        SPI1_tx_dma_fill(&color, total_pixels, 1000);
+    }
+    else {
+        uint16_t full_chunks = total_pixels / 0xFFFF;
+        uint16_t remainder = total_pixels % 0xFFFF;
+        
+        for (uint16_t i = 0; i < full_chunks; i++) {
+            SPI1_tx_dma_fill(&color, 0xFFFF, 1000);
+        }
+        
+        if (remainder > 0) {
+            SPI1_tx_dma_fill(&color, remainder, 1000);
+        }
     }
     
+    LCD_cs_high();
 }
 
 /**
@@ -499,9 +626,9 @@ void LCD_Send_Sequence(const LcdPacket* packet_array, uint32_t length) {
     for (uint32_t i = 0; i < length; i++) {
         // 1. Set the DC pin based on the packet type
         if (packet_array[i].type == CMD_LOW) {
-            LCD_WriteCommand(packet_array[i].value);
+            LCD_SendCommand_DMA(packet_array[i].value);
         } else if(packet_array[i].type == DATA_HIGH){
-            LCD_WriteData(&packet_array[i].value, 1);
+            LCD_SendData_DMA(&packet_array[i].value, 1);
         } else if(packet_array[i].type == DELAY_TIME){
             Delay(packet_array[i].value);
         }
@@ -532,66 +659,98 @@ void screen_Init(uint8_t screen_type) {
     }
 }
 
-#define SPI_MODE 3
+void spi1_pin_init(void)
+{
 
-void spi1_init_8(void) {
-    SPI_Enable(NV3029_SPI, DISABLE);
-    {
-        SPI_InitType SPI_InitStructure;
-        SPI_InitStructure.DataDirection = SPI_DIR_DOUBLELINE_FULLDUPLEX;
-        SPI_InitStructure.SpiMode       = SPI_MODE_MASTER;
-        SPI_InitStructure.DataLen       = SPI_DATA_SIZE_8BITS;
-        #if SPI_MODE == 3
-        SPI_InitStructure.CLKPOL        = SPI_CLKPOL_HIGH;
-        SPI_InitStructure.CLKPHA        = SPI_CLKPHA_SECOND_EDGE;
-        #else
-        SPI_InitStructure.CLKPOL        = SPI_CLKPOL_LOW;
-        SPI_InitStructure.CLKPHA        = SPI_CLKPHA_FIRST_EDGE;
-        #endif
-        SPI_InitStructure.NSS           = SPI_NSS_SOFT;
-        SPI_InitStructure.BaudRatePres  = SPI_BR_PRESCALER_4;
-        SPI_InitStructure.FirstBit      = SPI_FB_MSB;
-        SPI_InitStructure.CRCPoly       = 7;
-        SPI_Init(NV3029_SPI, &SPI_InitStructure);
-        SPI_Enable(NV3029_SPI, ENABLE);
-
+    // Enable GPIO clocks for used ports (explicit, do not depend on sFLASH macros)
+    RCC_EnableAPB2PeriphClk(NV3029_SPI_CLK | RCC_APB2_PERIPH_AFIO | RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB, ENABLE);
+   
+    // init CS
+    {GPIO_InitType GPIO_InitStructure;
+    GPIO_InitStructure.Pin = NV3029_CS_PIN ;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.GPIO_Pull = GPIO_NO_PULL;
+    GPIO_InitPeripheral(NV3029_CS_GPIO_PORT, &GPIO_InitStructure);
     }
-}
-
-void spi1_init_16(void) {
-    SPI_Enable(NV3029_SPI, DISABLE);
-    {
-        SPI_InitType SPI_InitStructure;
-        SPI_InitStructure.DataDirection = SPI_DIR_DOUBLELINE_FULLDUPLEX;
-        SPI_InitStructure.SpiMode       = SPI_MODE_MASTER;
-        SPI_InitStructure.DataLen       = SPI_DATA_SIZE_16BITS;
-        #if SPI_MODE == 3
-        SPI_InitStructure.CLKPOL        = SPI_CLKPOL_HIGH;
-        SPI_InitStructure.CLKPHA        = SPI_CLKPHA_SECOND_EDGE;
-        #else
-        SPI_InitStructure.CLKPOL        = SPI_CLKPOL_LOW;
-        SPI_InitStructure.CLKPHA        = SPI_CLKPHA_FIRST_EDGE;
-        #endif
-        SPI_InitStructure.NSS           = SPI_NSS_SOFT;
-        SPI_InitStructure.BaudRatePres  = SPI_BR_PRESCALER_4;
-        SPI_InitStructure.FirstBit      = SPI_FB_MSB;
-        SPI_InitStructure.CRCPoly       = 7;
-        SPI_Init(NV3029_SPI, &SPI_InitStructure);
-        SPI_Enable(NV3029_SPI, ENABLE);
-    }
-}
-
-/**
- * @brief One-wire SPI protocol: send 0x04, then receive 3 bytes using bit-banging
- * Manually toggles SCLK and reads/writes MOSI pin for deterministic timing
- */
-static void spi1_onewire_tx_rx(void) {
-    uint8_t tx_byte = 0x04;
-    uint8_t byte_idx, bit_idx;
-    uint8_t bit_val;
+        // init DC, RST pins as outputs
+        {GPIO_InitType GPIO_InitStructure;
+    GPIO_InitStructure.Pin = NV3029_DC_PIN | NV3029_RST_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.GPIO_Pull = GPIO_NO_PULL;
+    GPIO_InitPeripheral(NV3029_DC_GPIO_PORT, &GPIO_InitStructure);
+        }
     
-    // ========== TRANSMIT: Send 0x04 ==========
-    // Set MOSI to output mode
+    {GPIO_InitType(GPIO_InitStructure);
+    // Configure SCLK (PB3) and MOSI (PB5) as SPI1 alternate-function outputs
+    GPIO_InitStructure.Pin = NV3029_SCLK_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStructure.GPIO_Alternate = NV3029_SPI_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitStructure.GPIO_Pull = GPIO_NO_PULL;
+    GPIO_InitPeripheral(NV3029_SCLK_GPIO_PORT, &GPIO_InitStructure);}
+    
+    //INIT MOSI
+    {GPIO_InitType(GPIO_InitStructure);
+    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStructure.GPIO_Alternate = NV3029_SPI_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitStructure.GPIO_Pull = GPIO_NO_PULL;
+    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
+    }
+}
+
+// Drop-in helper: configure SPI1 for display, 8- or 16-bit frames
+void spi1_config(bool sixteen_bit)
+{
+    // Ensure PA15 (CS) is output
+    spi1_pin_init(); 
+
+
+    SPI_Enable(NV3029_SPI, DISABLE);
+
+    SPI_InitType spi;
+    SPI_InitStruct(&spi);
+    spi.DataDirection  = SPI_DIR_DOUBLELINE_FULLDUPLEX;
+    spi.SpiMode        = SPI_MODE_MASTER;
+    spi.DataLen        = sixteen_bit ? SPI_DATA_SIZE_16BITS : SPI_DATA_SIZE_8BITS;
+    spi.CLKPOL         = SPI_CLKPOL_HIGH;          // Mode 3
+    spi.CLKPHA         = SPI_CLKPHA_SECOND_EDGE;   // Mode 3
+    spi.NSS            = SPI_NSS_SOFT;
+    spi.BaudRatePres   = SPI_BR_PRESCALER_4;       // ~0x200 in CR1
+    spi.FirstBit       = SPI_FB_MSB;
+    spi.CRCPoly        = 7;
+
+    SPI_Init(NV3029_SPI, &spi);
+    SPI_Enable(NV3029_SPI, ENABLE);
+}
+
+
+
+
+void spi1_init_bitbang(void) {
+    // Disable hardware SPI
+    SPI_Enable(NV3029_SPI, DISABLE);
+    
+    // Configure SCLK (PB3) as output
+    {
+    GPIO_InitType GPIO_InitStructure;
+    GPIO_InitStruct(&GPIO_InitStructure);
+    GPIO_InitStructure.Pin = NV3029_SCLK_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
+    GPIO_InitPeripheral(NV3029_SCLK_GPIO_PORT, &GPIO_InitStructure);
+    }
+
+    // Configure MOSI (PB5) as output initially
+    {
     GPIO_InitType GPIO_InitStructure;
     GPIO_InitStruct(&GPIO_InitStructure);
     GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
@@ -599,15 +758,37 @@ static void spi1_onewire_tx_rx(void) {
     GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
     GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
     GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
+    }
+    
+}
+
+
+
+
+
+/**
+ * @brief One-wire SPI protocol: send byte, then receive 3 bytes using bit-banging
+ * Manually toggles SCLK and reads/writes MOSI pin for deterministic timing
+ */
+
+static void spi1_onewire_bitbang(uint8_t tx_byte, uint8_t low_or_high) {
+
+    uint8_t byte_idx, bit_idx;
+    uint8_t bit_val;
+    spi1_init_bitbang();
+
     
     LCD_cs_high();
-    GPIO_SetBits(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN);
     LCD_mosi_high();
+    LCD_sclk_high();
     LCD_dc_data();
     LCD_cs_low();
-    LCD_dc_cmd();
-    LCD_mosi_low();
-    GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
+
+    if (low_or_high)
+        LCD_dc_data();
+    else
+        LCD_dc_cmd();
+
 
     // Send 0x04 MSB first (0000 0100)
     for (bit_idx = 0; bit_idx < 8; ++bit_idx) {
@@ -622,407 +803,374 @@ static void spi1_onewire_tx_rx(void) {
         }
         
         // Clock pulse: toggle SCLK
-        GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
-        Delay(1);
-        GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
+        
+        LCD_sclk_low();
+        LCD_sclk_high();
 
     }
     
     // ========== RECEIVE: Get 3 bytes ==========
     // Set MOSI to input mode (read-only)
+    {GPIO_InitType GPIO_InitStructure;
     GPIO_InitStruct(&GPIO_InitStructure);
     GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
     GPIO_InitStructure.GPIO_Mode = GPIO_MODE_INPUT;
     GPIO_InitStructure.GPIO_Pull = GPIO_NO_PULL;
     GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
+    }
+    LCD_sclk_low();
+    LCD_sclk_high();
     
-    // Receive 3 bytes
-    for (byte_idx = 0; byte_idx < 3; ++byte_idx) {
+     
+    // Receive 4 bytes
+    for (byte_idx = 0; byte_idx < 4; ++byte_idx) {
         spi_rx_data[byte_idx] = 0x00;
         
         // Receive 8 bits MSB first
         for (bit_idx = 0; bit_idx < 8; ++bit_idx) {
             // Clock pulse: SCLK high (sample on rising edge)
-            GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
-            //Delay(100);
+           
+            GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
             
             // Read bit from MOSI
-            bit_val = (GPIO_ReadInputDataBit(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN) != 0) ? 1 : 0;
+             bit_val = (GPIO_ReadInputDataBit(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN) != 0) ? 1 : 0;
             
             // Shift bit into byte (MSB first)
             spi_rx_data[byte_idx] = (spi_rx_data[byte_idx] << 1) | bit_val;
             
             // Clock pulse: SCLK low
-            GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
-            Delay(100);
-        }
-    }
-    
-    // Set MOSI back to output mode for normal operation
-    GPIO_InitStruct(&GPIO_InitStructure);
-    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
-    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
-    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
-}
-
-/**
- * @brief One-wire SPI protocol: send 0xD3, then receive 3 bytes using bit-banging
- * DC pin is set LOW. Manually toggles SCLK and reads/writes MOSI pin for deterministic timing
- */
-static void spi1_onewire_tx_rx_d3(void) {
-    uint8_t tx_byte = 0xD3;
-    uint8_t byte_idx, bit_idx;
-    uint8_t bit_val;
-    
-    // Set DC pin LOW
-    GPIO_ResetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN);
-    
-    // ========== TRANSMIT: Send 0xD3 ==========
-    // Set MOSI to output mode
-    GPIO_InitType GPIO_InitStructure;
-    GPIO_InitStruct(&GPIO_InitStructure);
-    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
-    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
-    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
-    
-    // Send 0xD3 MSB first (1101 0011)
-    for (bit_idx = 0; bit_idx < 8; ++bit_idx) {
-        // Extract bit from MSB to LSB
-        bit_val = (tx_byte >> (7 - bit_idx)) & 0x01;
-        
-        // Set MOSI to bit value
-        if (bit_val) {
-            GPIO_SetBits(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN);
-        } else {
-            GPIO_ResetBits(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN);
-        }
-        
-        // Clock pulse: toggle SCLK
-        GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
-        GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
-    }
-    
-    // ========== RECEIVE: Get 3 bytes ==========
-    // Set MOSI to input mode (read-only)
-    GPIO_InitStruct(&GPIO_InitStructure);
-    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_INPUT;
-    GPIO_InitStructure.GPIO_Pull = GPIO_NO_PULL;
-    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
-    
-    // Receive 3 bytes
-    for (byte_idx = 0; byte_idx < 3; ++byte_idx) {
-        spi_rx_data_d3[byte_idx] = 0x00;
-        
-        // Receive 8 bits MSB first
-        for (bit_idx = 0; bit_idx < 8; ++bit_idx) {
-            // Clock pulse: SCLK high (sample on rising edge)
             GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
-            
-            // Read bit from MOSI
-            bit_val = (GPIO_ReadInputDataBit(NV3029_MOSI_GPIO_PORT, NV3029_MOSI_PIN) != 0) ? 1 : 0;
-            
-            // Shift bit into byte (MSB first)
-            spi_rx_data_d3[byte_idx] = (spi_rx_data_d3[byte_idx] << 1) | bit_val;
-            
-            // Clock pulse: SCLK low
-            GPIO_ResetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN);
         }
     }
-    
-    // Set MOSI back to output mode for normal operation
-    GPIO_InitStruct(&GPIO_InitStructure);
-    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
-    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
-    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
-    
-    // Set DC pin back HIGH
-    GPIO_SetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN);
 }
 
-void spi1_pin_init(void)
-{
- GPIO_InitType GPIO_InitStructure;
 
-    GPIO_InitStruct(&GPIO_InitStructure);
-    // Enable GPIO clocks for used ports (explicit, do not depend on sFLASH macros)
-    RCC_EnableAPB2PeriphClk(NV3029_SPI_CLK | RCC_APB2_PERIPH_AFIO | RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB, ENABLE);
 
-    // init CS, DC, RST pins as outputs
-    GPIO_InitStructure.Pin = NV3029_CS_PIN ;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
-    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
-    GPIO_InitPeripheral(NV3029_CS_GPIO_PORT, &GPIO_InitStructure);
-        // init CS, DC, RST pins as outputs
-    GPIO_InitStructure.Pin = NV3029_DC_PIN | NV3029_RST_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
-    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
-    GPIO_InitPeripheral(NV3029_DC_GPIO_PORT, &GPIO_InitStructure);
-    
-    GPIO_InitStruct(&GPIO_InitStructure);
-    // Configure SCLK (PB3) and MOSI (PB5) as SPI1 alternate-function outputs
-    GPIO_InitStructure.Pin = NV3029_SCLK_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStructure.GPIO_Alternate = NV3029_SPI_AF;
-    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
-    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
-    GPIO_InitPeripheral(NV3029_SCLK_GPIO_PORT, &GPIO_InitStructure);
 
-    GPIO_InitStruct(&GPIO_InitStructure);
-    GPIO_InitStructure.Pin = NV3029_MOSI_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStructure.GPIO_Alternate = NV3029_SPI_AF;
-    GPIO_InitStructure.GPIO_Speed = GPIO_SPEED_HIGH;
-    GPIO_InitStructure.GPIO_Current = GPIO_DC_HIGH;
-    GPIO_InitPeripheral(NV3029_MOSI_GPIO_PORT, &GPIO_InitStructure);
-}
+
+
+
 
 void LCD_init(void)
 {
-    LCD_rst_low();
-    Delay(500);
+    
+    
     LCD_rst_high();
-    Delay(500);
+    Delay(50);
     LCD_rst_low();
-    Delay(500);
- 
-
-    // One-wire SPI protocol: send 0x04 and receive 3 bytes
-    spi1_onewire_tx_rx();
-    
-    // One-wire SPI protocol: send 0xD3 (with DC low) and receive 3 bytes
-    spi1_onewire_tx_rx_d3();
-
-    spi1_pin_init();
-    
-    spi1_init_8();
-
-
-
-    // hardware reset
-    LCD_cs_high();
+    Delay(50);
+    LCD_rst_high();
+    Delay(200);
+    LCD_cs_low();
     LCD_dc_cmd();
-    LCD_rst_high();
-
-    Delay(1000);
-    LCD_rst_low();
-    Delay(500);
-    LCD_rst_high();
-    Delay(500);
-    LCD_cs_low();
-    Delay(100);
-    LCD_WriteCommand(LCD_CMD_SWRESET); // 0x01
-    Delay(150);
-    LCD_WriteCommand(LCD_CMD_SLPOUT);
-    Delay(255);
-
-   
-     //Send the initialization sequence
-     uint8_t screen_type = 2; // Set the desired screen type here (0, 1, 2, or 3)
-     screen_Init(screen_type); 
-    //LCD_WriteCommand(LCD_CMD_COLMOD); // 0x3A
-    //Delay(1);
-    LCD_WriteData((uint8_t*)0x55, 1); // 16 bits per pixel
-    Delay(10);
-    LCD_WriteCommand(LCD_CMD_MADCTL); // 0x36
-    Delay(10);
-    if(screen_type == 0) {
-        uint8_t madctl = 0x80; // MADCTL for screen type 
-        LCD_WriteData(&madctl, 1);
-    } else if(screen_type == 1) {
-        uint8_t madctl = 0x80; // MADCTL for screen type 
-        LCD_WriteData(&madctl, 1);
-    } else if(screen_type == 2) {
-        uint8_t madctl = 0x80; // MADCTL for screen type 
-        LCD_WriteData(&madctl, 1);
-    } else if(screen_type == 3) {
-        uint8_t madctl = 0xC0; // MADCTL for screen type 
-        LCD_WriteData(&madctl, 1);
+    volatile uint8_t cmd_byte = 0x4;
+    volatile uint8_t cmd_or_data = 0;
+    spi1_onewire_bitbang(cmd_byte, cmd_or_data);
+    uint8_t screen_type = 0xff;
+    if(spi_rx_data[0] == 0x33 && spi_rx_data[1] == 0x30 && spi_rx_data[2] == 0x25) {
+        spi1_onewire_bitbang(0xd3, 0x00);
+        if(spi_rx_data[0] == 0x33 && spi_rx_data[1] == 0x30 && spi_rx_data[2] == 0x25) {
+            screen_type = 2;
+        }
+        else {
+            screen_type = 0; 
+        }
     }
-    Delay(5);
-    //LCD_WriteCommand(LCD_CMD_NORON); // 0x13
-    Delay(10);
-    //LCD_WriteCommand(LCD_CMD_IDMOFF); // 0x29
-    Delay(10);
-    //LCD_WriteCommand(LCD_CMD_INVON); // 0x20
-    Delay(10);
-    LCD_WriteCommand(LCD_CMD_DISPON); // 0x29
-    Delay(1000);
-
-
-    Delay(11);
-    LCD_WriteCommand(LCD_CMD_CASET); // 0x2A
-    spi1_init_16();
-
-    uint16_t data[2] = {0x0000, 0x007F};
-    LCD_WriteData16(data, 2);
-    spi1_init_8();
-    LCD_WriteCommand(LCD_CMD_RASET); // 0x2B
-    spi1_init_16();
-    data[1] = 0x009F;
-    LCD_WriteData16(data, 2);
-    spi1_init_8();
-    LCD_WriteCommand(LCD_CMD_RAMWR);
-    spi1_init_16();
-    LCD_cs_high();
-    Delay(10);
-    LCD_cs_low();
-    // Send 54ms of 0x00 data
-    data[1] = 0x0000;
-    for (uint32_t i = 0; i < (128*160); ++i) { 
-        LCD_WriteData16(data, 2);
+    else {
+        screen_type = 2; 
     }
-    LCD_cs_high();
-    Delay(700);
-    LCD_cs_low();
-    Delay(1000);
 
+
+    cmd_byte = 0xd3;
+    spi1_onewire_bitbang(cmd_byte, cmd_or_data);
+    volatile uint8_t debug_mode = 0;
+     
+     while (debug_mode)
+     {
+     Delay(100);
+     spi1_onewire_bitbang(cmd_byte, cmd_or_data);
+     
+     }
+
+    /*
+    
+    command and feedback decimal
+
+
+    0x09 -> 0,1,0,0              // read status
+    0x04 -> 51,48,37,128         // read id          : manufacturer id, driver id, version id, ?
+    0x00 -> 0,0,0,0              // nop
+    0xd3 -> 192,0,0,0            //
+    0xda -> 102,0,0,0            // read id1         : manufacturer id
+    0xdb -> 96,0,0,0             // read id2         : version id
+    0xdc -> 74,0,0,0             // read id3         : driver id
+    0x0a -> 16,0,0,0             // read power mode  : default value
+    //slp out cmd sent 
+    0x11 -> 192,0,0,0             // sleep out cmd
+    0x0a -> 48,0,0,0              // read power mode  : noron,slpout, bston
+    0x0b -> 0,0,0,0               // read display mode
+    0x09 -> 128,3,0,0             // read status      : mx--,noron, vertical scroll on
+    0x0c -> 0,0,0,0               // read colmod
+    0x04 -> 51,48,37,128          // read id          : manufacturer id, driver id, version id, ?
+    0X29 -> 128,0,0,0             // display on cmd
+
+    0x01 -> 192,0,0,0,             // software reset cmd
+
+    */
+
+
+    /*
+
+
+    ghidra xd011_f
+      0x4->
+      byte 0 : 0x33 '3' d51
+      byte 1 : 0x30 '0' d48
+      byte 2 : 0x25 '%' d37
+      -> 0
+
+
+      ghidra xd011_e
+      0x4->
+      byte 0 : 0x33 '3' d51
+      byte 1 : 0x30 '0' d48
+      byte 2 : 0x25 '%' d37
+      -> 0
+
+      0xd3->
+      byte 0 : 0x33 '3' d51
+      byte 1 : 0x30 '0' d48
+      byte 2 : 0x25 '%' d37
+      -> 1
+      
+      byte 0 : 0x7c '|'    d124
+      byte 1 : 0x89 -0x77  d137
+      byte 2 : 0xf0 -0x10  d240
+      -> 2
+
+
+*/
 
 
 
     /*
-    Remaining Commands before data from sigrok pulseview implemented above
-
-    CMD:   0xAC
-    DELAY: 71uS
-    CMD:   0x2A
-    DELAY: 15uS
-    DATA:  0x00
-    DELAY: 15uS
-    DATA:  0x00
-    DELAY: 45uS
-    DATA:  0x00
-    DELAY: 15uS
-    DATA:  0x7F
-    DELAY: 15uS
-    CMD:   0x2B
-    DELAY: 45uS
-    DATA:  0x00
-    DELAY: 15uS
-    DATA:  0x00
-    DELAY: 15uS
-    DATA:  0x00
-    DELAY: 45uS
-    DATA:  0x9F
-    DELAY: 15uS
-    CMD:   0x2C
-    DELAY: 15uS
-    DATA:  0x00
-    CS:    HIGH
-    DELAY: 10uS
-    CS:    LOW
-    DATA:  54mS OF 0X00
-    CS:    HIGH
-    DELAY: 700uS
-    CS:    LOW
-    */
-
-     /*
-    Remaining Commands AFTER NULL DATA TRAIN from sigrok pulseview
-    CMD:   0x2A
-    DELAY: 15uS
-    CMD:   0x00
-    DELAY: 15uS
-    CMD:   0x54
-    DELAY: 45uS
-    DATA:  0x00
-    DELAY: 15uS
-    DATA:  0x7B
-    DELAY: 15uS
-    CMD:   0x2B
-    DELAY: 45uS
-    DATA:  0x00
-    DELAY: 15uS
-    DATA:  0x03
-    DELAY: 50uS
-    DATA:  0x00
-    DELAY: 15uS
-    DATA:  0x28
-    DELAY: 15uS
-    CMD:   0x2C
-    DELAY: 438uS
-    DATA:  2.234mS OF DATA
-    CS:    HIGH
-    DELAY: 80uS
-    CS:    LOW
+    miami mint Firmware output:
+    Successfully recieved bytes:
+    
+    0x4->
+      byte 0 : 0x33 '3' d51
+      byte 1 : 0x30 '0' d48
+      byte 2 : 0x25 '%' d37
+      -> 0
+    
 
     */
 
 
+    // One-wire SPI protocol: send 0xD3 (with DC low) and receive 3 bytes
 
 
+    spi1_config(false); // 8-bit mode
+    LCD_rst_low();
+    Delay(150);
+    LCD_rst_high();
+    Delay(200);
+    LCD_SendCommand_DMA(LCD_CMD_SLPOUT);
+    Delay(200);
 
 
+   
+     //Send the initialization sequence
+     //screen_type = 1; // Set the desired screen type here (0, 1, 2, or 3)
+    screen_Init(screen_type); 
+
+     
+    LCD_SendCommand_DMA(LCD_CMD_MADCTL); // 0x36
+    if(screen_type == 2) {
+        uint8_t madctl = 0x80; // MADCTL for screen type 
+        LCD_SendData_DMA(&madctl, 1);
+    } else if(screen_type == 1) {
+        uint8_t madctl = 0x80; // MADCTL for screen type 
+        LCD_SendData_DMA(&madctl, 1);
+    } else if(screen_type == 2) {
+        uint8_t madctl = 0x80; // MADCTL for screen type 
+        LCD_SendData_DMA(&madctl, 1);
+    } else if(screen_type == 3) {
+        uint8_t madctl = 0xC0; // MADCTL for screen type 
+        LCD_SendData_DMA(&madctl, 1);
+    }
+
+    LCD_SendCommand_DMA(LCD_CMD_DISPON); // 0x29
+    LCD_SendCommand_DMA(LCD_CMD_RAMWR); // 0x2C
     LCD_cs_high();
-    Delay(100);
+    LCD_fill_screen(COLOR_BLACK); // yellow
+
+
+
+
     
 }
 
 
 void LCD_fill_screen(uint16_t color)
 {
-    LCD_cs_low();
-    Delay(10);
-    // fill entire screen with a single color
-    LCD_SetWindow(0, 0, NV3029_WIDTH-1, NV3029_HEIGHT-1);
-    // send color data as high byte then low byte repeatedly using hardware SPI
+    uint32_t total_pixels = NV3029_WIDTH * NV3029_HEIGHT;
     
-    peek_value[0] = color;
-
-    for (int i = 0; i < (NV3029_WIDTH * NV3029_HEIGHT); ++i) {
-        LCD_WriteData16(&color, 1);
+    LCD_cs_low();
+    LCD_SetWindow(0, 0, NV3029_WIDTH - 1, NV3029_HEIGHT - 1);
+    LCD_dc_data();
+    
+    // Switch to 16-bit mode for efficient pixel data transfer
+    spi1_config(true);
+    
+    // Use DMA fill (reads same color repeatedly)
+    // DMA counter is 16-bit max, so chunk if needed
+    if (total_pixels <= 0xFFFF) {
+        SPI1_tx_dma_fill(&color, total_pixels, 1000);
     }
-    Delay(10);
+    else {
+        uint16_t full_chunks = total_pixels / 0xFFFF;
+        uint16_t remainder = total_pixels % 0xFFFF;
+        
+        for (uint16_t i = 0; i < full_chunks; i++) {
+            SPI1_tx_dma_fill(&color, 0xFFFF, 1000);
+        }
+        
+        if (remainder > 0) {
+            SPI1_tx_dma_fill(&color, remainder, 1000);
+        }
+    }
+    
     LCD_cs_high();
 }
 
-// Draw a single 5x8 character (x,y in pixels)
-void LCD_draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint16_t bgcolor)
+// Draw a single 5x8 character with configurable scaling (x,y in pixels)
+
+void LCD_draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint16_t bgcolor, uint8_t scale)
 {
     if (c < 32 || c > 127) c = '?';
-    uint8_t index = c - 32;
-    const uint8_t* glyph = font5x8[0];
-    if (index < (sizeof(font5x8)/5)) glyph = font5x8[index];
+    if (scale == 0) scale = 1;  // Minimum scale of 1
+    
+     uint8_t index = c - 32;
+    
+    // Clamp index to valid range
+    if (index >= 96) index = 0;
+    
+    const uint8_t* glyph = font5x8[index];
 
-    for (uint8_t col = 0; col < 5; ++col){
-        uint8_t line = glyph[col];
-        for (uint8_t row = 0; row < 8; ++row){
-            uint16_t px = x + col;
-            uint16_t py = y + row;
-            LCD_SetWindow(px, py, px, py);
+    uint16_t char_width = 6 * scale;  // 5 cols + 1 spacing
+    uint16_t char_height = 8 * scale;
+    
+    // Set window for entire character (CS controlled by caller)
+    LCD_SetWindow(x, y, x + char_width - 1, y + char_height - 1);
+    spi1_config(true);
+    
+    LCD_dc_data();
+    
+    // Draw character row by row (top to bottom), then column by column within row
+    // Y outer, X inner to match display frame increment order
+    for (uint16_t py = 0; py < char_height; py++) {
+        uint8_t row = py / scale;  // Which font row (0-7)
+        
+        for (uint16_t px = 0; px < char_width; px++) {
+            uint8_t col = px / scale;  // Which font column (0-5)
+            uint16_t pixel_color;
             
-            uint8_t hi = (line & (1<<row)) ? (color >> 8) : (bgcolor >> 8);
-            uint8_t lo = (line & (1<<row)) ? (color & 0xFF) : (bgcolor & 0xFF);
-            uint16_t tmp = (hi << 8) | lo;
-            LCD_WriteData16(&tmp, 1);
+            if (col >= 5) {
+                // Spacing column
+                pixel_color = bgcolor;
+            } else {
+                // Character pixel
+                uint8_t line = glyph[col];
+                pixel_color = (line & (1 << row)) ? color : bgcolor;
+            }
+            
+            SPI1_tx_dma_fill(&pixel_color, 1, 100);
         }
-    }
-    // one column spacing
-    for (uint8_t row = 0; row < 8; ++row){
-        uint16_t px = x + 5; uint16_t py = y + row;
-        LCD_SetWindow(px, py, px, py);
-        uint8_t hi = bgcolor >> 8; uint8_t lo = bgcolor & 0xFF;
-        uint16_t tmpb = (hi << 8) | lo;
-        LCD_WriteData16(&tmpb, 1);
     }
 }
 
-void LCD_draw_string(uint16_t x, uint16_t y, const char* s, uint16_t color, uint16_t bgcolor)
+
+void LCD_draw_string(uint16_t x, uint16_t y, const char* s, uint16_t color, uint16_t bgcolor, uint8_t scale)
 {
+    if (scale == 0) scale = 1;
+    if (s == NULL) return;
+
+    LCD_cs_low();  // Keep CS low for entire string
     uint16_t cx = x;
-    while (*s){
-        LCD_draw_char(cx, y, *s, color, bgcolor);
-        cx += 6; // 5px + 1 spacing
-        s++;
+    // Use indexed loop to avoid pointer side effects
+    for (size_t i = 0; s[i] != '\0'; ++i) {
+        LCD_draw_char(cx, y, s[i], color, bgcolor, scale);
+        cx += (5 + 1) * scale;  // 5px char + 1px spacing, scaled
     }
+    LCD_cs_high();  // Release CS after string complete
+}
+
+/**
+ * Diagnostic: Draw a simple grid pattern to understand pixel mapping
+ */
+void LCD_test_grid(void)
+{
+    // Fill with black background
+    //LCD_fill_screen(COLOR_BLACK);
+    Delay(500);
+    
+    // Draw vertical lines at X positions (every 16 pixels)
+    for (uint16_t x = 0; x < NV3029_WIDTH; x += 16) {
+        LCD_cs_low();
+        LCD_SetWindow(x, 0, x, NV3029_HEIGHT - 1);
+        spi1_config(true);
+        LCD_dc_data();
+        uint16_t white = COLOR_WHITE;
+        for (uint16_t y = 0; y < NV3029_HEIGHT; y++) {
+            SPI1_tx_dma_fill(&white, 1, 100);
+        }
+        LCD_cs_high();
+    }
+    Delay(500);
+    
+    // Draw horizontal lines at Y positions (every 16 pixels)
+    for (uint16_t y = 0; y < NV3029_HEIGHT; y += 16) {
+        LCD_cs_low();
+        LCD_SetWindow(0, y, NV3029_WIDTH - 1, y);
+        spi1_config(true);
+        LCD_dc_data();
+        uint16_t red = COLOR_RED;
+        for (uint16_t x = 0; x < NV3029_WIDTH; x++) {
+            SPI1_tx_dma_fill(&red, 1, 100);
+        }
+        LCD_cs_high();
+    }
+    Delay(500);
+    
+    // Draw a 10x10 white square in corner
+    LCD_cs_low();
+    LCD_SetWindow(10, 10, 19, 19);
+    spi1_config(true);
+    LCD_dc_data();
+    uint16_t white = COLOR_WHITE;
+    for (uint16_t i = 0; i < 100; i++) {
+        SPI1_tx_dma_fill(&white, 1, 100);
+    }
+    LCD_cs_high();
+}
+
+/**
+ * Diagnostic: Test single character rendering
+ */
+void LCD_test_char(void)
+{
+    //LCD_fill_screen(COLOR_BLACK);
+    //Delay(500);
+    LCD_cs_low();
+    // Draw a single large "A" in top-left
+    
+    for (uint8_t index = 32; index <= 127; index++) {
+    LCD_draw_char(0, 0, index, COLOR_WHITE, COLOR_BLACK, 4);        
+    Delay(100);
+    }
+    LCD_cs_high();
+    //LCD_draw_char(0, 0, 'A', COLOR_WHITE, COLOR_BLACK, 8);
 }
 
 // Diagnostic routine: reset display, then fill with a series of colors
@@ -1030,27 +1178,37 @@ void LCD_diag(void)
 {
     // Hardware reset sequence
 
-    //LCD_dc_data();
-    //LCD_rst_low();
-    //Delay(200);
-    //LCD_rst_high();
-    //Delay(200);
-   // LCD_cs_high();
-    //Delay(10);
-    //LCD_cs_low();
-    //Delay(10);
+ 
 
     //LCD_init();
     // A few colors to verify SPI and LCD functioning
-    LCD_fill_screen(COLOR_BLACK); // red
+    LCD_fill_screen(COLOR_RED); // red
     Delay(100);
     LCD_fill_screen(COLOR_GREEN); // green
     Delay(100);
     LCD_fill_screen(COLOR_BLUE); // blue
     Delay(100);
     LCD_fill_screen(COLOR_WHITE); // white
+    //Delay(1000);
+    //LCD_fill_screen(COLOR_BLUE); // black
     Delay(100);
+    LCD_FillRect(0, 10, 10, 100, COLOR_RED);
+	Delay(100);
+    LCD_fill_screen(COLOR_BLACK); // black
+    Delay(100);
+    LCD_test_grid();
+	Delay(100);
     LCD_fill_screen(COLOR_BLUE); // black
-    Delay(200);
+    Delay(100);
+	LCD_test_char();
+    Delay(100);
+    LCD_fill_screen(COLOR_WHITE); // white
+    Delay(100);
+	LCD_draw_string(0, 0, "Hello world", COLOR_WHITE, COLOR_MAGENTA, 1);
+	LCD_draw_string(0, 20, "Hello world", COLOR_RED, COLOR_WHITE, 2);
+	LCD_draw_string(0, 40, "Hello world", COLOR_BLACK, COLOR_NAVY, 1);
+	LCD_draw_string(0, 60, "Hello world", COLOR_NAVY, COLOR_GREEN, 2);
+    Delay(1000);
+    LCD_fill_screen(COLOR_BLACK); // black
 
 }

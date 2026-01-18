@@ -5,6 +5,7 @@
 #define __NV3029_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "n32g031.h"
 
 #ifdef __cplusplus
@@ -192,13 +193,32 @@ typedef struct {
             uint8_t value;
 } LcdPacket;
 
-void spi1_init_8(void);
-void spi1_init_16(void);
+void spi1_config(bool sixteen_bit);
+static void spi1_onewire_bitbang(uint8_t tx_byte, uint8_t low_or_high);
+void spi1_init_bitbang(void);
+void spi1_pin_init(void);
+
 void LCD_init(void);
 void LCD_fill_screen(uint16_t color);
-void LCD_draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint16_t bgcolor);
-void LCD_draw_string(uint16_t x, uint16_t y, const char* s, uint16_t color, uint16_t bgcolor);
+void LCD_FillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color);
+void LCD_SetWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1) ;
+void LCD_draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint16_t bgcolor, uint8_t scale);
+void LCD_draw_string(uint16_t x, uint16_t y, const char* s, uint16_t color, uint16_t bgcolor, uint8_t scale);
+
+/* DMA-based SPI transmit functions */
+bool SPI1_tx_dma_mode(const uint8_t* buff, uint16_t len, uint32_t timeout_ms, uint8_t mode);
+bool SPI1_tx_dma(const uint8_t* buff, uint16_t len, uint32_t timeout_ms);
+bool SPI1_tx_dma_16bit(const uint16_t* buff, uint16_t count, uint32_t timeout_ms);
+bool SPI1_tx_dma_async(const uint8_t* buff, uint16_t len, uint32_t timeout_ms);
+
+/* High-level DMA I/O helpers with CS/DC control */
+void LCD_SendCommand_DMA(uint8_t cmd);
+void LCD_SendData_DMA(const uint8_t* data, uint16_t len);
+void LCD_SendPixels_DMA(const uint16_t* pixels, uint16_t count);
+
 void LCD_diag(void);
+void LCD_test_grid(void);
+void LCD_test_char(void);
 void LCD_Send_Sequence(const LcdPacket* packet_array, uint32_t length);
 void screen_Init(uint8_t screen_type);
 extern void Delay(volatile uint32_t count);

@@ -48,10 +48,10 @@ void VoltageMonitor_Init(void)
     gpio_init_struct.GPIO_Mode = GPIO_MODE_ANALOG;
     GPIO_InitPeripheral(GPIOA, &gpio_init_struct);
 
-    GPIO_InitStruct(&gpio_init_struct);
-    gpio_init_struct.Pin = GPIO_PIN_2;
-    gpio_init_struct.GPIO_Mode = GPIO_MODE_ANALOG;
-    GPIO_InitPeripheral(GPIOB, &gpio_init_struct);
+    // GPIO_InitStruct(&gpio_init_struct);
+    // gpio_init_struct.Pin = GPIO_PIN_2;
+    // gpio_init_struct.GPIO_Mode = GPIO_MODE_ANALOG;
+    // GPIO_InitPeripheral(GPIOB, &gpio_init_struct);
 
     GPIO_InitStruct(&gpio_init_struct);
     gpio_init_struct.Pin = GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
@@ -115,13 +115,15 @@ void VoltageMonitor_UpdateReadings(void)
     /* Read all 4 channels and update the struct */
     g_voltage_readings.pa0_analog = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA0));
     
-    GPIO_On(TV1_PIN);  /* Power on voltage sense circuitry if needed */
+    //GPIO_On(TV1_PIN);  /* Power on voltage sense circuitry if needed */
+    //Delay(1);
     g_voltage_readings.pa1_tv1_sense = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA1));
-    GPIO_Off(TV1_PIN); /* Power off to save energy */
+    //GPIO_Off(TV1_PIN); /* Power off to save energy */
     
-    GPIO_On(TV2_PIN);  /* Power on voltage sense circuitry if needed */
+    //GPIO_On(TV2_PIN);  /* Power on voltage sense circuitry if needed */
+    Delay(1);
     g_voltage_readings.pa2_tv2_sense = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA2));
-    GPIO_Off(TV2_PIN); /* Power off to save energy */
+    //GPIO_Off(TV2_PIN); /* Power off to save energy */
     
     
     g_voltage_readings.temp_sensor = ((1300-VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_TEMP)))/39)+2500; /* Convert to °C using typical formula */
