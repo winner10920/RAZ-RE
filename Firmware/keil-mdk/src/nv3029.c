@@ -1449,20 +1449,19 @@ bool LCD_is_flash_read_complete(void)
         flash_dma_busy = false;
         return true;
     }
-    return true;
     
     /* Check for errors on RX channel */
-    // if (DMA_GetFlagStatus(DMA_FLAG_TE4, DMA) == SET) {
-    //     DMA_EnableChannel(DMA_CH4, DISABLE);
-    //     DMA_EnableChannel(DMA_CH5, DISABLE);
-    //     sFLASH_CS_HIGH();
-    //     DMA_ClearFlag(DMA_FLAG_TC4 | DMA_FLAG_HT4 | DMA_FLAG_TE4, DMA);
-    //     DMA_ClearFlag(DMA_FLAG_TC5 | DMA_FLAG_HT5 | DMA_FLAG_TE5, DMA);
-    //     flash_dma_busy = false;
-    //     return true;  /* Return true to exit loop, but transfer failed */
-    // }
+    if (DMA_GetFlagStatus(DMA_FLAG_TE4, DMA) == SET) {
+        DMA_EnableChannel(DMA_CH4, DISABLE);
+        DMA_EnableChannel(DMA_CH5, DISABLE);
+        sFLASH_CS_HIGH();
+        DMA_ClearFlag(DMA_FLAG_TC4 | DMA_FLAG_HT4 | DMA_FLAG_TE4, DMA);
+        DMA_ClearFlag(DMA_FLAG_TC5 | DMA_FLAG_HT5 | DMA_FLAG_TE5, DMA);
+        flash_dma_busy = false;
+        return true;  /* Return true to exit loop, but transfer failed */
+    }
     
-    // return false;
+    return false;  /* Still in progress */
 }
 
 /**

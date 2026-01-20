@@ -1,7 +1,7 @@
 
-cmake_minimum_required(VERSION ${CMAKE_VERSION}) # this file comes with cmake
+cmake_minimum_required(VERSION 3.15)
 
-set(command "/home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/bin/cmake;--build;/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1;--target;database")
+set(command "/usr/bin/cmake;--build;/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1;--target;database")
 set(log_merged "")
 set(log_output_on_failure "ON")
 set(stdout_log "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-database-out.log")

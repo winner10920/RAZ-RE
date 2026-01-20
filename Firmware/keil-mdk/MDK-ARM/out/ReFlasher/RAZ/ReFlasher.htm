@@ -3,7 +3,7 @@
 <title>Static Call Graph - [/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ/ReFlasher.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ/ReFlasher.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Tue Jan 20 10:45:07 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Tue Jan 20 12:22:21 2026
 <BR><P>
 <H3>Maximum Stack Usage =        448 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -442,7 +442,7 @@ Global Symbols
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Init
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;VoltageMonitor_Init
-<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
 <P><STRONG><a name="[64]"></a>GPIO_InitStruct</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, n32g031_gpio.o(.text.GPIO_InitStruct))
@@ -452,7 +452,7 @@ Global Symbols
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Init
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;VoltageMonitor_Init
-<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
 <P><STRONG><a name="[48]"></a>GPIO_ReadInputDataBit</STRONG> (Thumb, 140 bytes, Stack size 16 bytes, n32g031_gpio.o(.text.GPIO_ReadInputDataBit))
@@ -461,7 +461,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spi1_onewire_bitbang
-<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[49]"></a>GPIO_ReadOutputDataBit</STRONG> (Thumb, 140 bytes, Stack size 16 bytes, n32g031_gpio.o(.text.GPIO_ReadOutputDataBit))
@@ -484,14 +484,14 @@ Global Symbols
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WaitForWriteEnd
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteEnable
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
-<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
 <LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_draw_string
 <LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SleepWake_GoToSleep
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SleepWake_WakeUp
 <LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_init
-<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
-<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 <LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetWindow
 <LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_cs_low
 <LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_fill_screen
@@ -509,14 +509,14 @@ Global Symbols
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WaitForWriteEnd
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteEnable
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
-<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
 <LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_draw_string
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SleepWake_WakeUp
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 <LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_init
-<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
-<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_cs_high
 <LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_write_buffer_to_window
 <LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetWindow
@@ -554,7 +554,7 @@ Global Symbols
 <LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_init
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayFullPhotoChunked
 <LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_fill_screen
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
 </UL>
 
 <P><STRONG><a name="[51]"></a>LCD_cs_high</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, nv3029.o(.text.LCD_cs_high))
@@ -563,7 +563,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
 <BR>[Called By]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayFullPhotoChunked
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
 </UL>
 
 <P><STRONG><a name="[52]"></a>LCD_cs_low</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, nv3029.o(.text.LCD_cs_low))
@@ -572,7 +572,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 </UL>
 <BR>[Called By]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayFullPhotoChunked
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
 </UL>
 
 <P><STRONG><a name="[53]"></a>LCD_draw_char</STRONG> (Thumb, 196 bytes, Stack size 48 bytes, nv3029.o(.text.LCD_draw_char))
@@ -594,7 +594,7 @@ Global Symbols
 <LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[57]"></a>LCD_fill_screen</STRONG> (Thumb, 76 bytes, Stack size 24 bytes, nv3029.o(.text.LCD_fill_screen))
@@ -607,7 +607,7 @@ Global Symbols
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
 <BR>[Called By]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayFullPhotoChunked
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
 </UL>
 
 <P><STRONG><a name="[58]"></a>LCD_flash_dma_init</STRONG> (Thumb, 36 bytes, Stack size 16 bytes, nv3029.o(.text.LCD_flash_dma_init))
@@ -615,7 +615,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DMA_RequestRemap
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
 <P><STRONG><a name="[59]"></a>LCD_flash_read_async</STRONG> (Thumb, 144 bytes, Stack size 64 bytes, nv3029.o(.text.LCD_flash_read_async))
@@ -625,7 +625,8 @@ Global Symbols
 <LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_StartReadSequence
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_EnableDma
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
+<BR>[Called By]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayFullPhotoChunked
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
 </UL>
 
 <P><STRONG><a name="[5d]"></a>LCD_init</STRONG> (Thumb, 492 bytes, Stack size 80 bytes, nv3029.o(.text.LCD_init))
@@ -641,10 +642,10 @@ Global Symbols
 <LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
-<P><STRONG><a name="[5f]"></a>LCD_is_flash_read_complete</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, nv3029.o(.text.LCD_is_flash_read_complete))
+<P><STRONG><a name="[5f]"></a>LCD_is_flash_read_complete</STRONG> (Thumb, 120 bytes, Stack size 24 bytes, nv3029.o(.text.LCD_is_flash_read_complete))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = LCD_is_flash_read_complete &rArr; DMA_ClearFlag
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DMA_ClearFlag
@@ -652,7 +653,8 @@ Global Symbols
 <LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DMA_EnableChannel
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
+<BR>[Called By]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayFullPhotoChunked
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
 </UL>
 
 <P><STRONG><a name="[60]"></a>LCD_write_buffer_to_window</STRONG> (Thumb, 44 bytes, Stack size 24 bytes, nv3029.o(.text.LCD_write_buffer_to_window))
@@ -663,7 +665,7 @@ Global Symbols
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
 <BR>[Called By]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayFullPhotoChunked
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
 </UL>
 
 <P><STRONG><a name="[1]"></a>NMI_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, n32g031_it.o(.text.NMI_Handler))
@@ -682,7 +684,7 @@ Global Symbols
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
 <LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitPeripheral
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
 <P><STRONG><a name="[65]"></a>PWM_SetDutyCycle</STRONG> (Thumb, 32 bytes, Stack size 8 bytes, pwm.o(.text.PWM_SetDutyCycle))
@@ -693,7 +695,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SleepWake_GoToSleep
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SleepWake_WakeUp
-<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
 <P><STRONG><a name="[4]"></a>PendSV_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, n32g031_it.o(.text.PendSV_Handler))
@@ -704,7 +706,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
 <P><STRONG><a name="[67]"></a>RCC_EnableAHBPeriphClk</STRONG> (Thumb, 64 bytes, Stack size 16 bytes, n32g031_rcc.o(.text.RCC_EnableAHBPeriphClk))
@@ -712,9 +714,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dma_init
+<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dma_init
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;VoltageMonitor_Init
-<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
 <P><STRONG><a name="[62]"></a>RCC_EnableAPB1PeriphClk</STRONG> (Thumb, 64 bytes, Stack size 16 bytes, n32g031_rcc.o(.text.RCC_EnableAPB1PeriphClk))
@@ -734,7 +736,7 @@ Global Symbols
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_Init
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Init
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;VoltageMonitor_Init
-<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
 <P><STRONG><a name="[55]"></a>SPI1_tx_dma_fill</STRONG> (Thumb, 144 bytes, Stack size 56 bytes, nv3029.o(.text.SPI1_tx_dma_fill))
@@ -802,9 +804,9 @@ Global Symbols
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WaitForWriteEnd
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteEnable
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
-<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
-<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
 </UL>
 
 <P><STRONG><a name="[6c]"></a>SPI_I2S_ReceiveData</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, n32g031_spi.o(.text.SPI_I2S_ReceiveData))
@@ -817,9 +819,9 @@ Global Symbols
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WaitForWriteEnd
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteEnable
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
-<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
-<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
 </UL>
 
 <P><STRONG><a name="[6d]"></a>SPI_I2S_TransmitData</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, n32g031_spi.o(.text.SPI_I2S_TransmitData))
@@ -832,9 +834,9 @@ Global Symbols
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WaitForWriteEnd
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteEnable
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
-<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
-<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
 </UL>
 
 <P><STRONG><a name="[6e]"></a>SPI_Init</STRONG> (Thumb, 296 bytes, Stack size 16 bytes, n32g031_spi.o(.text.SPI_Init))
@@ -854,11 +856,11 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_n32g031.o(RESET)
 </UL>
 <P><STRONG><a name="[86]"></a>SleepWake_CheckTimeout</STRONG> (Thumb, 44 bytes, Stack size 0 bytes, sleep_wake.o(.text.SleepWake_CheckTimeout))
-<BR><BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR><BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[85]"></a>SleepWake_ClearWakeInterrupt</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, sleep_wake.o(.text.SleepWake_ClearWakeInterrupt))
-<BR><BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR><BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[6f]"></a>SleepWake_GoToSleep</STRONG> (Thumb, 92 bytes, Stack size 24 bytes, sleep_wake.o(.text.SleepWake_GoToSleep))
@@ -869,7 +871,7 @@ Global Symbols
 <LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ReadOutputDataBit
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[71]"></a>SleepWake_Init</STRONG> (Thumb, 112 bytes, Stack size 24 bytes, sleep_wake.o(.text.SleepWake_Init))
@@ -878,19 +880,19 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EXTI_InitStruct
 <LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EXTI_InitPeripheral
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
 <P><STRONG><a name="[82]"></a>SleepWake_IsSleeping</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, sleep_wake.o(.text.SleepWake_IsSleeping))
-<BR><BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR><BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[84]"></a>SleepWake_IsWakeInterruptTriggered</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, sleep_wake.o(.text.SleepWake_IsWakeInterruptTriggered))
-<BR><BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR><BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[83]"></a>SleepWake_ResetTimer</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, sleep_wake.o(.text.SleepWake_ResetTimer))
-<BR><BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR><BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[73]"></a>SleepWake_WakeUp</STRONG> (Thumb, 76 bytes, Stack size 8 bytes, sleep_wake.o(.text.SleepWake_WakeUp))
@@ -900,7 +902,7 @@ Global Symbols
 <LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[5]"></a>SysTick_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, n32g031_it.o(.text.SysTick_Handler))
@@ -923,7 +925,7 @@ Global Symbols
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
 <LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitPeripheral
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
 <P><STRONG><a name="[76]"></a>VoltageMonitor_UpdateReadings</STRONG> (Thumb, 460 bytes, Stack size 24 bytes, voltage_monitor.o(.text.VoltageMonitor_UpdateReadings))
@@ -938,7 +940,7 @@ Global Symbols
 <LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_ConfigRegularChannel
 <LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_EnableSoftwareStartConv
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[33]"></a>assert_failed</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, main.o(.text.assert_failed))
@@ -980,20 +982,21 @@ Global Symbols
 <LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 </UL>
 
-<P><STRONG><a name="[78]"></a>displayFullPhotoChunked</STRONG> (Thumb, 88 bytes, Stack size 24 bytes, main.o(.text.displayFullPhotoChunked))
+<P><STRONG><a name="[78]"></a>displayFullPhotoChunked</STRONG> (Thumb, 92 bytes, Stack size 24 bytes, main.o(.text.displayFullPhotoChunked))
 <BR><BR>[Stack]<UL><LI>Max Depth = 272<LI>Call Chain = displayFullPhotoChunked &rArr; LCD_fill_screen &rArr; LCD_SetWindow &rArr; SPI1_tx_dma_mode &rArr; dma_start_transfer &rArr; DMA_ConfigInt
 </UL>
-<BR>[Calls]<UL><LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
-<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_cs_high
+<BR>[Calls]<UL><LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_cs_high
 <LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_write_buffer_to_window
 <LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetWindow
 <LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_cs_low
+<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_is_flash_read_complete
+<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_flash_read_async
 <LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_fill_screen
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
-<P><STRONG><a name="[7a]"></a>displayPhoto</STRONG> (Thumb, 68 bytes, Stack size 8 bytes, main.o(.text.displayPhoto))
+<P><STRONG><a name="[79]"></a>displayPhoto</STRONG> (Thumb, 68 bytes, Stack size 8 bytes, main.o(.text.displayPhoto))
 <BR><BR>[Stack]<UL><LI>Max Depth = 256<LI>Call Chain = displayPhoto &rArr; LCD_fill_screen &rArr; LCD_SetWindow &rArr; SPI1_tx_dma_mode &rArr; dma_start_transfer &rArr; DMA_ConfigInt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_cs_high
@@ -1004,7 +1007,7 @@ Global Symbols
 <LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_flash_read_async
 <LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_fill_screen
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[68]"></a>dma_clear_flags</STRONG> (Thumb, 8 bytes, Stack size 8 bytes, dma.o(.text.dma_clear_flags))
@@ -1016,12 +1019,12 @@ Global Symbols
 <LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI1_tx_dma_mode
 </UL>
 
-<P><STRONG><a name="[7b]"></a>dma_init</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, dma.o(.text.dma_init))
+<P><STRONG><a name="[7a]"></a>dma_init</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, dma.o(.text.dma_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = dma_init &rArr; RCC_EnableAHBPeriphClk
 </UL>
 <BR>[Calls]<UL><LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_EnableAHBPeriphClk
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
 <P><STRONG><a name="[5c]"></a>dma_start_transfer</STRONG> (Thumb, 96 bytes, Stack size 72 bytes, dma.o(.text.dma_start_transfer))
@@ -1051,17 +1054,17 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 448<LI>Call Chain = main &rArr; mainScreen &rArr; LCD_draw_string &rArr; LCD_draw_char &rArr; LCD_SetWindow &rArr; SPI1_tx_dma_mode &rArr; dma_start_transfer &rArr; DMA_ConfigInt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
-<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteBuffer
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
-<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
-<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteBuffer
+<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadID
+<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 <LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_SetDutyCycle
-<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
-<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_ReadBuffer
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> entry9a.o(.ARM.Collect$$$$0000000B)
 </UL>
-<P><STRONG><a name="[7e]"></a>mainScreen</STRONG> (Thumb, 528 bytes, Stack size 96 bytes, main.o(.text.mainScreen))
+<P><STRONG><a name="[7d]"></a>mainScreen</STRONG> (Thumb, 528 bytes, Stack size 96 bytes, main.o(.text.mainScreen))
 <BR><BR>[Stack]<UL><LI>Max Depth = 416<LI>Call Chain = mainScreen &rArr; LCD_draw_string &rArr; LCD_draw_char &rArr; LCD_SetWindow &rArr; SPI1_tx_dma_mode &rArr; dma_start_transfer &rArr; DMA_ConfigInt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
@@ -1075,7 +1078,7 @@ Global Symbols
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SleepWake_WakeUp
 <LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SleepWake_IsSleeping
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayFullPhotoChunked
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayPhoto
 <LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ReadInputDataBit
 </UL>
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1095,7 +1098,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[7f]"></a>sFLASH_EraseSector</STRONG> (Thumb, 200 bytes, Stack size 24 bytes, spi_flash.o(.text.sFLASH_EraseSector))
+<P><STRONG><a name="[7e]"></a>sFLASH_EraseSector</STRONG> (Thumb, 200 bytes, Stack size 24 bytes, spi_flash.o(.text.sFLASH_EraseSector))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = sFLASH_EraseSector &rArr; sFLASH_WaitForWriteEnd &rArr; SPI_I2S_GetStatus
 </UL>
 <BR>[Calls]<UL><LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WaitForWriteEnd
@@ -1119,10 +1122,10 @@ Global Symbols
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitStruct
 <LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_InitPeripheral
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
+<BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup
 </UL>
 
-<P><STRONG><a name="[79]"></a>sFLASH_ReadBuffer</STRONG> (Thumb, 244 bytes, Stack size 24 bytes, spi_flash.o(.text.sFLASH_ReadBuffer))
+<P><STRONG><a name="[80]"></a>sFLASH_ReadBuffer</STRONG> (Thumb, 244 bytes, Stack size 24 bytes, spi_flash.o(.text.sFLASH_ReadBuffer))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = sFLASH_ReadBuffer &rArr; SPI_I2S_GetStatus
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_GetStatus
@@ -1132,10 +1135,9 @@ Global Symbols
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;displayFullPhotoChunked
 </UL>
 
-<P><STRONG><a name="[7d]"></a>sFLASH_ReadID</STRONG> (Thumb, 204 bytes, Stack size 24 bytes, spi_flash.o(.text.sFLASH_ReadID))
+<P><STRONG><a name="[7c]"></a>sFLASH_ReadID</STRONG> (Thumb, 204 bytes, Stack size 24 bytes, spi_flash.o(.text.sFLASH_ReadID))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = sFLASH_ReadID &rArr; SPI_I2S_GetStatus
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_GetStatus
@@ -1169,10 +1171,10 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WritePage
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
+<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
 </UL>
 
-<P><STRONG><a name="[80]"></a>sFLASH_WriteBuffer</STRONG> (Thumb, 156 bytes, Stack size 24 bytes, spi_flash.o(.text.sFLASH_WriteBuffer))
+<P><STRONG><a name="[7f]"></a>sFLASH_WriteBuffer</STRONG> (Thumb, 156 bytes, Stack size 24 bytes, spi_flash.o(.text.sFLASH_WriteBuffer))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = sFLASH_WriteBuffer &rArr; sFLASH_WritePage &rArr; sFLASH_WaitForWriteEnd &rArr; SPI_I2S_GetStatus
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WritePage
@@ -1191,7 +1193,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WritePage
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseBulk
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
+<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_EraseSector
 </UL>
 
 <P><STRONG><a name="[8b]"></a>sFLASH_WritePage</STRONG> (Thumb, 252 bytes, Stack size 24 bytes, spi_flash.o(.text.sFLASH_WritePage))
@@ -1205,10 +1207,10 @@ Global Symbols
 <LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
-<BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteBuffer
+<BR>[Called By]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sFLASH_WriteBuffer
 </UL>
 
-<P><STRONG><a name="[7c]"></a>setup</STRONG> (Thumb, 504 bytes, Stack size 64 bytes, main.o(.text.setup))
+<P><STRONG><a name="[7b]"></a>setup</STRONG> (Thumb, 504 bytes, Stack size 64 bytes, main.o(.text.setup))
 <BR><BR>[Stack]<UL><LI>Max Depth = 368<LI>Call Chain = setup &rArr; LCD_init &rArr; LCD_SetWindow &rArr; SPI1_tx_dma_mode &rArr; dma_start_transfer &rArr; DMA_ConfigInt
 </UL>
 <BR>[Calls]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SleepWake_Init
@@ -1217,7 +1219,7 @@ Global Symbols
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Init
 <LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_init
 <LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_flash_dma_init
-<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dma_init
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dma_init
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;VoltageMonitor_Init
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_EnableAPB2PeriphClk
 <LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_EnableAHBPeriphClk
@@ -1255,7 +1257,7 @@ Global Symbols
 <P><STRONG><a name="[87]"></a>__2snprintf</STRONG> (Thumb, 0 bytes, Stack size 40 bytes, printf1.o(i.__0snprintf$1))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = __2snprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
+<BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mainScreen
 </UL>
 
 <P><STRONG><a name="[9a]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)

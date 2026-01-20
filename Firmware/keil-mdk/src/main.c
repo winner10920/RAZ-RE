@@ -178,13 +178,13 @@ void displayFullPhotoChunked(uint32_t startAddr){
 	while(bytesRemaining > 0){
 		uint32_t bytesToRead = (bytesRemaining > bytesPerChunk) ? bytesPerChunk : bytesRemaining;
 
-		// {/* Initiate async DMA read from flash */
-		// LCD_flash_read_async(addr, bytesToRead, buffer, BUFFER_SIZE);
+		{/* Initiate async DMA read from flash */
+		LCD_flash_read_async(addr, bytesToRead, buffer, BUFFER_SIZE);
 		
-		// /* Wait for DMA read to complete */
-		// while(!LCD_is_flash_read_complete());
-		// }
-		sFLASH_ReadBuffer(buffer,  addr, bytesToRead);
+		/* Wait for DMA read to complete */
+		while(!LCD_is_flash_read_complete());
+		}
+		//sFLASH_ReadBuffer(buffer,  addr, bytesToRead);
 		
 		/* Write buffer to LCD */
 		//LCD_cs_low();
