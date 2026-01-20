@@ -197,9 +197,15 @@ void spi1_config(bool sixteen_bit);
 static void spi1_onewire_bitbang(uint8_t tx_byte, uint8_t low_or_high);
 void spi1_init_bitbang(void);
 void spi1_pin_init(void);
+void spi1_config(bool sixteen_bit);
+
+/* LCD control pin functions */
+void LCD_cs_low(void);
+void LCD_cs_high(void);
 
 void LCD_init(void);
 void LCD_fill_screen(uint16_t color);
+void LCD_DrawPixel(uint8_t x, uint8_t y, uint16_t color);
 void LCD_FillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color);
 void LCD_SetWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1) ;
 void LCD_draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint16_t bgcolor, uint8_t scale);
@@ -223,7 +229,20 @@ void LCD_Send_Sequence(const LcdPacket* packet_array, uint32_t length);
 void screen_Init(uint8_t screen_type);
 extern void Delay(volatile uint32_t count);
 
-
+/* Flash-to-LCD DMA streaming API */
+void LCD_flash_dma_init(void);
+bool LCD_display_flash_region(uint32_t flash_addr,
+                              uint8_t x0,
+                              uint8_t y0,
+                              uint8_t x1,
+                              uint8_t y1,
+                              uint32_t wait_ms,
+                              uint8_t* dest_buffer,
+                              uint32_t dest_size);
+bool LCD_write_buffer_to_window(const uint16_t* data, uint32_t pixel_count, uint32_t wait_ms);
+void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* dest_buffer, uint32_t dest_size);
+bool LCD_is_flash_read_complete(void);
+const uint8_t* LCD_get_flash_buffer(void);
 
 
 // Standard 5x8 font (ASCII 32-127), 5 bytes per character

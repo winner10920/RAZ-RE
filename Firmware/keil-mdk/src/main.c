@@ -112,7 +112,7 @@ void check_memory_boundaries(void) {
 	}
 
 
-volatile uint8_t mainran = 0;
+ uint8_t mainran = 2;
 
 
 #define BUFFER_SIZE 4096
@@ -124,7 +124,7 @@ volatile int status[1];
 volatile bool RunError = false;
 uint8_t lvl_buffer[5];
 uint8_t lvl_buffer_read[5];
-uint8_t buffer[BUFFER_SIZE];
+ uint8_t buffer[BUFFER_SIZE];
 uint32_t FlashID = 0;
 uint32_t status_register;
 
@@ -146,9 +146,61 @@ uint8_t sFLASH_ReadRegister(uint8_t reg)
 		return flashstatus;
 }
 
-int main(void)
-{
-    RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB | RCC_APB2_PERIPH_GPIOC, ENABLE);
+void displayPhoto(void){
+	LCD_fill_screen(COLOR_BLACK);
+	uint32_t addr = 0x0A000;
+	
+	/* Initiate async DMA read from flash */
+	LCD_flash_read_async(addr, 0x0BE0, buffer, BUFFER_SIZE);
+	
+	/* Wait for DMA read to complete */
+	while(!LCD_is_flash_read_complete());
+	
+	/* Write buffer to LCD */
+	LCD_cs_low();
+	LCD_SetWindow(80, 0, 119, 39);
+	LCD_write_buffer_to_window((uint16_t*)buffer, 0x0BE0/2, 5000);
+	LCD_cs_high();
+    }
+
+void displayFullPhotoChunked(uint32_t startAddr){
+	LCD_fill_screen(COLOR_BLACK);
+	uint8_t imageWidth = 128;
+	uint8_t imageHeight = 160;
+	uint32_t totalBytes = imageWidth * imageHeight *2;
+	uint32_t addr = startAddr;
+	uint32_t bytesPerChunk = BUFFER_SIZE;
+	uint32_t bytesRemaining = totalBytes;
+
+	LCD_cs_low();
+	LCD_SetWindow(0, 0, 127, 159);
+
+	while(bytesRemaining > 0){
+		uint32_t bytesToRead = (bytesRemaining > bytesPerChunk) ? bytesPerChunk : bytesRemaining;
+
+		// {/* Initiate async DMA read from flash */
+		// LCD_flash_read_async(addr, bytesToRead, buffer, BUFFER_SIZE);
+		
+		// /* Wait for DMA read to complete */
+		// while(!LCD_is_flash_read_complete());
+		// }
+		sFLASH_ReadBuffer(buffer,  addr, bytesToRead);
+		
+		/* Write buffer to LCD */
+		//LCD_cs_low();
+		LCD_write_buffer_to_window((uint16_t*)buffer, bytesToRead/2, 5000);
+		//LCD_cs_high();
+		addr += bytesToRead;
+		bytesRemaining -= bytesToRead;
+	}
+	
+		LCD_cs_high();
+
+    }
+
+void setup(void){
+
+ RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB | RCC_APB2_PERIPH_GPIOC, ENABLE);
     RCC_ConfigAdcHclk(RCC_ADCHCLK_DIV6);
 	RCC_EnableAHBPeriphClk(RCC_AHBPCLKEN_ADCEN, ENABLE);
 
@@ -162,7 +214,7 @@ int main(void)
 	GPIO_Off(LCD_FLASH_PWR_EN_PIN);
 
 	GPIO_Init(lV_CUTOFF_EN, GPIO_MODE_OUTPUT_PP);
-	GPIO_Off( lV_CUTOFF_EN);
+	GPIO_On( lV_CUTOFF_EN);
 
     GPIO_Init(TV1_PIN, GPIO_MODE_OUTPUT_PP);
 	GPIO_Off(TV1_PIN);
@@ -197,57 +249,36 @@ int main(void)
 
 }
 	dma_init();
+	LCD_flash_dma_init();
 	LCD_init();
 	/* Initialize PWM for LCD backlight (PA6) - 500Hz, 85% duty cycle */
 	PWM_Init(20000);
     PWM_SetDutyCycle(50);  /* Set initial brightness */
-	//LCD_diag();
-	
 
-	
+	sFLASH_Init();
 
-	/* Initialize sleep/wake system - 30 second inactivity timeout */
 	SleepWake_Init(30);
-	
-	/* Variables for button debouncing and activity tracking */
+
+}
+
+void mainScreen(void){
+/* Variables for button debouncing and activity tracking */
 	static uint8_t button_prev_state = 0;
 	static uint32_t activity_timer = 0;
 
 	
-    
-
-	
-
-	/* Simple PA7 test: toggle LED on each rising edge (short startup test) */
-	// {
-	// 	uint8_t prev = GPIO_ReadInputDataBit(BUTTON_PIN);
-	// 	uint8_t led_state = GPIO_ReadOutputDataBit(LCD_BACKLIGHT_PIN);; // currently LED was turned on earlier
-	// 	for (int i = 0; i < 500; ++i) {
-	// 		uint8_t cur = GPIO_ReadInputDataBit(BUTTON_PIN);
-	// 		if (cur && !prev) {
-	// 			led_state = !led_state;
-	// 			if (led_state) GPIO_On(LCD_BACKLIGHT_PIN); else GPIO_Off(LCD_BACKLIGHT_PIN);
-	// 		}
-	// 		prev = cur;
-	// 		Delay(100);
-	// 	}
-	// }
     bool micInput = false;
-	bool unknownInput = false;	
+	bool lvInput = false;	
+	bool isCharging = false;
+	bool buttonPressed = false;
+    displayFullPhotoChunked(0x0);
+	Delay(10000);
 
-	if( mainran == 0){
+	displayPhoto();
 
-		 sFLASH_Init();
-		
-	while(1){
-		Delay(100);
-		FlashID = sFLASH_ReadID();
-		if(FlashID != 0) break;
-	}
-    mainran++;
-	/* Main loop - includes sleep/wake and button handling */
-	while(mainran == 1 && !RunError) {
-		/* Check button for wake-up or activity */
+	while(mainran == 1){
+
+	/* Check button for wake-up or activity */
 		uint8_t button_cur_state = GPIO_ReadInputDataBit(BUTTON_PIN);
 		if (button_cur_state && !button_prev_state)  /* Button pressed */
 		{
@@ -261,6 +292,20 @@ int main(void)
 		}
 		button_prev_state = button_cur_state;
 
+		/* Check for external interrupt wake-up (button or mic) */
+		if (SleepWake_IsWakeInterruptTriggered())
+		{
+			if (SleepWake_IsSleeping())
+			{
+				/* Wake up from sleep via interrupt */
+				SleepWake_WakeUp();
+			}
+			/* Reset inactivity timer on interrupt wake */
+			SleepWake_ResetTimer();
+			/* Clear the interrupt flag */
+			SleepWake_ClearWakeInterrupt();
+		}
+
 		/* Check if timeout for sleep has expired */
 		if (SleepWake_CheckTimeout())
 		{
@@ -271,10 +316,13 @@ int main(void)
 		/* Update voltage readings periodically */
 		VoltageMonitor_UpdateReadings();
         micInput = GPIO_ReadInputDataBit(MIC_PIN);
-	    unknownInput = GPIO_ReadInputDataBit(LV_CUTOFF_FEEDBACK);
+	    lvInput = GPIO_ReadInputDataBit(LV_CUTOFF_FEEDBACK);
+		isCharging = GPIO_ReadInputDataBit(LP4086_CHRG_PIN);
+		buttonPressed = !button_cur_state;
 		LCD_draw_string(0, 120, micInput ? "MIC IN" : "NO MIC", COLOR_YELLOW, COLOR_BLACK, 2);
-		LCD_draw_string(0, 140, unknownInput ? "UNK IN" : "NO UNK", COLOR_YELLOW, COLOR_BLACK, 2);
-		
+		LCD_draw_string(0, 140, lvInput ? "LV IN" : "NO LV", COLOR_YELLOW, COLOR_BLACK, 2);
+		LCD_draw_string(70, 140, "CHRG" , isCharging ? COLOR_RED : COLOR_GREEN, COLOR_BLACK, 2);
+		//LCD_draw_char(100,120,'B',button_cur_state ? COLOR_BLACK : COLOR_YELLOW, COLOR_BLACK,2);
 		// draw voltage values at x=0, and y =0, y=20, y=40 etc...
 		char voltage_str[20];
 		uint16_t tv1_voltage = g_voltage_readings.pa1_tv1_sense ;
@@ -301,11 +349,39 @@ int main(void)
 		Delay(200);  /* 100ms delay in main loop */
 
 	}
+}
 
+
+
+int main(void)
+{
+   mainran = 0;
+    setup();
+
+	//LCD_diag();
+	//LCD_display_flash_region(0x0766B0, 0, 0, 120,160, 5000, buffer, BUFFER_SIZE);
+	
+
+			while(1){
+				Delay(100);
+				FlashID = sFLASH_ReadID();
+				if(FlashID != 0) break;
+			}
+
+			if( mainran == 0){
+			mainran = 1;
+			/* Main loop - includes sleep/wake and button handling */
+			mainScreen();
+			}
+
+			
+
+	
+	while(mainran == 2 && !RunError) {
+	status[0] = 1;
 	/* Original flash check loop */
 	// Check Flash ID
-	if(FlashID == 8740886){      //sFLASH_PD32S_ID){
-		status[0] = 1;
+	if(FlashID == sFLASH_W25Q128_ID || FlashID == sFLASH_M25P64_ID || FlashID == sFLASH_GD25Q80_ID || FlashID == sFLASH_PD32S_ID ){     
 		
 		// Wait for continue flag
 		while(continue_flag[0] == 0);
@@ -323,11 +399,7 @@ int main(void)
 			status[0] = 3;
 			
 		}
-		//for(int i=0; i<4096; i++){
-			//buffer[i] = 0xe1;
-		//}
-		
-		//Delay(10);
+
 		sFLASH_ReadBuffer(lvl_buffer_read, 0xf8000, 5);
 		
 		volatile int tmp_page = -1;
@@ -342,35 +414,19 @@ int main(void)
 				while(status[0] == 5) ;
 				uint32_t addr = i * BUFFER_SIZE;
 				sFLASH_WriteBuffer(buffer, addr, BUFFER_SIZE);
+				Delay(1000);
 				status[0] = 5;
 			}
-			//sFLASH_EraseBulk();
-			//Delay(10);
-			//while(1){
-				//if(tmp_page != page[0]){
-					//status[0] = 4;
-					//tmp_page = page[0];
-					//uint32_t addr = page[0] * BUFFER_SIZE;
-					//sFLASH_WriteBuffer(buffer, addr, BUFFER_SIZE);
-					//for(int i=0; i<16; i++){
-						//int offset = (i * 256);
-						//uint32_t sector_addr = addr + offset;
-						//pointer = sector_addr;
-						//Delay(1000);
-						
-					//}
-					//sFLASH_ReadBuffer(buffer, addr, BUFFER_SIZE);
-					//status[0] = 5;
-				//}
-				
-			//}
-		}else{
+			
+		}else{ //Reaxing Flash page by page
 			while(1){
 				if(tmp_page != page[0]){
 					status[0] = 6;
 					tmp_page = page[0];
 					uint32_t addr = page[0] * BUFFER_SIZE;
 					sFLASH_ReadBuffer(buffer, addr, BUFFER_SIZE);
+					//LCD_fill_screen(COLOR_BLACK); // black
+					//LCD_write_buffer_to_window((uint16_t*)buffer, BUFFER_SIZE/2, 5000);
 					status[0] = 7;
 				}
 			}
@@ -395,11 +451,8 @@ int main(void)
 		mainran = 1;
 	}
 	}
-	else{
 
-
-
-	}
+	while(1);
 
 }
 

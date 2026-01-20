@@ -22,7 +22,7 @@ registerParser(() => {
 
     // External flash memory map (from repository readme)
     const map = [
-        { idx:0,  offset:0x00000,  length:0x9600,  w:120,  h:160, category:'Background' },
+        { idx:0,  offset:0x00000,  length:0x9FFF,  w:128,  h:160, category:'Background' },
         { idx:1,  offset:0x0A000,  length:0x0BE0,  w:40,  h:40,  category:'Battery Icon' },
         { idx:2,  offset:0x0ABE0,  length:0x0BE0,  w:40,  h:40,  category:'Battery Icon' },
         { idx:3,  offset:0x0B7C0,  length:0x0BE0,  w:40,  h:40,  category:'Battery Icon' },

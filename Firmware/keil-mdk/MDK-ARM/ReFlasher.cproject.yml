@@ -80,6 +80,7 @@ project:
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_dma.c
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_tim.c
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_adc.c
+        - file: ../firmware/n32g031_std_periph_driver/src/n32g031_exti.c
     - group: USER
       files:
         - file: ../src/main.c

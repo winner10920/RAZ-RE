@@ -61,6 +61,7 @@ add_library(Group_FWLIB OBJECT
   "${SOLUTION_ROOT}/../firmware/n32g031_std_periph_driver/src/n32g031_dma.c"
   "${SOLUTION_ROOT}/../firmware/n32g031_std_periph_driver/src/n32g031_tim.c"
   "${SOLUTION_ROOT}/../firmware/n32g031_std_periph_driver/src/n32g031_adc.c"
+  "${SOLUTION_ROOT}/../firmware/n32g031_std_periph_driver/src/n32g031_exti.c"
 )
 target_include_directories(Group_FWLIB PUBLIC
   $<TARGET_PROPERTY:${CONTEXT},INTERFACE_INCLUDE_DIRECTORIES>

@@ -8,9 +8,11 @@
 
 #include "nv3029.h"
 #include "n32g031.h"
+#include "n32g031_dma.h"
 #include "n32g031_gpio.h"
 #include "n32g031_spi.h"
 #include "dma.h"
+#include "spi_flash.h"  /* for sFLASH_ReadBuffer to stage data from SPI2 flash */
 #include <string.h>
 
 volatile uint16_t peek_value[] = {0,0,0,0,0,0,0,0,0,0,0};
@@ -366,8 +368,8 @@ static const LcdPacket screen_init_seq_2[] = {
     {CMD_LOW, LCD_CMD_COLMOD}, {DATA_HIGH, 0x55}
 };
 
-static void LCD_cs_low(void)  { GPIO_ResetBits(NV3029_CS_GPIO_PORT, NV3029_CS_PIN); }
-static void LCD_cs_high(void) { GPIO_SetBits(NV3029_CS_GPIO_PORT, NV3029_CS_PIN); }
+void LCD_cs_low(void)  { GPIO_ResetBits(NV3029_CS_GPIO_PORT, NV3029_CS_PIN); }
+void LCD_cs_high(void) { GPIO_SetBits(NV3029_CS_GPIO_PORT, NV3029_CS_PIN); }
 static void LCD_dc_cmd(void)  { GPIO_ResetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN); }
 static void LCD_dc_data(void) { GPIO_SetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN); }
 static void LCD_rst_low(void) { GPIO_ResetBits(NV3029_RST_GPIO_PORT, NV3029_RST_PIN); }
@@ -1183,32 +1185,291 @@ void LCD_diag(void)
     //LCD_init();
     // A few colors to verify SPI and LCD functioning
     LCD_fill_screen(COLOR_RED); // red
-    Delay(100);
+    Delay(200);
     LCD_fill_screen(COLOR_GREEN); // green
-    Delay(100);
+    Delay(200);
     LCD_fill_screen(COLOR_BLUE); // blue
-    Delay(100);
+    Delay(200);
     LCD_fill_screen(COLOR_WHITE); // white
     //Delay(1000);
     //LCD_fill_screen(COLOR_BLUE); // black
-    Delay(100);
+    Delay(200);
     LCD_FillRect(0, 10, 10, 100, COLOR_RED);
-	Delay(100);
+	Delay(200);
     LCD_fill_screen(COLOR_BLACK); // black
-    Delay(100);
+    Delay(200);
     LCD_test_grid();
-	Delay(100);
+	Delay(200);
     LCD_fill_screen(COLOR_BLUE); // black
-    Delay(100);
+    Delay(200);
 	LCD_test_char();
-    Delay(100);
+    Delay(200);
     LCD_fill_screen(COLOR_WHITE); // white
-    Delay(100);
+    Delay(200);
 	LCD_draw_string(0, 0, "Hello world", COLOR_WHITE, COLOR_MAGENTA, 1);
 	LCD_draw_string(0, 20, "Hello world", COLOR_RED, COLOR_WHITE, 2);
 	LCD_draw_string(0, 40, "Hello world", COLOR_BLACK, COLOR_NAVY, 1);
 	LCD_draw_string(0, 60, "Hello world", COLOR_NAVY, COLOR_GREEN, 2);
     Delay(1000);
     LCD_fill_screen(COLOR_BLACK); // black
+    
+}
 
+
+/**
+ * Flash-to-LCD DMA streaming functions
+ * Allows reading from SPI2 flash directly to SPI1 LCD display
+ */
+
+// Buffer for intermediate storage during flash->LCD transfers (provided by caller)
+static uint8_t* flash_buffer_ptr = NULL;
+static uint32_t flash_buffer_size = 0;
+static volatile uint32_t flash_read_addr = 0;
+static volatile uint16_t flash_read_count = 0;
+static volatile bool flash_dma_busy = false;
+static uint8_t spi2_dummy_tx = 0x00;  /* Dummy byte to clock RX during flash reads */
+
+/**
+ * @brief Initialize DMA channel for flash read (SPI2_RX)
+ * Uses DMA_CH4 (typical SPI2_RX mapping on N32G031)
+ */
+void LCD_flash_dma_init(void)
+{
+    // DMA_CH4 is typically SPI2_RX on N32G031
+    // Enable DMA request remapping for SPI2_RX
+    DMA_RequestRemap(DMA_REMAP_SPI2_RX, DMA, DMA_CH4, ENABLE);
+    // DMA_CH5 for SPI2_TX to generate clocks
+    DMA_RequestRemap(DMA_REMAP_SPI2_TX, DMA, DMA_CH5, ENABLE);
+}
+
+/**
+ * @brief Read a rectangular region from flash and display on LCD
+ * 
+ * @param flash_addr Starting address in flash memory
+ * @param x0,y0,x1,y1 LCD window coordinates
+ * @param wait_ms Timeout in milliseconds
+ * 
+ * Calculates pixel count from window, reads that many bytes from flash,
+ * and streams them to LCD display.
+ */
+bool LCD_display_flash_region(uint32_t flash_addr,
+                              uint8_t x0,
+                              uint8_t y0,
+                              uint8_t x1,
+                              uint8_t y1,
+                              uint32_t wait_ms,
+                              uint8_t* dest_buffer,
+                              uint32_t dest_size)
+{
+    // Calculate pixel dimensions
+    uint16_t width = x1 - x0 + 1;
+    uint16_t height = y1 - y0 + 1;
+    uint32_t pixel_count = (uint32_t)width * height;
+    
+    // Each pixel is 2 bytes (RGB565)
+    uint32_t byte_count = pixel_count * 2;
+    
+    // Caller-provided buffer must be large enough
+    if (dest_buffer == NULL || dest_size < byte_count) {
+        return false;
+    }
+    flash_buffer_ptr = dest_buffer;
+    flash_buffer_size = dest_size;
+    
+    // 1) Prepare flash READ stream: keep CS low and set 24-bit address
+    sFLASH_StartReadSequence(flash_addr);
+
+    // 2) Enable SPI2 DMA requests
+    SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_RX, ENABLE);
+    SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_TX, ENABLE);
+
+    // 3) Start TX DMA to send dummy bytes (generate RX clocks)
+    dma_start_transfer(
+        DMA_CH5,
+        (uint32_t)&sFLASH_SPI->DAT,
+        (uint32_t)&spi2_dummy_tx,
+        (uint16_t)byte_count,
+        DMA_DIR_PERIPH_DST,
+        DMA_PERIPH_INC_DISABLE,
+        DMA_MEM_INC_DISABLE,
+        DMA_PERIPH_DATA_SIZE_BYTE,
+        DMA_MemoryDataSize_Byte,
+        DMA_MODE_NORMAL,
+        DMA_PRIORITY_HIGH,
+        DMA_M2M_DISABLE
+    );
+
+    // 4) Start RX DMA to capture data into buffer
+    dma_start_transfer(
+        DMA_CH4,
+        (uint32_t)&sFLASH_SPI->DAT,
+        (uint32_t)dest_buffer,
+        (uint16_t)byte_count,
+        DMA_DIR_PERIPH_SRC,
+        DMA_PERIPH_INC_DISABLE,
+        DMA_MEM_INC_ENABLE,
+        DMA_PERIPH_DATA_SIZE_BYTE,
+        DMA_MemoryDataSize_Byte,
+        DMA_MODE_NORMAL,
+        DMA_PRIORITY_HIGH,
+        DMA_M2M_DISABLE
+    );
+
+    // 5) Wait for RX to complete (TX completes concurrently)
+    if (!dma_wait_complete(DMA_CH4, wait_ms)) {
+        DMA_EnableChannel(DMA_CH4, DISABLE);
+        DMA_EnableChannel(DMA_CH5, DISABLE);
+        sFLASH_CS_HIGH();
+        return false;
+    }
+
+    // Stop TX channel if still running
+    DMA_EnableChannel(DMA_CH5, DISABLE);
+
+    // Deassert flash CS (end read stream)
+    sFLASH_CS_HIGH();
+
+    // 6) Push the buffer to LCD via SPI1 DMA
+    LCD_cs_low();
+    LCD_SetWindow(x0, y0, x1, y1);
+    spi1_config(true);
+    LCD_dc_data();
+    SPI1_tx_dma(dest_buffer, byte_count, wait_ms);
+    
+    LCD_cs_high();
+    return true;
+}
+
+/**
+ * @brief Write buffer directly to LCD window (for use after flash read)
+ * Does not manage window setting - assumes LCD_SetWindow already called
+ * 
+ * @param data Pixel buffer (16-bit RGB565 pixels)
+ * @param pixel_count Number of pixels (not bytes)
+ * @param wait_ms Timeout
+ */
+bool LCD_write_buffer_to_window(const uint16_t* data, uint32_t pixel_count, uint32_t wait_ms)
+{
+    // Use existing SPI1_tx_dma with 16-bit mode
+    spi1_config(true);
+    LCD_dc_data();
+    SPI1_tx_dma_16bit(data, pixel_count, wait_ms);
+    return true;
+}
+
+/**
+ * @brief Async flash read - initiate without waiting
+ * Call LCD_is_flash_read_complete() to check status
+ * 
+ * @param flash_addr Starting flash address
+ * @param byte_count Number of bytes to read
+ */
+/**
+ * @brief Async flash read - initiate without waiting
+ * Call LCD_is_flash_read_complete() to check status
+ * 
+ * @param flash_addr Starting flash address
+ * @param byte_count Number of bytes to read
+ * @param dest_buffer Destination buffer for data
+ * @param dest_size Size of destination buffer
+ */
+void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* dest_buffer, uint32_t dest_size)
+{
+    if (flash_dma_busy) return;
+    if (dest_buffer == NULL || dest_size < byte_count) return;
+    
+    flash_read_addr = flash_addr;
+    flash_read_count = byte_count;
+    flash_buffer_ptr = dest_buffer;
+    flash_buffer_size = dest_size;
+    flash_dma_busy = true;
+    
+    /* 1) Prepare flash READ stream: keep CS low and set 24-bit address */
+    sFLASH_StartReadSequence(flash_addr);
+    
+    /* 2) Enable SPI2 DMA requests for both RX and TX */
+    SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_RX, ENABLE);
+    SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_TX, ENABLE);
+    
+  
+    
+    /* 4) Start RX DMA to capture data into buffer */
+    dma_start_transfer(
+        DMA_CH4,
+        (uint32_t)&sFLASH_SPI->DAT,
+        (uint32_t)dest_buffer,
+        (uint16_t)byte_count,
+        DMA_DIR_PERIPH_SRC,
+        DMA_PERIPH_INC_DISABLE,
+        DMA_MEM_INC_ENABLE,
+        DMA_PERIPH_DATA_SIZE_BYTE,
+        DMA_MemoryDataSize_Byte,
+        DMA_MODE_NORMAL,
+        DMA_PRIORITY_HIGH,
+        DMA_M2M_DISABLE
+    );
+      /* 3) Start TX DMA to send dummy bytes (generate RX clocks) */
+    dma_start_transfer(
+        DMA_CH5,
+        (uint32_t)&sFLASH_SPI->DAT,
+        (uint32_t)&spi2_dummy_tx,
+        (uint16_t)byte_count,
+        DMA_DIR_PERIPH_DST,
+        DMA_PERIPH_INC_DISABLE,
+        DMA_MEM_INC_DISABLE,
+        DMA_PERIPH_DATA_SIZE_BYTE,
+        DMA_MemoryDataSize_Byte,
+        DMA_MODE_NORMAL,
+        DMA_PRIORITY_HIGH,
+        DMA_M2M_DISABLE
+    );
+}
+
+/**
+ * @brief Check if async flash read is complete
+ * @return true if read finished, false if still in progress
+ */
+bool LCD_is_flash_read_complete(void)
+{
+    if (!flash_dma_busy) return true;
+    
+    /* Check if RX DMA (CH4) has completed */
+    if (DMA_GetFlagStatus(DMA_FLAG_TC4, DMA) == SET) {
+        /* RX is done - stop both DMAs immediately */
+        DMA_EnableChannel(DMA_CH5, DISABLE);  /* Stop TX clock generation */
+        DMA_EnableChannel(DMA_CH4, DISABLE);  /* Stop RX */
+        
+        /* Deassert flash CS to end read */
+        sFLASH_CS_HIGH();
+        
+        /* Clear all flags for both channels */
+        DMA_ClearFlag(DMA_FLAG_TC4 | DMA_FLAG_HT4 | DMA_FLAG_TE4, DMA);
+        DMA_ClearFlag(DMA_FLAG_TC5 | DMA_FLAG_HT5 | DMA_FLAG_TE5, DMA);
+        
+        flash_dma_busy = false;
+        return true;
+    }
+    return true;
+    
+    /* Check for errors on RX channel */
+    // if (DMA_GetFlagStatus(DMA_FLAG_TE4, DMA) == SET) {
+    //     DMA_EnableChannel(DMA_CH4, DISABLE);
+    //     DMA_EnableChannel(DMA_CH5, DISABLE);
+    //     sFLASH_CS_HIGH();
+    //     DMA_ClearFlag(DMA_FLAG_TC4 | DMA_FLAG_HT4 | DMA_FLAG_TE4, DMA);
+    //     DMA_ClearFlag(DMA_FLAG_TC5 | DMA_FLAG_HT5 | DMA_FLAG_TE5, DMA);
+    //     flash_dma_busy = false;
+    //     return true;  /* Return true to exit loop, but transfer failed */
+    // }
+    
+    // return false;
+}
+
+/**
+ * @brief Get the flash buffer (read-only after transfer complete)
+ * @return Pointer to internal flash_lcd_buffer
+ */
+const uint8_t* LCD_get_flash_buffer(void)
+{
+    return flash_buffer_ptr;
 }

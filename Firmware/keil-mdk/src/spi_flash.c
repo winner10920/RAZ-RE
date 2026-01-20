@@ -487,8 +487,6 @@ uint8_t sFLASH_SendByte(uint8_t byte)
 			;
 		
 		
-		
-		
 
     /*!< Return the byte read from the SPI bus */
     return SPI_I2S_ReceiveData(sFLASH_SPI);

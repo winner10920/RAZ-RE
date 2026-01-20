@@ -70,6 +70,33 @@ void SleepWake_WakeUp(void);
  */
 uint32_t SleepWake_GetTimeRemaining(void);
 
+/**
+ * @brief Initialize external interrupts for button and mic pins
+ * Called automatically by SleepWake_Init()
+ */
+void SleepWake_InitExternalInterrupts(void);
+
+/**
+ * @brief Enable external wake interrupts
+ */
+void SleepWake_EnableExternalInterrupts(void);
+
+/**
+ * @brief Disable external wake interrupts
+ */
+void SleepWake_DisableExternalInterrupts(void);
+
+/**
+ * @brief Check if external interrupt triggered a wake event
+ * @return true if BUTTON_PIN or MIC_PIN interrupt occurred
+ */
+bool SleepWake_IsWakeInterruptTriggered(void);
+
+/**
+ * @brief Clear the wake interrupt flag
+ */
+void SleepWake_ClearWakeInterrupt(void);
+
 #ifdef __cplusplus
 }
 #endif
