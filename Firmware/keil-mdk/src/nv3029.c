@@ -1227,7 +1227,7 @@ static uint32_t flash_buffer_size = 0;
 static volatile uint32_t flash_read_addr = 0;
 static volatile uint16_t flash_read_count = 0;
 static volatile bool flash_dma_busy = false;
-static uint8_t spi2_dummy_tx = 0x00;  /* Dummy byte to clock RX during flash reads */
+static uint8_t spi2_dummy_tx = 0xFE;  /* Dummy byte to clock RX during flash reads */
 
 /**
  * @brief Initialize DMA channel for flash read (SPI2_RX)
@@ -1387,11 +1387,11 @@ void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* des
     /* 1) Prepare flash READ stream: keep CS low and set 24-bit address */
     sFLASH_StartReadSequence(flash_addr);
     
-    /* 2) Enable SPI2 DMA requests for both RX and TX */
+    sFLASH_ReadByte();
+   /* 2) Enable SPI2 DMA requests for both RX and TX */
     SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_RX, ENABLE);
     SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_TX, ENABLE);
-    
-  
+   
     
     /* 4) Start RX DMA to capture data into buffer */
     dma_start_transfer(
@@ -1405,7 +1405,7 @@ void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* des
         DMA_PERIPH_DATA_SIZE_BYTE,
         DMA_MemoryDataSize_Byte,
         DMA_MODE_NORMAL,
-        DMA_PRIORITY_HIGH,
+        DMA_PRIORITY_MEDIUM,
         DMA_M2M_DISABLE
     );
       /* 3) Start TX DMA to send dummy bytes (generate RX clocks) */
@@ -1423,6 +1423,8 @@ void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* des
         DMA_PRIORITY_HIGH,
         DMA_M2M_DISABLE
     );
+
+    
 }
 
 /**

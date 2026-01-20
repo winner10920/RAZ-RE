@@ -14,9 +14,6 @@
 # EXTERNAL cache entries
 ########################
 
-//Enable/Disable output of build database during the build.
-CMAKE_EXPORT_BUILD_DATABASE:BOOL=
-
 //Enable/Disable output of compile commands during generation.
 CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=
 
@@ -27,7 +24,7 @@ CMAKE_FIND_PACKAGE_REDIRECTS_DIR:STATIC=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-
 CMAKE_INSTALL_PREFIX:PATH=/usr/local
 
 //Program used to build from build.ninja files.
-CMAKE_MAKE_PROGRAM:FILEPATH=/home/cody/.vcpkg/artifacts/2139c4c6/tools.ninja.build.ninja/1.12.1/ninja
+CMAKE_MAKE_PROGRAM:FILEPATH=/home/cody/.vcpkg/artifacts/2139c4c6/tools.ninja.build.ninja/1.13.2/ninja
 
 //Value Computed by CMake
 CMAKE_PROJECT_DESCRIPTION:STATIC=
@@ -88,12 +85,8 @@ CMAKE_COMMAND:INTERNAL=/usr/bin/cmake
 CMAKE_CPACK_COMMAND:INTERNAL=/usr/bin/cpack
 //Path to ctest program executable.
 CMAKE_CTEST_COMMAND:INTERNAL=/usr/bin/ctest
-//Path to cache edit program executable.
-CMAKE_EDIT_COMMAND:INTERNAL=/home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/bin/ccmake
 //Whether to issue deprecation errors for macros and functions.
 CMAKE_ERROR_DEPRECATED:INTERNAL=FALSE
-//ADVANCED property for variable: CMAKE_EXPORT_BUILD_DATABASE
-CMAKE_EXPORT_BUILD_DATABASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_EXPORT_COMPILE_COMMANDS
 CMAKE_EXPORT_COMPILE_COMMANDS-ADVANCED:INTERNAL=1
 //Name of external makefile project generator.

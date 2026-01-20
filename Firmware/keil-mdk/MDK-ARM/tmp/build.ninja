@@ -76,9 +76,8 @@ build ReFlasher+RAZ-database: phony CMakeFiles/ReFlasher+RAZ-database ReFlasher+
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp && /home/cody/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/bin/ccmake -S/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp -B/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp
-  DESC = Running CMake cache editor...
-  pool = console
+  COMMAND = cd /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  DESC = No interactive CMake dialog available...
   restat = 1
 
 build edit_cache: phony CMakeFiles/edit_cache.util

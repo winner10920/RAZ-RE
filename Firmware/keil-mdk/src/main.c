@@ -187,9 +187,7 @@ void displayFullPhotoChunked(uint32_t startAddr){
 		//sFLASH_ReadBuffer(buffer,  addr, bytesToRead);
 		
 		/* Write buffer to LCD */
-		//LCD_cs_low();
 		LCD_write_buffer_to_window((uint16_t*)buffer, bytesToRead/2, 5000);
-		//LCD_cs_high();
 		addr += bytesToRead;
 		bytesRemaining -= bytesToRead;
 	}
