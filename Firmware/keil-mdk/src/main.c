@@ -297,6 +297,9 @@ void mainScreen(void){
 			{
 				/* Wake up from sleep via interrupt */
 				SleepWake_WakeUp();
+				displayFullPhotoChunked(0x0);
+				Delay(5000);
+				LCD_fill_screen(COLOR_BLACK);
 			}
 			/* Reset inactivity timer on interrupt wake */
 			SleepWake_ResetTimer();
@@ -353,7 +356,7 @@ void mainScreen(void){
 
 int main(void)
 {
-   mainran = 0;
+   mainran = 2;
     setup();
 
 	//LCD_diag();
@@ -427,6 +430,7 @@ int main(void)
 					//LCD_write_buffer_to_window((uint16_t*)buffer, BUFFER_SIZE/2, 5000);
 					status[0] = 7;
 				}
+				status[0] = 8;
 			}
 		}
 	}else{
@@ -445,6 +449,7 @@ int main(void)
 		Delay(1000);
 		PWM_SetDutyCycle(50); 
 	    RunError = true;
+		
 		//while(1)
 		mainran = 1;
 	}
