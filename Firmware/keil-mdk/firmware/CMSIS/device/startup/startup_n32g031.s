@@ -30,8 +30,10 @@
 ; <h> Stack Configuration
 ;   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
 ; </h>
+; Increased to 3KB (0xC00) for ultra-low power sleep/wake functionality
+; N32G031K8 has 8KB RAM total. Stack: 3KB, Heap: 2KB, remaining ~3KB for globals
 
-Stack_Size      EQU     0x0000800
+Stack_Size      EQU     0x00000C00
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3
 Stack_Mem       SPACE   Stack_Size
@@ -40,8 +42,9 @@ __initial_sp
 ; <h> Heap Configuration
 ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
 ; </h>
+; Increased to 2KB (0x800) for dynamic allocations
 
-Heap_Size       EQU     0x00000400
+Heap_Size       EQU     0x00000800
 
                 AREA    HEAP, NOINIT, READWRITE, ALIGN=3
 __heap_base

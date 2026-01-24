@@ -1387,7 +1387,7 @@ void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* des
     /* 1) Prepare flash READ stream: keep CS low and set 24-bit address */
     sFLASH_StartReadSequence(flash_addr);
     
-    sFLASH_ReadByte();
+    //sFLASH_ReadByte();
    /* 2) Enable SPI2 DMA requests for both RX and TX */
     SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_RX, ENABLE);
     SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_TX, ENABLE);
@@ -1473,4 +1473,190 @@ bool LCD_is_flash_read_complete(void)
 const uint8_t* LCD_get_flash_buffer(void)
 {
     return flash_buffer_ptr;
+}
+
+/* ======================================================================
+ *  ASYNC FLASH WRITE FUNCTIONS (DMA-based with page boundary handling)
+ * ====================================================================== */
+
+#define FLASH_PAGE_SIZE 256  /* Standard SPI flash page size */
+
+typedef enum {
+    FLASH_WRITE_IDLE = 0,
+    FLASH_WRITE_DMA_IN_PROGRESS,
+    FLASH_WRITE_WAITING_FOR_FLASH
+} FlashWriteState;
+
+static volatile FlashWriteState flash_write_state = FLASH_WRITE_IDLE;
+static const uint8_t* flash_write_buffer_start = NULL;
+static uint32_t flash_write_start_addr = 0;
+static uint32_t flash_write_total_bytes = 0;
+static uint32_t flash_write_bytes_written = 0;
+
+/**
+ * @brief Async flash write - automatically handles page boundaries
+ * Call LCD_is_flash_write_complete() to check status
+ * 
+ * Supports writing up to 64KB in a single call, automatically splitting
+ * across 256-byte page boundaries. Works asynchronously - repeatedly call
+ * the completion check function until it returns true.
+ * 
+ * @param flash_addr Starting flash address to write to (can be any address)
+ * @param byte_count Number of bytes to write (any size, automatically split into pages)
+ * @param src_buffer Source buffer containing data to write
+ */
+void LCD_flash_write_async(uint32_t flash_addr, uint32_t byte_count, const uint8_t* src_buffer)
+{
+    if (flash_write_state != FLASH_WRITE_IDLE) return;
+    if (src_buffer == NULL || byte_count == 0) return;
+    
+    flash_write_buffer_start = src_buffer;
+    flash_write_start_addr = flash_addr;
+    flash_write_total_bytes = byte_count;
+    flash_write_bytes_written = 0;
+    
+    /* Start first page write */
+    uint32_t current_addr = flash_write_start_addr;
+    uint32_t bytes_remaining = flash_write_total_bytes;
+    
+    /* Calculate how many bytes until next page boundary */
+    uint32_t bytes_to_page_end = FLASH_PAGE_SIZE - (current_addr % FLASH_PAGE_SIZE);
+    uint16_t bytes_this_write = (bytes_remaining < bytes_to_page_end) ? bytes_remaining : bytes_to_page_end;
+    
+    /* 1) Enable write latch */
+    sFLASH_WriteEnable();
+    
+    /* 2) Start write sequence: CS low, send WRITE command + 24-bit address */
+    sFLASH_CS_LOW();
+    sFLASH_SendByte(sFLASH_CMD_WRITE);
+    sFLASH_SendByte((current_addr & 0xFF0000) >> 16);
+    sFLASH_SendByte((current_addr & 0xFF00) >> 8);
+    sFLASH_SendByte(current_addr & 0xFF);
+
+    //sFLASH_ReadByte();
+    
+    /* 3) Enable SPI2 DMA request for TX only */
+    SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_TX, ENABLE);
+    
+    /* 4) Start TX DMA to send buffer data to flash */
+    dma_start_transfer(
+        DMA_CH5,
+        (uint32_t)&sFLASH_SPI->DAT,
+        (uint32_t)src_buffer,
+        bytes_this_write,
+        DMA_DIR_PERIPH_DST,
+        DMA_PERIPH_INC_DISABLE,
+        DMA_MEM_INC_ENABLE,
+        DMA_PERIPH_DATA_SIZE_BYTE,
+        DMA_MemoryDataSize_Byte,
+        DMA_MODE_NORMAL,
+        DMA_PRIORITY_HIGH,
+        DMA_M2M_DISABLE
+    );
+    
+    flash_write_state = FLASH_WRITE_DMA_IN_PROGRESS;
+}
+
+/**
+ * @brief Check if async flash write is complete
+ * @return true if entire write operation finished, false if still in progress
+ * 
+ * This function handles the state machine for multi-page writes:
+ * - Waits for DMA transfer to complete
+ * - Waits for flash internal programming
+ * - Starts next page if more data remains
+ * - Returns true only when all pages are written
+ */
+bool LCD_is_flash_write_complete(void)
+{
+    if (flash_write_state == FLASH_WRITE_IDLE) return true;
+    
+    if (flash_write_state == FLASH_WRITE_DMA_IN_PROGRESS) {
+        /* Check if TX DMA (CH5) has completed */
+        if (DMA_GetFlagStatus(DMA_FLAG_TC5, DMA) == SET) {
+            /* DMA done - stop DMA and deassert CS */
+            DMA_EnableChannel(DMA_CH5, DISABLE);
+            sFLASH_CS_HIGH();
+            SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_TX, DISABLE);
+            DMA_ClearFlag(DMA_FLAG_TC5 | DMA_FLAG_HT5 | DMA_FLAG_TE5, DMA);
+            
+            /* Calculate how many bytes were just written */
+            uint32_t current_addr = flash_write_start_addr + flash_write_bytes_written;
+            uint32_t bytes_remaining = flash_write_total_bytes - flash_write_bytes_written;
+            uint32_t bytes_to_page_end = FLASH_PAGE_SIZE - (current_addr % FLASH_PAGE_SIZE);
+            uint16_t bytes_written_now = (bytes_remaining < bytes_to_page_end) ? bytes_remaining : bytes_to_page_end;
+            
+            flash_write_bytes_written += bytes_written_now;
+            
+            /* Flash is now programming - transition to wait state */
+            flash_write_state = FLASH_WRITE_WAITING_FOR_FLASH;
+        }
+        
+        /* Check for DMA errors */
+        if (DMA_GetFlagStatus(DMA_FLAG_TE5, DMA) == SET) {
+            DMA_EnableChannel(DMA_CH5, DISABLE);
+            sFLASH_CS_HIGH();
+            SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_TX, DISABLE);
+            DMA_ClearFlag(DMA_FLAG_TC5 | DMA_FLAG_HT5 | DMA_FLAG_TE5, DMA);
+            flash_write_state = FLASH_WRITE_IDLE;
+            return true;  /* Error - abort */
+        }
+    }
+    
+    if (flash_write_state == FLASH_WRITE_WAITING_FOR_FLASH) {
+        /* Check if flash internal programming is complete (WIP bit cleared) */
+        /* Read status register inline */
+        sFLASH_CS_LOW();
+        sFLASH_SendByte(sFLASH_CMD_RDSR_1);
+        uint8_t status = sFLASH_SendByte(sFLASH_DUMMY_BYTE);
+        sFLASH_CS_HIGH();
+        
+        if ((status & sFLASH_WIP_FLAG) == 0) {
+            /* Flash programming done - check if more pages to write */
+            if (flash_write_bytes_written >= flash_write_total_bytes) {
+                /* All done! */
+                flash_write_state = FLASH_WRITE_IDLE;
+                return true;
+            }
+            
+            /* More pages to write - start next page */
+            uint32_t current_addr = flash_write_start_addr + flash_write_bytes_written;
+            uint32_t bytes_remaining = flash_write_total_bytes - flash_write_bytes_written;
+            uint32_t bytes_to_page_end = FLASH_PAGE_SIZE - (current_addr % FLASH_PAGE_SIZE);
+            uint16_t bytes_this_write = (bytes_remaining < bytes_to_page_end) ? bytes_remaining : bytes_to_page_end;
+            
+            /* Enable write latch for next page */
+            sFLASH_WriteEnable();
+            
+            /* Start write sequence */
+            sFLASH_CS_LOW();
+            sFLASH_SendByte(sFLASH_CMD_WRITE);
+            sFLASH_SendByte((current_addr & 0xFF0000) >> 16);
+            sFLASH_SendByte((current_addr & 0xFF00) >> 8);
+            sFLASH_SendByte(current_addr & 0xFF);
+            
+            /* Enable DMA */
+            SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_TX, ENABLE);
+            
+            /* Start DMA for next chunk */
+            dma_start_transfer(
+                DMA_CH5,
+                (uint32_t)&sFLASH_SPI->DAT,
+                (uint32_t)(flash_write_buffer_start + flash_write_bytes_written),
+                bytes_this_write,
+                DMA_DIR_PERIPH_DST,
+                DMA_PERIPH_INC_DISABLE,
+                DMA_MEM_INC_ENABLE,
+                DMA_PERIPH_DATA_SIZE_BYTE,
+                DMA_MemoryDataSize_Byte,
+                DMA_MODE_NORMAL,
+                DMA_PRIORITY_HIGH,
+                DMA_M2M_DISABLE
+            );
+            
+            flash_write_state = FLASH_WRITE_DMA_IN_PROGRESS;
+        }
+    }
+    
+    return false;  /* Still in progress */
 }

@@ -129,6 +129,10 @@ build:
           category: sourceC
         - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_exti.c
           category: sourceC
+        - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_lptim.c
+          category: sourceC
+        - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_pwr.c
+          category: sourceC
     - group: USER
       files:
         - file: ../../../../src/main.c

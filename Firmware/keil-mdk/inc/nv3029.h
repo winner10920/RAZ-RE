@@ -243,6 +243,8 @@ bool LCD_write_buffer_to_window(const uint16_t* data, uint32_t pixel_count, uint
 void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* dest_buffer, uint32_t dest_size);
 bool LCD_is_flash_read_complete(void);
 const uint8_t* LCD_get_flash_buffer(void);
+void LCD_flash_write_async(uint32_t flash_addr, uint32_t byte_count, const uint8_t* src_buffer);
+bool LCD_is_flash_write_complete(void);
 
 
 // Standard 5x8 font (ASCII 32-127), 5 bytes per character

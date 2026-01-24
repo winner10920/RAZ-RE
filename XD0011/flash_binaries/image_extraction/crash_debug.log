@@ -1,0 +1,1111 @@
+Reading onboard_flash_dumpF2.binF...
+File size: 1048576 bytes
+Scanning 1048576 bytes for images (Pass 1: Coarse detection)...
+  Progress: 0.0%
+  Progress: 1.6%
+  Progress: 3.1%
+  Progress: 4.7%
+  Progress: 6.2%
+  Progress: 7.8%
+  Found image at 0x14600: 75x80, score=0.064
+  Found image at 0x14B00: 75x80, score=0.061
+  Found image at 0x15D00: 75x80, score=0.064
+  Found image at 0x16A00: 75x80, score=0.063
+  Found image at 0x17B00: 75x80, score=0.065
+  Progress: 9.4%
+  Progress: 10.9%
+  Found image at 0x1E400: 120x160, score=0.084
+  Found image at 0x1E500: 120x160, score=0.082
+  Found image at 0x1F400: 120x32, score=0.074
+  Progress: 12.5%
+  Found image at 0x20000: 120x160, score=0.083
+  Found image at 0x20100: 120x160, score=0.086
+  Found image at 0x20200: 120x160, score=0.084
+  Found image at 0x20300: 120x160, score=0.083
+  Found image at 0x21200: 120x32, score=0.074
+  Found image at 0x21E00: 120x160, score=0.085
+  Found image at 0x21F00: 120x160, score=0.087
+  Found image at 0x22000: 120x160, score=0.084
+  Found image at 0x22100: 120x160, score=0.084
+  Found image at 0x22F00: 120x32, score=0.080
+  Found image at 0x23000: 120x160, score=0.075
+  Found image at 0x23B00: 120x160, score=0.075
+  Found image at 0x23C00: 120x160, score=0.085
+  Found image at 0x23D00: 120x160, score=0.088
+  Found image at 0x23E00: 120x160, score=0.084
+  Found image at 0x23F00: 120x160, score=0.084
+  Progress: 14.1%
+  Found image at 0x24D00: 120x160, score=0.081
+  Found image at 0x24E00: 120x160, score=0.076
+  Found image at 0x25900: 120x160, score=0.076
+  Found image at 0x25A00: 120x160, score=0.085
+  Found image at 0x25B00: 120x160, score=0.091
+  Found image at 0x25C00: 120x160, score=0.084
+  Found image at 0x25D00: 120x32, score=0.085
+  Found image at 0x26B00: 120x160, score=0.082
+  Found image at 0x26C00: 120x160, score=0.077
+  Found image at 0x27700: 120x32, score=0.074
+  Found image at 0x27800: 120x160, score=0.086
+  Found image at 0x27900: 120x32, score=0.084
+  Found image at 0x27A00: 120x32, score=0.086
+  Found image at 0x27B00: 120x160, score=0.085
+  Progress: 15.6%
+  Found image at 0x28800: 120x160, score=0.089
+  Found image at 0x28900: 120x160, score=0.082
+  Found image at 0x28A00: 120x160, score=0.078
+  Found image at 0x29500: 120x32, score=0.075
+  Found image at 0x29600: 120x32, score=0.082
+  Found image at 0x29700: 120x32, score=0.086
+  Found image at 0x29800: 120x160, score=0.085
+  Found image at 0x29900: 120x160, score=0.086
+  Found image at 0x2A700: 120x160, score=0.083
+  Found image at 0x2A800: 120x160, score=0.080
+  Found image at 0x2B400: 120x32, score=0.082
+  Found image at 0x2B600: 120x160, score=0.086
+  Found image at 0x2B700: 120x160, score=0.087
+  Progress: 17.2%
+  Found image at 0x2C600: 120x160, score=0.081
+  Found image at 0x2D100: 24x24, score=0.062
+  Found image at 0x2D300: 120x160, score=0.094
+  Found image at 0x2D400: 120x160, score=0.087
+  Found image at 0x2D500: 120x160, score=0.088
+  Found image at 0x2E300: 120x160, score=0.085
+  Found image at 0x2E400: 120x160, score=0.083
+  Found image at 0x2F000: 120x160, score=0.095
+  Found image at 0x2F100: 120x160, score=0.095
+  Found image at 0x2F200: 120x160, score=0.090
+  Found image at 0x2F300: 120x160, score=0.089
+  Progress: 18.8%
+  Found image at 0x30100: 120x160, score=0.086
+  Found image at 0x30200: 120x160, score=0.086
+  Found image at 0x30D00: 120x160, score=0.087
+  Found image at 0x30E00: 120x160, score=0.098
+  Found image at 0x30F00: 120x160, score=0.096
+  Found image at 0x31000: 120x160, score=0.092
+  Found image at 0x31100: 120x160, score=0.091
+  Found image at 0x31F00: 120x160, score=0.088
+  Found image at 0x32000: 120x160, score=0.090
+  Found image at 0x32A00: 120x160, score=0.104
+  Found image at 0x32B00: 120x160, score=0.089
+  Found image at 0x32C00: 120x160, score=0.102
+  Found image at 0x32D00: 120x160, score=0.098
+  Found image at 0x32E00: 120x160, score=0.095
+  Found image at 0x32F00: 120x160, score=0.093
+  Found image at 0x33C00: 128x128, score=0.068
+  Found image at 0x33D00: 120x160, score=0.089
+  Found image at 0x33E00: 120x160, score=0.093
+  Found image at 0x33F00: 128x128, score=0.060
+  Progress: 20.3%
+  Found image at 0x34800: 120x160, score=0.107
+  Found image at 0x34900: 120x160, score=0.092
+  Found image at 0x34A00: 120x160, score=0.105
+  Found image at 0x34B00: 120x160, score=0.100
+  Found image at 0x34C00: 120x160, score=0.097
+  Found image at 0x34D00: 120x160, score=0.096
+  Found image at 0x35A00: 120x32, score=0.093
+  Found image at 0x35B00: 120x160, score=0.090
+  Found image at 0x35C00: 120x160, score=0.097
+  Found image at 0x35D00: 128x128, score=0.062
+  Found image at 0x36000: 42x68, score=0.063
+  Found image at 0x36100: 72x36, score=0.063
+  Found image at 0x36500: 120x160, score=0.100
+  Found image at 0x36600: 120x160, score=0.110
+  Found image at 0x36700: 120x160, score=0.093
+  Found image at 0x36800: 120x160, score=0.106
+  Found image at 0x36900: 120x160, score=0.101
+  Found image at 0x36A00: 120x160, score=0.099
+  Found image at 0x36B00: 120x160, score=0.099
+  Found image at 0x37800: 120x32, score=0.098
+  Found image at 0x37900: 120x32, score=0.092
+  Found image at 0x37A00: 120x160, score=0.100
+  Found image at 0x37C00: 128x128, score=0.071
+  Found image at 0x37D00: 128x128, score=0.068
+  Found image at 0x37E00: 128x160, score=0.064
+  Found image at 0x37F00: 128x160, score=0.060
+  Progress: 21.9%
+  Found image at 0x38300: 120x160, score=0.100
+  Found image at 0x38400: 120x160, score=0.109
+  Found image at 0x38500: 120x160, score=0.093
+  Found image at 0x38600: 120x160, score=0.105
+  Found image at 0x38700: 120x160, score=0.100
+  Found image at 0x38800: 120x160, score=0.100
+  Found image at 0x38900: 120x160, score=0.101
+  Found image at 0x39600: 120x32, score=0.100
+  Found image at 0x39700: 120x32, score=0.092
+  Found image at 0x39800: 120x160, score=0.098
+  Found image at 0x39D00: 128x160, score=0.068
+  Found image at 0x39E00: 128x128, score=0.065
+  Found image at 0x39F00: 128x128, score=0.061
+  Found image at 0x3A100: 120x160, score=0.098
+  Found image at 0x3A200: 120x160, score=0.108
+  Found image at 0x3A300: 120x160, score=0.091
+  Found image at 0x3A400: 120x160, score=0.103
+  Found image at 0x3A500: 120x160, score=0.097
+  Found image at 0x3A600: 120x160, score=0.099
+  Found image at 0x3A700: 120x160, score=0.101
+  Found image at 0x3B300: 24x24, score=0.065
+  Found image at 0x3B500: 120x160, score=0.092
+  Found image at 0x3B600: 120x160, score=0.097
+  Found image at 0x3BB00: 128x160, score=0.070
+  Found image at 0x3BC00: 128x128, score=0.068
+  Found image at 0x3BD00: 128x128, score=0.065
+  Found image at 0x3BF00: 120x160, score=0.093
+  Progress: 23.4%
+  Found image at 0x3C000: 120x160, score=0.104
+  Found image at 0x3C100: 120x160, score=0.088
+  Found image at 0x3C200: 120x160, score=0.099
+  Found image at 0x3C300: 120x160, score=0.093
+  Found image at 0x3C400: 120x160, score=0.098
+  Found image at 0x3C500: 120x160, score=0.099
+  Found image at 0x3CF00: 128x160, score=0.074
+  Found image at 0x3D000: 128x128, score=0.074
+  Found image at 0x3D100: 24x24, score=0.062
+  Found image at 0x3D200: 120x160, score=0.095
+  Found image at 0x3D300: 120x160, score=0.091
+  Found image at 0x3D400: 120x160, score=0.095
+  Found image at 0x3DA00: 128x128, score=0.069
+  Found image at 0x3DB00: 128x128, score=0.066
+  Found image at 0x3DD00: 120x32, score=0.093
+  Found image at 0x3DE00: 120x32, score=0.106
+  Found image at 0x3DF00: 120x160, score=0.086
+  Found image at 0x3E000: 120x160, score=0.096
+  Found image at 0x3E100: 120x160, score=0.090
+  Found image at 0x3E200: 120x160, score=0.096
+  Found image at 0x3E300: 120x32, score=0.102
+  Found image at 0x3ED00: 128x160, score=0.072
+  Found image at 0x3F000: 120x160, score=0.093
+  Found image at 0x3F100: 120x160, score=0.090
+  Found image at 0x3F200: 120x160, score=0.094
+  Found image at 0x3FB00: 120x32, score=0.092
+  Found image at 0x3FC00: 120x32, score=0.105
+  Found image at 0x3FD00: 120x32, score=0.086
+  Found image at 0x3FE00: 120x160, score=0.093
+  Found image at 0x3FF00: 120x160, score=0.088
+  Progress: 25.0%
+  Found image at 0x40000: 120x160, score=0.094
+  Found image at 0x40100: 120x32, score=0.101
+  Found image at 0x40B00: 128x160, score=0.070
+  Found image at 0x40E00: 120x160, score=0.089
+  Found image at 0x40F00: 120x160, score=0.090
+  Found image at 0x41B00: 120x32, score=0.081
+  Found image at 0x41C00: 120x32, score=0.092
+  Found image at 0x41D00: 120x160, score=0.085
+  Found image at 0x41E00: 120x32, score=0.098
+  Found image at 0x42B00: 120x160, score=0.090
+  Found image at 0x42C00: 120x160, score=0.088
+  Found image at 0x43500: 128x128, score=0.061
+  Found image at 0x43A00: 120x32, score=0.086
+  Found image at 0x43B00: 120x160, score=0.082
+  Found image at 0x43C00: 120x32, score=0.093
+  Found image at 0x43D00: 120x160, score=0.090
+  Progress: 26.6%
+  Found image at 0x44900: 120x160, score=0.088
+  Found image at 0x44C00: 120x160, score=0.089
+  Found image at 0x45100: 128x128, score=0.060
+  Found image at 0x45900: 120x160, score=0.081
+  Found image at 0x45B00: 120x160, score=0.088
+  Found image at 0x47600: 120x160, score=0.083
+  Found image at 0x47700: 120x160, score=0.080
+  Found image at 0x47800: 120x160, score=0.086
+  Found image at 0x47900: 120x160, score=0.085
+  Progress: 28.1%
+  Found image at 0x48800: 120x160, score=0.084
+  Found image at 0x49400: 120x160, score=0.081
+  Found image at 0x49500: 120x160, score=0.081
+  Found image at 0x49600: 120x160, score=0.084
+  Found image at 0x49700: 120x160, score=0.082
+  Found image at 0x4A600: 120x160, score=0.082
+  Found image at 0x4B200: 120x160, score=0.080
+  Found image at 0x4B300: 120x32, score=0.079
+  Found image at 0x4B400: 120x32, score=0.088
+  Found image at 0x4B500: 120x160, score=0.080
+  Progress: 29.7%
+  Found image at 0x4C300: 120x160, score=0.085
+  Found image at 0x4C400: 120x160, score=0.080
+  Found image at 0x4D000: 120x160, score=0.079
+  Found image at 0x4D100: 120x32, score=0.078
+  Found image at 0x4D200: 120x32, score=0.086
+  Found image at 0x4D300: 120x160, score=0.079
+  Found image at 0x4E100: 120x160, score=0.086
+  Found image at 0x4E200: 120x160, score=0.081
+  Found image at 0x4EE00: 120x32, score=0.078
+  Found image at 0x4F100: 120x32, score=0.081
+  Found image at 0x4FF00: 120x160, score=0.087
+  Progress: 31.2%
+  Found image at 0x50900: 120x160, score=0.088
+  Found image at 0x50A00: 120x160, score=0.090
+  Found image at 0x50B00: 120x160, score=0.077
+  Found image at 0x50C00: 120x160, score=0.082
+  Found image at 0x50D00: 120x160, score=0.085
+  Found image at 0x50E00: 120x160, score=0.085
+  Found image at 0x50F00: 120x160, score=0.082
+  Found image at 0x51E00: 120x160, score=0.081
+  Found image at 0x52600: 120x160, score=0.078
+  Found image at 0x52700: 120x160, score=0.089
+  Found image at 0x52800: 120x160, score=0.092
+  Found image at 0x52900: 120x160, score=0.078
+  Found image at 0x52A00: 120x160, score=0.083
+  Found image at 0x52B00: 120x160, score=0.085
+  Found image at 0x52C00: 120x160, score=0.086
+  Found image at 0x52D00: 120x160, score=0.084
+  Progress: 32.8%
+  Found image at 0x54400: 120x160, score=0.079
+  Found image at 0x54500: 120x160, score=0.090
+  Found image at 0x54600: 120x160, score=0.093
+  Found image at 0x54700: 120x160, score=0.078
+  Found image at 0x54800: 120x160, score=0.083
+  Found image at 0x54900: 120x160, score=0.085
+  Found image at 0x54A00: 120x160, score=0.090
+  Found image at 0x54B00: 120x160, score=0.086
+  Found image at 0x55600: 120x160, score=0.082
+  Found image at 0x55900: 120x160, score=0.089
+  Found image at 0x55A00: 120x160, score=0.080
+  Found image at 0x55D00: 42x68, score=0.062
+  Found image at 0x55E00: 42x68, score=0.062
+  Found image at 0x56200: 120x160, score=0.080
+  Found image at 0x56300: 120x160, score=0.089
+  Found image at 0x56400: 120x160, score=0.094
+  Found image at 0x56500: 120x160, score=0.078
+  Found image at 0x56600: 120x160, score=0.082
+  Found image at 0x56700: 120x160, score=0.083
+  Found image at 0x56800: 120x160, score=0.090
+  Found image at 0x56900: 120x160, score=0.087
+  Found image at 0x57100: 72x36, score=0.067
+  Found image at 0x57400: 120x160, score=0.083
+  Found image at 0x57600: 120x160, score=0.096
+  Found image at 0x57700: 120x160, score=0.088
+  Found image at 0x57800: 120x160, score=0.079
+  Found image at 0x57B00: 42x68, score=0.062
+  Found image at 0x57C00: 42x68, score=0.063
+  Progress: 34.4%
+  Found image at 0x58000: 120x160, score=0.081
+  Found image at 0x58100: 120x160, score=0.089
+  Found image at 0x58200: 120x160, score=0.094
+  Found image at 0x58300: 120x160, score=0.078
+  Found image at 0x58400: 120x160, score=0.083
+  Found image at 0x58500: 120x160, score=0.084
+  Found image at 0x58600: 120x160, score=0.091
+  Found image at 0x58700: 120x160, score=0.088
+  Found image at 0x58F00: 72x36, score=0.062
+  Found image at 0x59200: 120x160, score=0.084
+  Found image at 0x59400: 120x160, score=0.095
+  Found image at 0x59500: 120x160, score=0.086
+  Found image at 0x59600: 120x160, score=0.080
+  Found image at 0x59700: 128x128, score=0.063
+  Found image at 0x59800: 128x128, score=0.062
+  Found image at 0x59900: 128x160, score=0.061
+  Found image at 0x59A00: 42x68, score=0.065
+  Found image at 0x59E00: 120x160, score=0.081
+  Found image at 0x59F00: 120x160, score=0.089
+  Found image at 0x5A000: 120x160, score=0.095
+  Found image at 0x5A100: 120x160, score=0.079
+  Found image at 0x5A200: 120x160, score=0.083
+  Found image at 0x5A300: 120x160, score=0.084
+  Found image at 0x5A400: 120x160, score=0.091
+  Found image at 0x5A500: 120x160, score=0.088
+  Found image at 0x5B000: 120x160, score=0.084
+  Found image at 0x5B100: 120x160, score=0.090
+  Found image at 0x5B200: 120x160, score=0.095
+  Found image at 0x5B300: 120x160, score=0.087
+  Found image at 0x5B400: 120x160, score=0.080
+  Found image at 0x5B500: 42x68, score=0.069
+  Found image at 0x5B600: 128x128, score=0.064
+  Found image at 0x5B700: 128x160, score=0.063
+  Found image at 0x5B800: 128x128, score=0.060
+  Found image at 0x5B900: 128x160, score=0.060
+  Found image at 0x5BC00: 120x160, score=0.080
+  Found image at 0x5BD00: 120x32, score=0.087
+  Found image at 0x5BE00: 120x160, score=0.095
+  Found image at 0x5BF00: 120x160, score=0.080
+  Progress: 35.9%
+  Found image at 0x5C000: 120x160, score=0.083
+  Found image at 0x5C100: 120x160, score=0.087
+  Found image at 0x5C200: 120x160, score=0.091
+  Found image at 0x5C300: 120x160, score=0.088
+  Found image at 0x5CE00: 120x160, score=0.085
+  Found image at 0x5CF00: 120x160, score=0.090
+  Found image at 0x5D000: 120x160, score=0.097
+  Found image at 0x5D100: 120x160, score=0.087
+  Found image at 0x5D200: 120x160, score=0.081
+  Found image at 0x5D300: 42x68, score=0.068
+  Found image at 0x5D400: 42x68, score=0.067
+  Found image at 0x5D500: 72x36, score=0.069
+  Found image at 0x5D600: 128x128, score=0.063
+  Found image at 0x5D700: 128x160, score=0.063
+  Found image at 0x5D800: 128x128, score=0.062
+  Found image at 0x5D900: 128x128, score=0.062
+  Found image at 0x5DA00: 120x32, score=0.080
+  Found image at 0x5DB00: 120x32, score=0.086
+  Found image at 0x5DC00: 120x160, score=0.096
+  Found image at 0x5DD00: 120x160, score=0.081
+  Found image at 0x5DE00: 120x160, score=0.084
+  Found image at 0x5DF00: 120x160, score=0.089
+  Found image at 0x5E000: 120x160, score=0.092
+  Found image at 0x5E100: 120x160, score=0.089
+  Found image at 0x5E800: 75x80, score=0.064
+  Found image at 0x5EC00: 120x160, score=0.086
+  Found image at 0x5ED00: 120x160, score=0.090
+  Found image at 0x5EE00: 120x160, score=0.099
+  Found image at 0x5EF00: 120x160, score=0.088
+  Found image at 0x5F000: 120x160, score=0.082
+  Found image at 0x5F300: 72x36, score=0.069
+  Found image at 0x5F400: 42x68, score=0.064
+  Found image at 0x5F500: 128x160, score=0.065
+  Found image at 0x5F600: 128x128, score=0.064
+  Found image at 0x5F700: 128x128, score=0.063
+  Found image at 0x5F800: 120x32, score=0.081
+  Found image at 0x5FA00: 120x160, score=0.097
+  Found image at 0x5FB00: 120x160, score=0.082
+  Found image at 0x5FC00: 120x160, score=0.085
+  Found image at 0x5FD00: 120x160, score=0.090
+  Found image at 0x5FE00: 120x160, score=0.092
+  Found image at 0x5FF00: 120x160, score=0.090
+  Progress: 37.5%
+  Found image at 0x60600: 128x160, score=0.066
+  Found image at 0x60900: 120x160, score=0.103
+  Found image at 0x60A00: 120x160, score=0.088
+  Found image at 0x60B00: 120x160, score=0.091
+  Found image at 0x60C00: 120x160, score=0.099
+  Found image at 0x60D00: 120x160, score=0.089
+  Found image at 0x60E00: 120x160, score=0.084
+  Found image at 0x61100: 42x68, score=0.064
+  Found image at 0x61200: 42x68, score=0.064
+  Found image at 0x61300: 72x36, score=0.060
+  Found image at 0x61400: 128x128, score=0.065
+  Found image at 0x61500: 128x128, score=0.062
+  Found image at 0x61800: 120x160, score=0.097
+  Found image at 0x61900: 120x160, score=0.083
+  Found image at 0x61A00: 120x160, score=0.086
+  Found image at 0x61B00: 120x160, score=0.091
+  Found image at 0x61C00: 120x160, score=0.093
+  Found image at 0x61D00: 120x160, score=0.090
+  Found image at 0x62700: 120x160, score=0.104
+  Found image at 0x62800: 120x160, score=0.090
+  Found image at 0x62900: 120x160, score=0.091
+  Found image at 0x62A00: 120x160, score=0.100
+  Found image at 0x62B00: 120x160, score=0.090
+  Found image at 0x62C00: 120x160, score=0.085
+  Found image at 0x62F00: 42x68, score=0.063
+  Found image at 0x63000: 42x68, score=0.062
+  Found image at 0x63200: 128x128, score=0.064
+  Found image at 0x63500: 120x160, score=0.091
+  Found image at 0x63600: 120x160, score=0.098
+  Found image at 0x63700: 120x160, score=0.084
+  Found image at 0x63800: 120x160, score=0.087
+  Found image at 0x63900: 120x160, score=0.090
+  Found image at 0x63A00: 120x160, score=0.094
+  Found image at 0x63B00: 120x160, score=0.091
+  Progress: 39.1%
+  Found image at 0x64500: 120x160, score=0.105
+  Found image at 0x64600: 120x160, score=0.092
+  Found image at 0x64700: 120x160, score=0.093
+  Found image at 0x64800: 120x160, score=0.101
+  Found image at 0x64900: 120x160, score=0.091
+  Found image at 0x64A00: 120x160, score=0.087
+  Found image at 0x64D00: 42x68, score=0.064
+  Found image at 0x64E00: 42x68, score=0.064
+  Found image at 0x64F00: 72x36, score=0.060
+  Found image at 0x65000: 128x128, score=0.065
+  Found image at 0x65100: 128x128, score=0.061
+  Found image at 0x65300: 120x160, score=0.093
+  Found image at 0x65400: 120x160, score=0.101
+  Found image at 0x65500: 120x160, score=0.085
+  Found image at 0x65600: 120x160, score=0.088
+  Found image at 0x65700: 120x160, score=0.091
+  Found image at 0x65800: 120x160, score=0.097
+  Found image at 0x65900: 120x160, score=0.093
+  Found image at 0x66300: 120x160, score=0.108
+  Found image at 0x66400: 120x160, score=0.095
+  Found image at 0x66500: 120x160, score=0.097
+  Found image at 0x66600: 120x160, score=0.102
+  Found image at 0x66700: 120x160, score=0.092
+  Found image at 0x66800: 120x160, score=0.092
+  Found image at 0x66A00: 42x68, score=0.069
+  Found image at 0x66B00: 42x68, score=0.066
+  Found image at 0x66C00: 72x36, score=0.068
+  Found image at 0x66D00: 72x36, score=0.063
+  Found image at 0x66E00: 128x128, score=0.066
+  Found image at 0x66F00: 128x128, score=0.063
+  Found image at 0x67000: 75x80, score=0.068
+  Found image at 0x67100: 120x160, score=0.096
+  Found image at 0x67200: 120x160, score=0.104
+  Found image at 0x67300: 120x160, score=0.087
+  Found image at 0x67400: 120x160, score=0.091
+  Found image at 0x67500: 120x160, score=0.093
+  Found image at 0x67600: 120x160, score=0.100
+  Found image at 0x67700: 120x160, score=0.096
+  Progress: 40.6%
+  Found image at 0x68000: 120x160, score=0.113
+  Found image at 0x68100: 120x160, score=0.111
+  Found image at 0x68200: 120x160, score=0.098
+  Found image at 0x68300: 120x160, score=0.101
+  Found image at 0x68400: 120x160, score=0.104
+  Found image at 0x68500: 120x160, score=0.095
+  Found image at 0x68600: 120x160, score=0.096
+  Found image at 0x68800: 42x68, score=0.070
+  Found image at 0x68900: 42x68, score=0.069
+  Found image at 0x68A00: 72x36, score=0.069
+  Found image at 0x68B00: 72x36, score=0.065
+  Found image at 0x68C00: 128x128, score=0.069
+  Found image at 0x68D00: 128x128, score=0.067
+  Found image at 0x68E00: 75x80, score=0.069
+  Found image at 0x68F00: 120x160, score=0.099
+  Found image at 0x69000: 120x160, score=0.107
+  Found image at 0x69100: 120x160, score=0.090
+  Found image at 0x69200: 120x160, score=0.093
+  Found image at 0x69300: 120x160, score=0.097
+  Found image at 0x69400: 120x160, score=0.104
+  Found image at 0x69500: 120x160, score=0.100
+  Found image at 0x69F00: 120x160, score=0.114
+  Found image at 0x6A000: 120x160, score=0.101
+  Found image at 0x6A100: 120x160, score=0.105
+  Found image at 0x6A200: 120x160, score=0.107
+  Found image at 0x6A300: 120x160, score=0.096
+  Found image at 0x6A400: 120x160, score=0.100
+  Found image at 0x6A600: 42x68, score=0.070
+  Found image at 0x6A700: 42x68, score=0.070
+  Found image at 0x6A800: 72x36, score=0.070
+  Found image at 0x6A900: 72x36, score=0.065
+  Found image at 0x6AA00: 128x128, score=0.073
+  Found image at 0x6AB00: 128x128, score=0.071
+  Found image at 0x6AC00: 120x160, score=0.092
+  Found image at 0x6AD00: 120x160, score=0.102
+  Found image at 0x6AE00: 120x160, score=0.111
+  Found image at 0x6AF00: 120x160, score=0.092
+  Found image at 0x6B000: 120x160, score=0.098
+  Found image at 0x6B100: 120x160, score=0.099
+  Found image at 0x6B200: 120x160, score=0.107
+  Found image at 0x6B300: 120x160, score=0.103
+  Found image at 0x6BD00: 120x160, score=0.117
+  Found image at 0x6BE00: 120x160, score=0.103
+  Found image at 0x6BF00: 120x160, score=0.111
+  Progress: 42.2%
+  Found image at 0x6C000: 120x160, score=0.109
+  Found image at 0x6C100: 120x160, score=0.098
+  Found image at 0x6C200: 120x160, score=0.105
+  Found image at 0x6C300: 42x68, score=0.070
+  Found image at 0x6C400: 42x68, score=0.070
+  Found image at 0x6C500: 72x36, score=0.072
+  Found image at 0x6C600: 72x36, score=0.071
+  Found image at 0x6C700: 72x36, score=0.066
+  Found image at 0x6C900: 120x160, score=0.095
+  Found image at 0x6CA00: 120x160, score=0.095
+  Found image at 0x6CB00: 120x160, score=0.105
+  Found image at 0x6CC00: 120x160, score=0.114
+  Found image at 0x6CD00: 120x160, score=0.096
+  Found image at 0x6CE00: 120x160, score=0.102
+  Found image at 0x6CF00: 120x160, score=0.098
+  Found image at 0x6D000: 120x160, score=0.110
+  Found image at 0x6D100: 120x160, score=0.106
+  Found image at 0x6D900: 43x36, score=0.065
+  Found image at 0x6DA00: 120x32, score=0.119
+  Found image at 0x6DB00: 128x160, score=0.061
+  Found image at 0x6DC00: 120x160, score=0.104
+  Found image at 0x6DD00: 120x160, score=0.115
+  Found image at 0x6DE00: 120x160, score=0.111
+  Found image at 0x6DF00: 120x160, score=0.101
+  Found image at 0x6E000: 120x160, score=0.111
+  Found image at 0x6E100: 42x68, score=0.075
+  Found image at 0x6E200: 42x68, score=0.074
+  Found image at 0x6E300: 72x36, score=0.078
+  Found image at 0x6E400: 72x36, score=0.076
+  Found image at 0x6E500: 72x36, score=0.071
+  Found image at 0x6E800: 120x160, score=0.096
+  Found image at 0x6E900: 120x160, score=0.105
+  Found image at 0x6EA00: 120x160, score=0.116
+  Found image at 0x6EB00: 120x160, score=0.098
+  Found image at 0x6EC00: 120x160, score=0.103
+  Found image at 0x6ED00: 120x160, score=0.098
+  Found image at 0x6EE00: 120x160, score=0.111
+  Found image at 0x6EF00: 120x160, score=0.108
+  Found image at 0x6F700: 128x160, score=0.060
+  Found image at 0x6F800: 128x160, score=0.062
+  Found image at 0x6F900: 128x160, score=0.084
+  Found image at 0x6FA00: 128x128, score=0.083
+  Found image at 0x6FB00: 128x128, score=0.063
+  Found image at 0x6FC00: 120x160, score=0.111
+  Found image at 0x6FD00: 120x160, score=0.101
+  Found image at 0x6FE00: 120x160, score=0.110
+  Found image at 0x6FF00: 42x68, score=0.078
+  Progress: 43.8%
+  Found image at 0x70000: 72x36, score=0.080
+  Found image at 0x70100: 72x36, score=0.081
+  Found image at 0x70200: 72x36, score=0.080
+  Found image at 0x70300: 72x36, score=0.075
+  Found image at 0x70500: 120x32, score=0.096
+  Found image at 0x70600: 120x32, score=0.095
+  Found image at 0x70700: 120x160, score=0.103
+  Found image at 0x70800: 120x160, score=0.116
+  Found image at 0x70900: 120x160, score=0.097
+  Found image at 0x70A00: 120x160, score=0.100
+  Found image at 0x70B00: 120x160, score=0.098
+  Found image at 0x70C00: 120x160, score=0.111
+  Found image at 0x70D00: 120x160, score=0.108
+  Found image at 0x71500: 128x160, score=0.061
+  Found image at 0x71600: 128x160, score=0.063
+  Found image at 0x71700: 128x160, score=0.084
+  Found image at 0x71800: 128x128, score=0.084
+  Found image at 0x71900: 128x128, score=0.064
+  Found image at 0x71A00: 120x160, score=0.110
+  Found image at 0x71B00: 120x160, score=0.099
+  Found image at 0x71C00: 120x160, score=0.109
+  Found image at 0x71D00: 42x68, score=0.080
+  Found image at 0x71E00: 72x36, score=0.082
+  Found image at 0x71F00: 72x36, score=0.085
+  Found image at 0x72000: 72x36, score=0.082
+  Found image at 0x72100: 72x36, score=0.075
+  Found image at 0x72300: 32x32, score=0.064
+  Found image at 0x72400: 120x32, score=0.095
+  Found image at 0x72500: 120x160, score=0.097
+  Found image at 0x72600: 120x160, score=0.113
+  Found image at 0x72700: 120x160, score=0.094
+  Found image at 0x72800: 120x160, score=0.097
+  Found image at 0x72900: 120x160, score=0.096
+  Found image at 0x72A00: 120x160, score=0.109
+  Found image at 0x72B00: 120x160, score=0.106
+  Found image at 0x73300: 128x160, score=0.061
+  Found image at 0x73400: 128x160, score=0.082
+  Found image at 0x73500: 128x160, score=0.083
+  Found image at 0x73600: 128x128, score=0.084
+  Found image at 0x73700: 128x128, score=0.085
+  Found image at 0x73800: 120x160, score=0.104
+  Found image at 0x73900: 120x160, score=0.098
+  Found image at 0x73A00: 120x160, score=0.109
+  Found image at 0x73B00: 42x68, score=0.082
+  Found image at 0x73C00: 42x68, score=0.083
+  Found image at 0x73D00: 72x36, score=0.088
+  Found image at 0x73E00: 72x36, score=0.085
+  Found image at 0x73F00: 72x36, score=0.078
+  Progress: 45.3%
+  Found image at 0x74000: 30x30, score=0.082
+  Found image at 0x74100: 75x80, score=0.083
+  Found image at 0x74200: 75x80, score=0.082
+  Found image at 0x74300: 120x160, score=0.091
+  Found image at 0x74400: 120x160, score=0.109
+  Found image at 0x74500: 120x160, score=0.091
+  Found image at 0x74600: 120x160, score=0.094
+  Found image at 0x74700: 120x160, score=0.092
+  Found image at 0x74800: 120x160, score=0.107
+  Found image at 0x74900: 120x160, score=0.103
+  Found image at 0x75000: 72x36, score=0.079
+  Found image at 0x75200: 128x160, score=0.060
+  Found image at 0x75300: 128x160, score=0.080
+  Found image at 0x75400: 128x128, score=0.082
+  Found image at 0x75500: 120x160, score=0.108
+  Found image at 0x75600: 120x160, score=0.100
+  Found image at 0x75700: 120x160, score=0.097
+  Found image at 0x75800: 120x160, score=0.107
+  Found image at 0x75900: 42x68, score=0.085
+  Found image at 0x75A00: 42x68, score=0.084
+  Found image at 0x75B00: 72x36, score=0.089
+  Found image at 0x75C00: 72x36, score=0.085
+  Found image at 0x75D00: 72x36, score=0.080
+  Found image at 0x75F00: 75x80, score=0.081
+  Found image at 0x76000: 75x80, score=0.079
+  Found image at 0x76100: 120x160, score=0.087
+  Found image at 0x76200: 120x160, score=0.105
+  Found image at 0x76300: 120x160, score=0.086
+  Found image at 0x76400: 120x160, score=0.090
+  Found image at 0x76500: 120x160, score=0.090
+  Found image at 0x76600: 120x160, score=0.104
+  Found image at 0x76700: 120x160, score=0.099
+  Found image at 0x76D00: 72x36, score=0.064
+  Found image at 0x76E00: 72x36, score=0.069
+  Found image at 0x76F00: 72x36, score=0.081
+  Found image at 0x77000: 128x160, score=0.077
+  Found image at 0x77100: 128x160, score=0.077
+  Found image at 0x77200: 128x128, score=0.079
+  Found image at 0x77300: 120x160, score=0.102
+  Found image at 0x77400: 120x160, score=0.096
+  Found image at 0x77500: 120x160, score=0.097
+  Found image at 0x77600: 120x160, score=0.104
+  Found image at 0x77700: 42x68, score=0.063
+  Found image at 0x77800: 42x68, score=0.081
+  Found image at 0x77900: 72x36, score=0.083
+  Found image at 0x77A00: 72x36, score=0.082
+  Found image at 0x77B00: 72x36, score=0.076
+  Found image at 0x77E00: 40x40, score=0.066
+  Found image at 0x77F00: 120x160, score=0.084
+  Progress: 46.9%
+  Found image at 0x78000: 120x32, score=0.111
+  Found image at 0x78100: 120x160, score=0.083
+  Found image at 0x78200: 120x160, score=0.088
+  Found image at 0x78300: 120x160, score=0.088
+  Found image at 0x78400: 120x160, score=0.100
+  Found image at 0x78500: 120x160, score=0.095
+  Found image at 0x78D00: 72x36, score=0.064
+  Found image at 0x78E00: 72x36, score=0.085
+  Found image at 0x78F00: 128x160, score=0.073
+  Found image at 0x79000: 128x128, score=0.074
+  Found image at 0x79100: 120x160, score=0.098
+  Found image at 0x79200: 120x160, score=0.093
+  Found image at 0x79300: 120x160, score=0.096
+  Found image at 0x79400: 120x160, score=0.100
+  Found image at 0x79600: 42x68, score=0.075
+  Found image at 0x79700: 72x36, score=0.078
+  Found image at 0x79800: 72x36, score=0.077
+  Found image at 0x79900: 72x36, score=0.072
+  Found image at 0x79D00: 120x160, score=0.081
+  Found image at 0x79E00: 120x32, score=0.101
+  Found image at 0x79F00: 120x32, score=0.083
+  Found image at 0x7A000: 120x160, score=0.086
+  Found image at 0x7A100: 120x160, score=0.086
+  Found image at 0x7A200: 120x160, score=0.097
+  Found image at 0x7A300: 120x160, score=0.091
+  Found image at 0x7AE00: 120x160, score=0.086
+  Found image at 0x7AF00: 120x160, score=0.095
+  Found image at 0x7B000: 120x160, score=0.091
+  Found image at 0x7B100: 120x160, score=0.095
+  Found image at 0x7B200: 120x160, score=0.095
+  Found image at 0x7B400: 42x68, score=0.067
+  Found image at 0x7B500: 72x36, score=0.069
+  Found image at 0x7B600: 72x36, score=0.068
+  Found image at 0x7B700: 72x36, score=0.064
+  Found image at 0x7B900: 128x128, score=0.067
+  Found image at 0x7BB00: 120x160, score=0.079
+  Found image at 0x7BD00: 120x32, score=0.081
+  Found image at 0x7BE00: 120x160, score=0.085
+  Found image at 0x7BF00: 120x160, score=0.085
+  Progress: 48.4%
+  Found image at 0x7C000: 120x160, score=0.095
+  Found image at 0x7C100: 120x160, score=0.090
+  Found image at 0x7CC00: 120x160, score=0.085
+  Found image at 0x7CD00: 120x160, score=0.093
+  Found image at 0x7CE00: 120x160, score=0.090
+  Found image at 0x7CF00: 120x160, score=0.096
+  Found image at 0x7D000: 120x160, score=0.093
+  Found image at 0x7D200: 42x68, score=0.068
+  Found image at 0x7D300: 72x36, score=0.070
+  Found image at 0x7D400: 72x36, score=0.068
+  Found image at 0x7D500: 72x36, score=0.062
+  Found image at 0x7D700: 128x128, score=0.064
+  Found image at 0x7D900: 120x32, score=0.079
+  Found image at 0x7DC00: 120x160, score=0.085
+  Found image at 0x7DD00: 120x160, score=0.084
+  Found image at 0x7DE00: 120x160, score=0.094
+  Found image at 0x7DF00: 120x160, score=0.089
+  Found image at 0x7EA00: 120x160, score=0.084
+  Found image at 0x7EB00: 120x160, score=0.091
+  Found image at 0x7EC00: 120x160, score=0.091
+  Found image at 0x7ED00: 120x160, score=0.096
+  Found image at 0x7EE00: 120x160, score=0.090
+  Found image at 0x7F000: 42x68, score=0.069
+  Found image at 0x7F100: 72x36, score=0.070
+  Found image at 0x7F200: 72x36, score=0.067
+  Found image at 0x7F300: 75x80, score=0.068
+  Found image at 0x7F500: 128x128, score=0.061
+  Found image at 0x7F700: 120x32, score=0.079
+  Found image at 0x7F900: 120x160, score=0.081
+  Found image at 0x7FA00: 120x160, score=0.083
+  Found image at 0x7FB00: 120x160, score=0.082
+  Found image at 0x7FC00: 120x160, score=0.092
+  Found image at 0x7FD00: 120x160, score=0.087
+  Progress: 50.0%
+  Found image at 0x80500: 72x36, score=0.065
+  Found image at 0x80800: 120x160, score=0.083
+  Found image at 0x80900: 120x160, score=0.090
+  Found image at 0x80A00: 120x160, score=0.093
+  Found image at 0x80B00: 120x160, score=0.095
+  Found image at 0x80C00: 120x160, score=0.087
+  Found image at 0x80D00: 24x24, score=0.069
+  Found image at 0x80F00: 72x36, score=0.068
+  Found image at 0x81100: 128x160, score=0.062
+  Found image at 0x81600: 120x160, score=0.093
+  Found image at 0x81700: 120x160, score=0.079
+  Found image at 0x81800: 120x160, score=0.082
+  Found image at 0x81900: 120x160, score=0.082
+  Found image at 0x81A00: 120x160, score=0.091
+  Found image at 0x81B00: 120x160, score=0.090
+  Found image at 0x82300: 72x36, score=0.069
+  Found image at 0x82600: 120x32, score=0.084
+  Found image at 0x82800: 120x160, score=0.095
+  Found image at 0x82900: 120x160, score=0.095
+  Found image at 0x82A00: 120x32, score=0.091
+  Found image at 0x82B00: 24x24, score=0.069
+  Found image at 0x82E00: 128x128, score=0.060
+  Found image at 0x82F00: 75x80, score=0.067
+  Found image at 0x83400: 120x160, score=0.083
+  Found image at 0x83500: 120x32, score=0.080
+  Found image at 0x83600: 120x32, score=0.083
+  Found image at 0x83700: 120x32, score=0.083
+  Found image at 0x83800: 120x32, score=0.094
+  Found image at 0x83900: 120x32, score=0.089
+  Found image at 0x83F00: 128x160, score=0.060
+  Progress: 51.6%
+  Found image at 0x84000: 120x160, score=0.079
+  Found image at 0x84400: 120x160, score=0.077
+  Found image at 0x84600: 120x160, score=0.086
+  Found image at 0x84700: 120x32, score=0.096
+  Found image at 0x84800: 120x32, score=0.090
+  Found image at 0x84900: 24x24, score=0.068
+  Found image at 0x84B00: 42x68, score=0.063
+  Found image at 0x84C00: 42x68, score=0.063
+  Found image at 0x85200: 120x32, score=0.093
+  Found image at 0x85300: 120x32, score=0.079
+  Found image at 0x85400: 120x32, score=0.083
+  Found image at 0x85500: 120x160, score=0.070
+  Found image at 0x85600: 120x32, score=0.093
+  Found image at 0x85700: 120x32, score=0.088
+  Found image at 0x86100: 120x160, score=0.077
+  Found image at 0x86200: 120x32, score=0.082
+  Found image at 0x86400: 120x32, score=0.096
+  Found image at 0x86500: 120x32, score=0.095
+  Found image at 0x86600: 120x32, score=0.089
+  Found image at 0x86900: 42x68, score=0.063
+  Found image at 0x86A00: 42x68, score=0.063
+  Found image at 0x87000: 120x32, score=0.091
+  Found image at 0x87100: 120x32, score=0.077
+  Found image at 0x87200: 120x32, score=0.081
+  Found image at 0x87300: 120x160, score=0.064
+  Found image at 0x87400: 120x32, score=0.090
+  Found image at 0x87500: 120x32, score=0.086
+  Found image at 0x87B00: 72x36, score=0.064
+  Progress: 53.1%
+  Found image at 0x88000: 120x32, score=0.081
+  Found image at 0x88200: 120x32, score=0.099
+  Found image at 0x88300: 120x32, score=0.093
+  Found image at 0x88400: 120x32, score=0.086
+  Found image at 0x88600: 42x68, score=0.066
+  Found image at 0x88800: 72x36, score=0.062
+  Found image at 0x88D00: 120x32, score=0.082
+  Found image at 0x88E00: 120x32, score=0.091
+  Found image at 0x88F00: 120x32, score=0.077
+  Found image at 0x89000: 120x32, score=0.080
+  Found image at 0x89100: 120x32, score=0.082
+  Found image at 0x89200: 120x32, score=0.090
+  Found image at 0x89300: 120x32, score=0.088
+  Found image at 0x8A100: 120x32, score=0.085
+  Found image at 0x8A200: 24x24, score=0.082
+  Found image at 0x8A500: 120x32, score=0.071
+  Found image at 0x8A800: 42x68, score=0.065
+  Progress: 54.7%
+  Found image at 0x8C900: 42x68, score=0.080
+  Found image at 0x8CA00: 42x68, score=0.066
+  Found image at 0x8F600: 42x68, score=0.077
+  Progress: 56.2%
+  Found image at 0x90D00: 42x68, score=0.063
+  Found image at 0x93900: 42x68, score=0.073
+  Progress: 57.8%
+  Found image at 0x96600: 42x68, score=0.063
+  Found image at 0x97C00: 42x68, score=0.072
+  Progress: 59.4%
+  Found image at 0x99300: 42x68, score=0.062
+  Found image at 0x9A900: 42x68, score=0.071
+  Progress: 60.9%
+  Found image at 0x9EC00: 42x68, score=0.090
+  Progress: 62.5%
+  Found image at 0xA2E00: 42x68, score=0.086
+  Found image at 0xA2F00: 42x68, score=0.072
+  Progress: 64.1%
+  Found image at 0xA5B00: 42x68, score=0.085
+  Found image at 0xA7200: 42x68, score=0.068
+  Progress: 65.6%
+  Found image at 0xA9E00: 42x68, score=0.082
+  Found image at 0xAA900: 42x68, score=0.095
+  Found image at 0xAAA00: 42x68, score=0.080
+  Found image at 0xAB500: 42x68, score=0.068
+  Progress: 67.2%
+  Found image at 0xACB00: 42x68, score=0.072
+  Progress: 68.8%
+  Found image at 0xB0E00: 42x68, score=0.074
+  Found image at 0xB1900: 42x68, score=0.065
+  Progress: 70.3%
+  Found image at 0xB5100: 42x68, score=0.097
+  Progress: 71.9%
+  Found image at 0xB9300: 42x68, score=0.095
+  Found image at 0xB9400: 42x68, score=0.078
+  Found image at 0xB9F00: 42x68, score=0.061
+  Found image at 0xBAA00: 42x68, score=0.077
+  Found image at 0xBB500: 42x68, score=0.064
+  Progress: 73.4%
+  Found image at 0xBC000: 42x68, score=0.090
+  Found image at 0xBCB00: 42x68, score=0.065
+  Found image at 0xBCC00: 42x68, score=0.065
+  Found image at 0xBD700: 42x68, score=0.074
+  Found image at 0xBE200: 42x68, score=0.067
+  Found image at 0xBED00: 42x68, score=0.078
+  Found image at 0xBF800: 42x68, score=0.077
+  Progress: 75.0%
+  Found image at 0xC0300: 42x68, score=0.088
+  Found image at 0xC0E00: 42x68, score=0.093
+  Found image at 0xC0F00: 42x68, score=0.079
+  Found image at 0xC1A00: 42x68, score=0.072
+  Found image at 0xC2500: 42x68, score=0.093
+  Found image at 0xC3000: 42x68, score=0.077
+  Found image at 0xC3B00: 42x68, score=0.080
+  Progress: 76.6%
+  Found image at 0xC4600: 42x68, score=0.085
+  Found image at 0xC5100: 42x68, score=0.068
+  Found image at 0xC5200: 42x68, score=0.062
+  Found image at 0xC5D00: 42x68, score=0.073
+  Found image at 0xC6800: 42x68, score=0.060
+  Found image at 0xC7300: 42x68, score=0.078
+  Progress: 78.1%
+  Progress: 79.7%
+  Found image at 0xCC000: 42x68, score=0.067
+  Found image at 0xCD600: 42x68, score=0.064
+  Found image at 0xCED00: 42x68, score=0.064
+  Found image at 0xCF800: 42x68, score=0.098
+  Progress: 81.2%
+  Found image at 0xD1900: 42x68, score=0.066
+  Found image at 0xD3C00: 42x68, score=0.078
+  Progress: 82.8%
+  Found image at 0xD5200: 42x68, score=0.081
+  Found image at 0xD5C00: 42x68, score=0.066
+  Found image at 0xD5D00: 42x68, score=0.081
+  Found image at 0xD6800: 42x68, score=0.090
+  Progress: 84.4%
+  Found image at 0xD8600: 43x36, score=0.065
+  Found image at 0xD8700: 42x68, score=0.080
+  Found image at 0xD9100: 42x68, score=0.062
+  Found image at 0xD9200: 42x68, score=0.087
+  Found image at 0xD9D00: 42x68, score=0.099
+  Found image at 0xDAB00: 42x68, score=0.090
+  Found image at 0xDB300: 43x36, score=0.062
+  Progress: 85.9%
+  Found image at 0xDC200: 42x68, score=0.077
+  Found image at 0xDC900: 43x36, score=0.072
+  Found image at 0xDCA00: 42x68, score=0.081
+  Found image at 0xDD400: 42x68, score=0.064
+  Found image at 0xDD500: 42x68, score=0.087
+  Found image at 0xDD800: 42x68, score=0.083
+  Found image at 0xDE000: 42x68, score=0.069
+  Found image at 0xDEE00: 42x68, score=0.085
+  Found image at 0xDF600: 43x36, score=0.063
+  Progress: 87.5%
+  Found image at 0xE0500: 42x68, score=0.091
+  Found image at 0xE0C00: 43x36, score=0.069
+  Found image at 0xE0D00: 42x68, score=0.068
+  Found image at 0xE1700: 42x68, score=0.087
+  Found image at 0xE1800: 42x68, score=0.087
+  Found image at 0xE1B00: 42x68, score=0.110
+  Found image at 0xE2200: 43x36, score=0.083
+  Found image at 0xE2300: 42x68, score=0.071
+  Found image at 0xE3100: 42x68, score=0.096
+  Progress: 89.1%
+  Found image at 0xE4F00: 42x68, score=0.067
+  Found image at 0xE5E00: 42x68, score=0.083
+  Found image at 0xE6500: 43x36, score=0.068
+  Found image at 0xE7000: 42x68, score=0.086
+  Found image at 0xE7A00: 43x36, score=0.068
+  Found image at 0xE7B00: 42x68, score=0.066
+  Progress: 90.6%
+  Found image at 0xE8600: 42x68, score=0.094
+  Found image at 0xE9100: 42x68, score=0.069
+  Found image at 0xE9C00: 42x68, score=0.079
+  Found image at 0xEA100: 42x68, score=0.081
+  Found image at 0xEA700: 42x68, score=0.072
+  Found image at 0xEA800: 43x36, score=0.068
+  Found image at 0xEB300: 42x68, score=0.061
+  Found image at 0xEBD00: 43x36, score=0.070
+  Found image at 0xEBE00: 42x68, score=0.068
+  Progress: 92.2%
+  Found image at 0xED400: 42x68, score=0.065
+  Found image at 0xEE300: 43x36, score=0.061
+  Found image at 0xEEA00: 42x68, score=0.066
+  Found image at 0xEEB00: 43x36, score=0.066
+  Found image at 0xEF600: 42x68, score=0.064
+  Progress: 93.8%
+  Found image at 0xF0000: 43x36, score=0.069
+  Found image at 0xF0100: 42x68, score=0.086
+  Found image at 0xF1000: 42x68, score=0.093
+  Found image at 0xF1700: 42x68, score=0.103
+  Found image at 0xF2D00: 42x68, score=0.086
+  Found image at 0xF3900: 42x68, score=0.065
+  Found image at 0xF3A00: 42x68, score=0.089
+  Found image at 0xF3D00: 43x36, score=0.061
+  Progress: 95.3%
+  Found image at 0xF4400: 42x68, score=0.083
+  Found image at 0xF6A00: 42x68, score=0.098
+  Progress: 96.9%
+  Found image at 0xF8000: 42x68, score=0.114
+  Found image at 0xF9600: 42x68, score=0.100
+  Found image at 0xF9C00: 43x36, score=0.066
+  Progress: 98.4%
+  Found image at 0xFC300: 42x68, score=0.088
+  Found image at 0xFD900: 42x68, score=0.088
+  Found image at 0xFEF00: 43x36, score=0.062
+
+Pass 1 complete. Found 860 candidates.
+Sorted images by offset.
+
+Deduplicating 860 candidates...
+  Kept 215 after deduplication
+
+Pass 2: Finding animation sequences...
+  Sequence 0: 2 frames at 0x14600, 75x80, stride=0x1700
+  Warning: Failed to process sequence 0: name 'sys' is not defined
+  Sequence 1: 2 frames at 0x16A00, 75x80, stride=0x1100
+  Warning: Failed to process sequence 1: name 'sys' is not defined
+  Sequence 2: 4 frames at 0x1E400, 120x160, stride=0x1C00
+  Warning: Failed to process sequence 2: name 'sys' is not defined
+  Sequence 3: 3 frames at 0x1F400, 120x32, stride=0x1E00
+  Warning: Failed to process sequence 3: name 'sys' is not defined
+  Sequence 4: 2 frames at 0x24D00, 120x160, stride=0xC00
+  Warning: Failed to process sequence 4: name 'sys' is not defined
+  Sequence 5: 4 frames at 0x26B00, 120x160, stride=0x1D00
+  Warning: Failed to process sequence 5: name 'sys' is not defined
+  Sequence 6: 3 frames at 0x27700, 120x32, stride=0x1E00
+  Warning: Failed to process sequence 6: name 'sys' is not defined
+  Sequence 7: 2 frames at 0x2D300, 120x160, stride=0x1000
+  Warning: Failed to process sequence 7: name 'sys' is not defined
+  Sequence 8: 2 frames at 0x2F000, 120x160, stride=0x1100
+  Warning: Failed to process sequence 8: name 'sys' is not defined
+  Sequence 9: 2 frames at 0x30D00, 120x160, stride=0x1200
+  Warning: Failed to process sequence 9: name 'sys' is not defined
+  Sequence 10: 2 frames at 0x32A00, 120x160, stride=0x1300
+  Warning: Failed to process sequence 10: name 'sys' is not defined
+  Sequence 11: 4 frames at 0x34800, 120x160, stride=0x1D00
+  Warning: Failed to process sequence 11: name 'sys' is not defined
+  Sequence 12: 3 frames at 0x35A00, 120x32, stride=0x1E00
+  Warning: Failed to process sequence 12: name 'sys' is not defined
+  Sequence 13: 2 frames at 0x3B500, 120x160, stride=0xA00
+  Warning: Failed to process sequence 13: name 'sys' is not defined
+  Sequence 14: 5 frames at 0x3D200, 120x160, stride=0x1E00
+  Warning: Failed to process sequence 14: name 'sys' is not defined
+  Sequence 15: 4 frames at 0x3DD00, 120x32, stride=0x1E00
+  Warning: Failed to process sequence 15: name 'sys' is not defined
+  Sequence 17: 2 frames at 0x45900, 120x160, stride=0x1D00
+  Warning: Failed to process sequence 17: name 'sys' is not defined
+  Sequence 18: 2 frames at 0x48800, 120x160, stride=0xC00
+  Warning: Failed to process sequence 18: name 'sys' is not defined
+  Sequence 19: 2 frames at 0x4A600, 120x160, stride=0xC00
+  Warning: Failed to process sequence 19: name 'sys' is not defined
+  Sequence 20: 2 frames at 0x4C300, 120x160, stride=0xD00
+  Warning: Failed to process sequence 20: name 'sys' is not defined
+  Sequence 21: 2 frames at 0x4E100, 120x160, stride=0x1E00
+  Warning: Failed to process sequence 21: name 'sys' is not defined
+  Sequence 23: 2 frames at 0x50900, 120x160, stride=0x1500
+  Warning: Failed to process sequence 23: name 'sys' is not defined
+  Sequence 24: 2 frames at 0x52600, 120x160, stride=0x1E00
+  Warning: Failed to process sequence 24: name 'sys' is not defined
+  Sequence 25: 2 frames at 0x55600, 120x160, stride=0xD00
+  Warning: Failed to process sequence 25: name 'sys' is not defined
+  Sequence 26: 2 frames at 0x57600, 120x160, stride=0xA00
+  Warning: Failed to process sequence 26: name 'sys' is not defined
+  Sequence 27: 2 frames at 0x59200, 120x160, stride=0xD00
+  Warning: Failed to process sequence 27: name 'sys' is not defined
+  Sequence 28: 2 frames at 0x5B000, 120x160, stride=0xC00
+  Warning: Failed to process sequence 28: name 'sys' is not defined
+  Sequence 29: 2 frames at 0x5CE00, 120x160, stride=0x1E00
+  Warning: Failed to process sequence 29: name 'sys' is not defined
+  Sequence 31: 12 frames at 0x5FA00, 120x160, stride=0xF00
+  Warning: Failed to process sequence 31: name 'sys' is not defined
+  Sequence 32: 2 frames at 0x6AC00, 120x160, stride=0x1100
+  Warning: Failed to process sequence 32: name 'sys' is not defined
+  Sequence 33: 2 frames at 0x6C900, 120x160, stride=0x800
+  Warning: Failed to process sequence 33: name 'sys' is not defined
+  Sequence 35: 3 frames at 0x6EA00, 120x160, stride=0x1200
+  Warning: Failed to process sequence 35: name 'sys' is not defined
+  Sequence 36: 2 frames at 0x70500, 120x32, stride=0x1F00
+  Warning: Failed to process sequence 36: name 'sys' is not defined
+  Sequence 37: 2 frames at 0x71A00, 120x160, stride=0x1E00
+  Warning: Failed to process sequence 37: name 'sys' is not defined
+  Sequence 38: 2 frames at 0x74400, 120x160, stride=0x1100
+  Warning: Failed to process sequence 38: name 'sys' is not defined
+  Sequence 39: 2 frames at 0x76200, 120x160, stride=0x1100
+  Warning: Failed to process sequence 39: name 'sys' is not defined
+  Sequence 40: 2 frames at 0x78000, 120x32, stride=0x1E00
+  Warning: Failed to process sequence 40: name 'sys' is not defined
+  Sequence 43: 2 frames at 0x7AE00, 120x160, stride=0x1000
+  Warning: Failed to process sequence 43: name 'sys' is not defined
+  Sequence 44: 3 frames at 0x7B600, 72x36, stride=0x1E00
+  Warning: Failed to process sequence 44: name 'sys' is not defined
+  Sequence 45: 2 frames at 0x7CC00, 120x160, stride=0x1000
+  Warning: Failed to process sequence 45: name 'sys' is not defined
+  Sequence 46: 3 frames at 0x7EA00, 120x160, stride=0x1000
+  Warning: Failed to process sequence 46: name 'sys' is not defined
+  Sequence 47: 2 frames at 0x81600, 120x160, stride=0x1200
+  Warning: Failed to process sequence 47: name 'sys' is not defined
+  Sequence 48: 2 frames at 0x83400, 120x160, stride=0x1200
+  Warning: Failed to process sequence 48: name 'sys' is not defined
+  Sequence 49: 2 frames at 0x85200, 120x32, stride=0x1E00
+  Warning: Failed to process sequence 49: name 'sys' is not defined
+  Sequence 51: 2 frames at 0x88200, 120x32, stride=0xB00
+  Warning: Failed to process sequence 51: name 'sys' is not defined
+  Sequence 54: 2 frames at 0x8F600, 42x68, stride=0x1700
+  Warning: Failed to process sequence 54: name 'sys' is not defined
+  Sequence 56: 4 frames at 0x96600, 42x68, stride=0x1600
+  Warning: Failed to process sequence 56: name 'sys' is not defined
+  Sequence 59: 2 frames at 0xA5B00, 42x68, stride=0x1700
+  Warning: Failed to process sequence 59: name 'sys' is not defined
+  Sequence 60: 3 frames at 0xA9E00, 42x68, stride=0xB00
+  Warning: Failed to process sequence 60: name 'sys' is not defined
+  Sequence 62: 2 frames at 0xB0E00, 42x68, stride=0xB00
+  Warning: Failed to process sequence 62: name 'sys' is not defined
+  Sequence 64: 21 frames at 0xB9300, 42x68, stride=0xC00
+  Warning: Failed to process sequence 64: name 'sys' is not defined
+  Sequence 65: 3 frames at 0xCC000, 42x68, stride=0x1600
+  Warning: Failed to process sequence 65: name 'sys' is not defined
+  Sequence 68: 2 frames at 0xD3C00, 42x68, stride=0x1600
+  Warning: Failed to process sequence 68: name 'sys' is not defined
+  Sequence 69: 2 frames at 0xD5C00, 42x68, stride=0xC00
+  Warning: Failed to process sequence 69: name 'sys' is not defined
+  Sequence 71: 2 frames at 0xD9200, 42x68, stride=0xB00
+  Warning: Failed to process sequence 71: name 'sys' is not defined
+  Sequence 72: 2 frames at 0xDAB00, 42x68, stride=0x1700
+  Warning: Failed to process sequence 72: name 'sys' is not defined
+  Sequence 74: 3 frames at 0xDCA00, 42x68, stride=0xB00
+  Warning: Failed to process sequence 74: name 'sys' is not defined
+  Sequence 75: 2 frames at 0xDEE00, 42x68, stride=0x1700
+  Warning: Failed to process sequence 75: name 'sys' is not defined
+  Sequence 77: 2 frames at 0xE0D00, 42x68, stride=0xE00
+  Warning: Failed to process sequence 77: name 'sys' is not defined
+  Sequence 78: 2 frames at 0xE2300, 42x68, stride=0xE00
+  Warning: Failed to process sequence 78: name 'sys' is not defined
+  Sequence 79: 2 frames at 0xE4F00, 42x68, stride=0xF00
+  Warning: Failed to process sequence 79: name 'sys' is not defined
+  Sequence 80: 2 frames at 0xE7000, 42x68, stride=0x1600
+  Warning: Failed to process sequence 80: name 'sys' is not defined
+  Sequence 82: 4 frames at 0xE9100, 42x68, stride=0xB00
+  Warning: Failed to process sequence 82: name 'sys' is not defined
+  Sequence 85: 2 frames at 0xEE300, 43x36, stride=0x800
+  Warning: Failed to process sequence 85: name 'sys' is not defined
+  Sequence 86: 2 frames at 0xEF600, 42x68, stride=0x1A00
+  Warning: Failed to process sequence 86: name 'sys' is not defined
+  Sequence 88: 2 frames at 0xF2D00, 42x68, stride=0xD00
+  Warning: Failed to process sequence 88: name 'sys' is not defined
+  Sequence 90: 3 frames at 0xF6A00, 42x68, stride=0x1600
+  Warning: Failed to process sequence 90: name 'sys' is not defined
+  Sequence 91: 2 frames at 0xFC300, 42x68, stride=0x1600
+  Warning: Failed to process sequence 91: name 'sys' is not defined
+
+Found 46 non-overlapping images
+
+Grouping similar images...
+Saved image: image_000_75x80_0x17B00.png
+Saved image: image_001_120x32_0x1F400.png
+Saved image: image_002_120x160_0x34800.png
+Saved image: image_003_120x160_0x3F000.png
+Saved image: image_004_120x32_0x6DA00.png
+Saved image: image_005_120x160_0x6FC00.png
+Saved image: image_006_120x32_0x79E00.png
+Created GIF: animation_007_120x32.gif (2 frames)
+Created GIF: animation_008_42x68.gif (2 frames)
+Created GIF: animation_009_42x68.gif (2 frames)
+Created GIF: animation_010_42x68.gif (2 frames)
+Saved image: image_011_42x68_0x9EC00.png
+Created GIF: animation_012_42x68.gif (2 frames)
+Saved image: image_013_42x68_0xA7200.png
+Created GIF: animation_014_42x68.gif (2 frames)
+Saved image: image_015_42x68_0xB0E00.png
+Saved image: image_016_42x68_0xB5100.png
+Created GIF: animation_017_42x68.gif (2 frames)
+Created GIF: animation_018_42x68.gif (2 frames)
+Created GIF: animation_019_42x68.gif (2 frames)
+Saved image: image_020_42x68_0xCC000.png
+Created GIF: animation_021_42x68.gif (2 frames)
+Saved image: image_022_42x68_0xD6800.png
+Saved image: image_023_42x68_0xD9D00.png
+Created GIF: animation_024_42x68.gif (2 frames)
+Saved image: image_025_42x68_0xE1B00.png
+Created GIF: animation_026_42x68.gif (2 frames)
+Saved image: image_027_42x68_0xED400.png
+Created GIF: animation_028_43x36.gif (2 frames)
+Created GIF: animation_029_42x68.gif (2 frames)
+Saved image: image_030_42x68_0xF8000.png
+Saved image: image_031_42x68_0xFD900.png
+
+Markdown report saved to: test_extraction_output/report.md
+
+Extraction complete! Output directory: test_extraction_output

@@ -1,15 +1,6 @@
 
-
-#include "main.h"
-#include <stdint.h>
-#include <stdio.h>
-#include "n32g031_rcc.h"
-#include "nv3029.h"
-#include "spi_flash.h"
-#include "dma.h"
-#include "pwm.h"
-#include "sleep_wake.h"
-#include "voltage_monitor.h"
+#define USE_GRAPHICAL_STATUS 1
+#define DEBUG_SLEEP 1
 
 
 #define TV1_VOLTAGE_SENSE_PIN GPIOA,GPIO_PIN_1
@@ -54,6 +45,22 @@
 
 
 
+#include "main.h"
+#include <stdint.h>
+#include <stdio.h>
+#include "n32g031_rcc.h"
+#include "nv3029.h"
+#include "spi_flash.h"
+#include "dma.h"
+#include "pwm.h"
+#include "sleep_wake.h"
+#include "voltage_monitor.h"
+#include "iwdg.h"
+
+
+
+
+
 /*
 GPIO
 
@@ -62,8 +69,8 @@ GPIOA
 0 			    INPUT               ?
 1 			    ANALOG  HSR         TV1_VOLTAGE_SENSE        
 2               ANALOG  HSR         TV2_VOLTAGE_SENSE
-3			    INPUT               MIC ?
-4			    OUTPUT  PP,LOW      NC
+3			    INPUT   PULLDOWN?   MIC ?
+4			    OUTPUT  PP,Low?     A4 NC ?
 5			    OUTPUT  PP,LOW      ELEMENT TV2
 6				OUTPUT  PP,LOW      LCD_BACKLIGHT
 7			    INPUT   PULLUP      BUTTON
@@ -79,7 +86,7 @@ GPIOA
 GPIOB
 0	            OUTPUT  PP,LOW      LP4086_ISET
 1               INPUT   PULLUP      LP4086_CHRG (PULLED LOW ACTIVE) ext1 interupt
-2			    INPUT   PULLUP      Low Voltage Signal, when enabled by pin A12, low when low voltage detected
+2			    INPUT   PULLUP      LV_CUTOFF_FEEDBACK
 3               OUTPUT  PP,LOW      SPI1_SCLK, LCD_SPI_SCLK
 4               OUTPUT  OD,LOW      LCD_FLASH_PWR_EN 
 5			    OUTPUT  PP,LOW      SPI1_MOSI, LCD_SPI_MOSI
@@ -89,8 +96,8 @@ GPIOB
 
 GPIOC
 13              ANALOG  HSR         UNKNOWN_ANALOG
-14 			    ? 					FSLP     
-15              ?                   VPSW
+14 			    INPUT 			    FSLP     
+15              INPUT               VPSW
 
 GPIOF
 0              ANALOG  HSR         UNKOWN_ANALOG
@@ -100,19 +107,32 @@ GPIOF
 7              ANALOG  HSR         UNKOWN_ANALOG
 */
 
-extern char __heap_start__;
-extern char __heap_end__;
-extern char __stack_start__;
-extern char __stack_end__;
+// extern char __heap_start__;
+// extern char __heap_end__;
+// extern char __stack_start__;
+// extern char __stack_end__;
 
-void check_memory_boundaries(void) {
-    volatile char *heap_start = &__heap_start__;
-	volatile char *heap_end = &__heap_end__;
-	// ... use these pointers for monitoring
-	}
+// void check_memory_boundaries(void) {
+//     volatile char *heap_start = &__heap_start__;
+// 	volatile char *heap_end = &__heap_end__;
+// 	// ... use these pointers for monitoring
+// 	}
+
+enum StatusValues {
+	STATUS_IDLE = 0,
+	STATUS_READY = 1,
+	STATUS_STARTING = 2,
+	STATUS_LEVEL_RESET = 3,
+	STATUS_START_WRITE = 4,
+	STATUS_WRITE_DONE = 5,
+	STATUS_START_READ = 6,
+	STATUS_READ_DONE = 7,
+	STATUS_OPERATION_COMPLETE = 8,
+    STATUS_ERROR = 9
+};
 
 
- uint8_t mainran = 2;
+ uint8_t mainran = 0;
 
 
 #define BUFFER_SIZE 4096
@@ -121,7 +141,7 @@ volatile int lvl_reset_flag[1];
 volatile int continue_flag[1];
 volatile int write_flag[1];
 volatile int status[1];
-volatile bool RunError = false;
+volatile bool FlashID_error = false;
 uint8_t lvl_buffer[5];
 uint8_t lvl_buffer_read[5];
  uint8_t buffer[BUFFER_SIZE];
@@ -146,12 +166,12 @@ uint8_t sFLASH_ReadRegister(uint8_t reg)
 		return flashstatus;
 }
 
-void displayPhoto(void){
+void displayPhoto(uint32_t addr, uint32_t byteCount){
 	LCD_fill_screen(COLOR_BLACK);
-	uint32_t addr = 0x0A000;
-	
+
+
 	/* Initiate async DMA read from flash */
-	LCD_flash_read_async(addr, 0x0BE0, buffer, BUFFER_SIZE);
+	LCD_flash_read_async(addr, byteCount, buffer, BUFFER_SIZE);
 	
 	/* Wait for DMA read to complete */
 	while(!LCD_is_flash_read_complete());
@@ -241,7 +261,7 @@ void setup(void){
 
 
 
-    // Not connected
+    // Not connected?
 	GPIO_Init(GPIO_PA4, GPIO_MODE_OUTPUT_PP);
 	GPIO_Off(GPIO_PA4);
 
@@ -263,32 +283,50 @@ void mainScreen(void){
 /* Variables for button debouncing and activity tracking */
 	static uint8_t button_prev_state = 0;
 	static uint32_t activity_timer = 0;
-
+	static bool use_ultra_low_power = true;  /* Enable ultra-low power mode */
+	bool debugSleep = DEBUG_SLEEP;
 	
     bool micInput = false;
 	bool lvInput = false;	
 	bool isCharging = false;
 	bool buttonPressed = false;
+
+
+
     displayFullPhotoChunked(0x0);
 	Delay(10000);
 
-	displayPhoto();
+	displayPhoto(0x0A000, 0x0BE0);
+
+	if (debugSleep)
+	{
+		 SleepWake_SetDebugMode(true);
+	}
+	
+	
 
 	while(mainran == 1){
 
-	/* Check button for wake-up or activity */
-		uint8_t button_cur_state = GPIO_ReadInputDataBit(BUTTON_PIN);
-		if (button_cur_state && !button_prev_state)  /* Button pressed */
+	// /* Check button for wake-up or activity */
+	 	uint8_t button_cur_state = GPIO_ReadInputDataBit(BUTTON_PIN);
+
+		// sleep-wake logic
 		{
-			if (SleepWake_IsSleeping())
-			{
-				/* Wake up from sleep */
-				SleepWake_WakeUp();
-			}
-			/* Reset inactivity timer on button press */
-			SleepWake_ResetTimer();
-		}
-		button_prev_state = button_cur_state;
+	 	if (button_cur_state && !button_prev_state)  /* Button pressed */
+	// 	{
+	// 		if (SleepWake_IsSleeping())
+	// 		{
+	// 			/* Wake up from sleep */
+	// 			SleepWake_WakeUp();
+	// 			LCD_init();
+				
+	// 		}
+	// 		/* Reset inactivity timer on button press */
+	// 		SleepWake_ResetTimer();
+	// 		displayFullPhotoChunked(0x0);
+	// 			Delay(5000);
+	// 	}
+	 	button_prev_state = button_cur_state;
 
 		/* Check for external interrupt wake-up (button or mic) */
 		if (SleepWake_IsWakeInterruptTriggered())
@@ -297,22 +335,48 @@ void mainScreen(void){
 			{
 				/* Wake up from sleep via interrupt */
 				SleepWake_WakeUp();
-				displayFullPhotoChunked(0x0);
-				Delay(5000);
-				LCD_fill_screen(COLOR_BLACK);
+				LCD_init();
+				
 			}
 			/* Reset inactivity timer on interrupt wake */
 			SleepWake_ResetTimer();
 			/* Clear the interrupt flag */
 			SleepWake_ClearWakeInterrupt();
+			displayFullPhotoChunked(0x0);
+				Delay(5000);
 		}
 
 		/* Check if timeout for sleep has expired */
 		if (SleepWake_CheckTimeout())
 		{
-			/* Go to sleep */
-			SleepWake_GoToSleep();
+			if (use_ultra_low_power)
+			{
+				/* Enter ultra-low power mode with LPTIM wake */
+				while (1)
+				{
+					SleepWake_EnterUltraLowPower();
+					
+					/* Handle wake from ultra-low power */
+					if (SleepWake_HandleUltraLowPowerWake())
+					{
+						/* Stay awake - restore display and continue main loop */
+						LCD_init();
+						displayFullPhotoChunked(0x0);
+						Delay(5000);
+						LCD_fill_screen(COLOR_BLACK);
+						break;  /* Exit ultra-low power loop */
+					}
+					/* Otherwise, loop back to ultra-low power sleep */
+				}
+			}
+			else
+			{
+				/* Go to normal sleep */
+				SleepWake_GoToSleep();
+			}
 		}
+
+		}//end sleep-wake logic
 
 		/* Update voltage readings periodically */
 		VoltageMonitor_UpdateReadings();
@@ -356,30 +420,27 @@ void mainScreen(void){
 
 int main(void)
 {
-   mainran = 2;
-    setup();
+	mainran = STATUS_IDLE;
+	setup();
 
-	//LCD_diag();
-	//LCD_display_flash_region(0x0766B0, 0, 0, 120,160, 5000, buffer, BUFFER_SIZE);
-	
+	while(1){
+		Delay(100);
+		FlashID = sFLASH_ReadID();
+		if(FlashID_error == true) break;
+		if(FlashID != 0) break; else FlashID_error = true;
+		}
 
-			while(1){
-				Delay(100);
-				FlashID = sFLASH_ReadID();
-				if(FlashID != 0) break;
-			}
-
-			if( mainran == 0){
-			mainran = 1;
-			/* Main loop - includes sleep/wake and button handling */
-			mainScreen();
-			}
+	if( mainran == 0){
+		mainran = 1;
+		mainScreen();
+		}
 
 			
 
 	
-	while(mainran == 2 && !RunError) {
+	while(mainran == 2 && !FlashID_error) {
 	status[0] = 1;
+	bool use_graphical_status = USE_GRAPHICAL_STATUS;
 	/* Original flash check loop */
 	// Check Flash ID
 	if(FlashID == sFLASH_W25Q128_ID || FlashID == sFLASH_M25P64_ID || FlashID == sFLASH_GD25Q80_ID || FlashID == sFLASH_PD32S_ID ){     
@@ -388,16 +449,16 @@ int main(void)
 		while(continue_flag[0] == 0);
 		continue_flag[0] = 0;
 		
-		status[0] = 2;
+		status[0] = STATUS_READY;
 		continue_flag[0] = 0;
-		status[0] = 2;
+		status[0] = STATUS_READY;
 		
 		// If level reset flag is set, execute the level reset
 		if(lvl_reset_flag[0] == 1){
 			lvl_buffer[4] = 0xBB;
 			sFLASH_EraseSector(0xf8000);
 			sFLASH_WriteBuffer(lvl_buffer, 0xf8000, 5);
-			status[0] = 3;
+			status[0] = STATUS_LEVEL_RESET;
 			
 		}
 
@@ -410,54 +471,100 @@ int main(void)
 			write_flag[0] = 0;
 			sFLASH_EraseBulk();
 			Delay(10);
-			status[0] = 5;
+
+			status[0] = STATUS_WRITE_DONE;
+			if(use_graphical_status){
+				LCD_fill_screen(COLOR_BLACK);
+				LCD_draw_string(0, 0, "Writing- ", COLOR_WHITE, COLOR_BLACK, 2);
+				LCD_draw_string(0, 20, "Block#: ", COLOR_WHITE, COLOR_BLACK, 2);
+				Delay(10);
+			}
+
 			for(uint32_t i=0; i<256; i++){
 				while(status[0] == 5) ;
 				uint32_t addr = i * BUFFER_SIZE;
-				sFLASH_WriteBuffer(buffer, addr, BUFFER_SIZE);
-				Delay(1000);
-				status[0] = 5;
+				LCD_flash_write_async(addr, BUFFER_SIZE, buffer);
+				
+				if(use_graphical_status){
+					
+					char block_str[10];
+					snprintf(block_str, sizeof(block_str), "%lu", i);
+					LCD_draw_string(72, 20, block_str, COLOR_WHITE, COLOR_BLACK, 2);
+				}
+				while(!LCD_is_flash_write_complete());
+
+				//sFLASH_WriteBuffer(buffer, addr, BUFFER_SIZE);
+				status[0] = STATUS_WRITE_DONE;
 			}
 			
 		}else{ //Reaxing Flash page by page
-			while(1){
+			if(use_graphical_status){	
+				LCD_fill_screen(COLOR_BLACK);
+				LCD_draw_string(0, 0, "Reading- ", COLOR_WHITE, COLOR_BLACK, 2);
+				LCD_draw_string(0, 20, "Block#: ", COLOR_WHITE, COLOR_BLACK, 2);
+				Delay(10);
+			}
+
+			while(status[0] != STATUS_OPERATION_COMPLETE){
 				if(tmp_page != page[0]){
-					status[0] = 6;
+					status[0] = STATUS_START_READ;
 					tmp_page = page[0];
 					uint32_t addr = page[0] * BUFFER_SIZE;
-					sFLASH_ReadBuffer(buffer, addr, BUFFER_SIZE);
-					//LCD_fill_screen(COLOR_BLACK); // black
-					//LCD_write_buffer_to_window((uint16_t*)buffer, BUFFER_SIZE/2, 5000);
-					status[0] = 7;
+					if(use_graphical_status){	
+						char block_str[10];
+						snprintf(block_str, sizeof(block_str), "%lu", page[0]);
+						LCD_draw_string(72, 20, block_str, COLOR_WHITE, COLOR_BLACK, 2);
+					}
+
+					LCD_flash_read_async(addr, BUFFER_SIZE, buffer, BUFFER_SIZE);
+					/* Wait for DMA read to complete */
+					while(!LCD_is_flash_read_complete());
+		
+					//sFLASH_ReadBuffer(buffer, addr, BUFFER_SIZE);
+					status[0] = STATUS_READ_DONE;
 				}
-				status[0] = 8;
 			}
 		}
+		if(use_graphical_status){	
+			LCD_fill_screen(COLOR_BLACK);
+			LCD_draw_string(0, 0, "Done !", COLOR_WHITE, COLOR_BLACK, 2);
+		}
+		status[0] = STATUS_OPERATION_COMPLETE; //operation complete
 	}else{
 		// If there is an error reading the Flash ID, pulse the light 3 times for 1 second delay
 		PWM_SetDutyCycle(50); 
 		Delay(1000);
-		PWM_SetDutyCycle(20); 
+		PWM_SetDutyCycle(0); 
 		Delay(1000);
 		PWM_SetDutyCycle(50); 
 		Delay(1000);
-		PWM_SetDutyCycle(20); 
+		PWM_SetDutyCycle(0); 
 		Delay(1000);
 		PWM_SetDutyCycle(50); 
 		Delay(1000);
-		PWM_SetDutyCycle(20); 
+		PWM_SetDutyCycle(0); 
 		Delay(1000);
 		PWM_SetDutyCycle(50); 
-	    RunError = true;
-		
+	    FlashID_error = true;
+        status[0] = STATUS_ERROR;
 		//while(1)
 		mainran = 1;
 	}
+
+	/* Infinite loop after flash operations */
+	while (1)
+	{
+		/* Wait indefinitely */
+	}
+	
+	}//end while mainran 2
+
+	while(1)
+	{
+		/* Main infinite loop */
 	}
 
-	while(1);
-
-}
+} // end main
 
 
 

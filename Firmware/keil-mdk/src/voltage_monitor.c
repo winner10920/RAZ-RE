@@ -42,7 +42,7 @@ void VoltageMonitor_Init(void)
     RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOC, ENABLE);
     RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOB, ENABLE);
 
-    /* Configure PA0, PA1, PA2,  as analog inputs */
+    /* Configure PA0, PA1, PA2, PA4  as analog inputs */
     GPIO_InitStruct(&gpio_init_struct);
     gpio_init_struct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2;
     gpio_init_struct.GPIO_Mode = GPIO_MODE_ANALOG;

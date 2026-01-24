@@ -97,6 +97,56 @@ bool SleepWake_IsWakeInterruptTriggered(void);
  */
 void SleepWake_ClearWakeInterrupt(void);
 
+/**
+ * @brief Initialize LPTIM for periodic wake-up from ultra-low power mode
+ * @param wake_interval_sec Interval in seconds for LPTIM wake (e.g., 30 seconds)
+ */
+void SleepWake_InitLPTIM(uint32_t wake_interval_sec);
+
+/**
+ * @brief Enter ultra-low power mode (STOP mode)
+ * Disables LCD_FLASH_PWR_EN and lV_CUTOFF_EN, keeps LP4086_ISET low
+ * Wakes on LPTIM timeout or external interrupt
+ */
+void SleepWake_EnterUltraLowPower(void);
+
+/**
+ * @brief Check if device was woken by LPTIM
+ * @return true if LPTIM triggered the wake
+ */
+bool SleepWake_IsLPTIMWake(void);
+
+/**
+ * @brief Check if SWD/JLink is connected
+ * @return true if debugger is connected
+ */
+bool SleepWake_IsSWDConnected(void);
+
+/**
+ * @brief Handle wake from ultra-low power mode
+ * Provides 10-second window for SWD connection or returns to ultra-low power
+ * @return true if should remain fully awake (SWD connected or external interrupt)
+ */
+bool SleepWake_HandleUltraLowPowerWake(void);
+
+/**
+ * @brief Restore full power mode
+ * Re-enables LCD_FLASH_PWR_EN and lV_CUTOFF_EN
+ */
+void SleepWake_RestoreFullPower(void);
+
+/**
+ * @brief Enable/disable debug mode
+ * @param enable true to enable debug mode (full wake every minute)
+ */
+void SleepWake_SetDebugMode(bool enable);
+
+/**
+ * @brief Get current debug mode status
+ * @return true if debug mode is enabled
+ */
+bool SleepWake_IsDebugMode(void);
+
 #ifdef __cplusplus
 }
 #endif

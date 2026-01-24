@@ -8,18 +8,28 @@
 #include "n32g031_rcc.h"
 #include "n32g031_gpio.h"
 #include "n32g031_exti.h"
+#include "n32g031_pwr.h"
+#include "n32g031_lptim.h"
+#include "core_cm0.h"
 
 /* Sleep/Wake state machine */
 static bool g_is_sleeping = false;
+static bool g_is_ultra_low_power = false;
 static uint32_t g_timeout_sec = 0;
 static uint32_t g_inactivity_counter = 0;
 static uint32_t g_timeout_counter = 0;
 static volatile bool g_wake_interrupt_triggered = false;
+static volatile bool g_lptim_wake_triggered = false;
+static bool g_debug_mode = false;
+static uint32_t g_lptim_wake_interval = 30;
 
 /* Saved peripheral state for restoration */
 static uint8_t g_saved_backlight_brightness = 0;
 static bool g_saved_tv1_state = false;
 static bool g_saved_tv2_state = false;
+static bool g_saved_lcd_flash_pwr = false;
+static bool g_saved_lv_cutoff = false;
+static bool g_saved_lp4086_iset = false;
 
 /* GPIO Pin definitions */
 #define BUTTON_PORT GPIOA
@@ -29,6 +39,23 @@ static bool g_saved_tv2_state = false;
 #define MIC_PORT GPIOA
 #define MIC_PIN GPIO_PIN_3
 #define MIC_EXTI_LINE EXTI_LINE3
+
+#define LCD_FLASH_PWR_EN_PORT GPIOB
+#define LCD_FLASH_PWR_EN_PIN GPIO_PIN_4
+
+#define LV_CUTOFF_EN_PORT GPIOA
+#define LV_CUTOFF_EN_PIN GPIO_PIN_12
+
+#define LP4086_ISET_PORT GPIOB
+#define LP4086_ISET_PIN GPIO_PIN_0
+
+#define TV1_PORT GPIOA
+#define TV1_PIN GPIO_PIN_5
+
+#define TV2_PORT GPIOB
+#define TV2_PIN GPIO_PIN_8
+
+#define LCD_BACKLIGHT_PIN GPIOA,GPIO_PIN_6
 
 /* Timer tick counter (assuming 100ms per call to SleepWake_CheckTimeout) */
 #define TICKS_PER_SECOND 10
@@ -42,11 +69,17 @@ void SleepWake_Init(uint32_t timeout_sec)
     g_inactivity_counter = 0;
     g_timeout_counter = 0;
     g_is_sleeping = false;
+    g_is_ultra_low_power = false;
     g_wake_interrupt_triggered = false;
+    g_lptim_wake_triggered = false;
+    g_debug_mode = false;
     g_saved_backlight_brightness = 50;  /* Default brightness */
     
     /* Initialize external interrupts for wake */
     SleepWake_InitExternalInterrupts();
+    
+    /* Initialize LPTIM for 30-second wake intervals */
+    SleepWake_InitLPTIM(30);
 }
 
 /**
@@ -293,4 +326,264 @@ void EXTI4_15_IRQHandler(void)
         g_wake_interrupt_triggered = true;
         EXTI_ClrITPendBit(EXTI_LINE7);
     }
+}
+
+/**
+ * @brief Initialize LPTIM for periodic wake-up
+ */
+void SleepWake_InitLPTIM(uint32_t wake_interval_sec)
+{
+    LPTIM_InitType lptim_init;
+    
+    g_lptim_wake_interval = wake_interval_sec;
+    
+    /* Enable LPTIM clock */
+    RCC_EnableAPB1PeriphClk(RCC_APB1_PERIPH_LPTIM, ENABLE);
+    
+    /* Use LSI (32kHz internal oscillator) as LPTIM clock source */
+    RCC_ConfigLPTIMClk(RCC_LPTIMCLK_SRC_LSI);
+    
+    /* Enable LSI */
+    RCC_EnableLsi(ENABLE);
+    /* Wait for LSI to be ready - simple delay */
+    for (volatile uint32_t i = 0; i < 10000; i++);
+    
+    /* Configure LPTIM */
+    LPTIM_DeInit(LPTIM);
+    lptim_init.Prescaler = LPTIM_PRESCALER_DIV32;  /* 32kHz / 32 = 1kHz */
+    lptim_init.ClockSource = LPTIM_CLK_SOURCE_INTERNAL;
+    lptim_init.Waveform = LPTIM_OUTPUT_WAVEFORM_PWM;
+    lptim_init.Polarity = LPTIM_OUTPUT_POLARITY_REGULAR;
+    LPTIM_Init(LPTIM, &lptim_init);
+    
+    /* Set autoreload value for desired wake interval */
+    /* 1kHz clock, so for 30 seconds: 1000 Hz * 30 = 30000 */
+    uint32_t arr_value = (wake_interval_sec * 1000) - 1;
+    if (arr_value > 0xFFFF) arr_value = 0xFFFF;  /* Max 16-bit value */
+    
+    /* Enable LPTIM */
+    LPTIM_Enable(LPTIM);
+    
+    /* Set autoreload register */
+    LPTIM_SetAutoReload(LPTIM, arr_value);
+    
+    /* Enable LPTIM ARRM interrupt */
+    LPTIM_EnableIT_ARRM(LPTIM);
+    NVIC_EnableIRQ(LPTIM_TIM6_IRQn);
+    NVIC_SetPriority(LPTIM_TIM6_IRQn, 1);
+    
+    /* Start LPTIM in continuous mode */
+    LPTIM_StartCounter(LPTIM, LPTIM_OPERATING_MODE_CONTINUOUS);
+}
+
+/**
+ * @brief LPTIM interrupt handler
+ */
+void LPTIM_TIM6_IRQHandler(void)
+{
+    /* Check if autoreload match interrupt */
+    if (LPTIM_IsActiveFlag_ARRM(LPTIM) != RESET)
+    {
+        g_lptim_wake_triggered = true;
+        LPTIM_ClearFLAG_ARRM(LPTIM);
+    }
+    
+    /* Check if compare match interrupt */
+    if (LPTIM_IsActiveFlag_CMPM(LPTIM) != RESET)
+    {
+        g_lptim_wake_triggered = true;
+        LPTIM_ClearFLAG_CMPM(LPTIM);
+    }
+}
+
+/**
+ * @brief Check if LPTIM triggered wake
+ */
+bool SleepWake_IsLPTIMWake(void)
+{
+    return g_lptim_wake_triggered;
+}
+
+/**
+ * @brief Check if SWD is connected
+ */
+bool SleepWake_IsSWDConnected(void)
+{
+    /* Check if debugger is attached by reading DHCSR register */
+    volatile uint32_t *dhcsr = (uint32_t *)0xE000EDF0;
+    return ((*dhcsr & 0x00000001) != 0);  /* C_DEBUGEN bit */
+}
+
+/**
+ * @brief Enter ultra-low power mode (STOP)
+ */
+void SleepWake_EnterUltraLowPower(void)
+{
+    if (g_is_ultra_low_power)
+    {
+        return;  /* Already in ultra-low power */
+    }
+    
+    /* Save current power pin states */
+    g_saved_lcd_flash_pwr = GPIO_ReadOutputDataBit(LCD_FLASH_PWR_EN_PORT, LCD_FLASH_PWR_EN_PIN);
+    g_saved_lv_cutoff = GPIO_ReadOutputDataBit(LV_CUTOFF_EN_PORT, LV_CUTOFF_EN_PIN);
+    g_saved_lp4086_iset = GPIO_ReadOutputDataBit(LP4086_ISET_PORT, LP4086_ISET_PIN);
+    g_saved_tv1_state = GPIO_ReadOutputDataBit(TV1_PORT, TV1_PIN);
+    g_saved_tv2_state = GPIO_ReadOutputDataBit(TV2_PORT, TV2_PIN);
+    g_saved_backlight_brightness = PWM_GetDutyCycle();
+    
+    /* Turn off power-consuming peripherals */
+    GPIO_ResetBits(LCD_FLASH_PWR_EN_PORT, LCD_FLASH_PWR_EN_PIN);  /* LCD Flash power off */
+    GPIO_ResetBits(LV_CUTOFF_EN_PORT, LV_CUTOFF_EN_PIN);          /* LV cutoff disable */
+    GPIO_ResetBits(LP4086_ISET_PORT, LP4086_ISET_PIN);            /* Keep LP4086 ISET low */
+    GPIO_ResetBits(TV1_PORT, TV1_PIN);                            /* TV1 off */
+    GPIO_ResetBits(TV2_PORT, TV2_PIN);                            /* TV2 off */
+    PWM_SetDutyCycle(0);     
+    GPIO_SetBits(LCD_BACKLIGHT_PIN);                                      /* Backlight off */
+    
+    g_is_ultra_low_power = true;
+    g_is_sleeping = true;
+    g_lptim_wake_triggered = false;
+    
+    /* Clear pending wake flags */
+    g_wake_interrupt_triggered = false;
+    
+    /* Enter STOP mode - CPU clock stopped, peripherals can run on LSI */
+    /* Wake sources: EXTI (button/mic) and LPTIM */
+    PWR_EnterSTOPMode(PWR_PDEntry_WFI);
+}
+
+/**
+ * @brief Handle wake from ultra-low power mode
+ */
+bool SleepWake_HandleUltraLowPowerWake(void)
+{
+    if (!g_is_ultra_low_power)
+    {
+        return true;  /* Not in ultra-low power, stay awake */
+    }
+    
+    /* Check if woken by external interrupt (button or mic) */
+    if (g_wake_interrupt_triggered)
+    {
+        /* External interrupt - restore full power and stay awake */
+        SleepWake_RestoreFullPower();
+        g_wake_interrupt_triggered = false;
+        g_lptim_wake_triggered = false;
+        return true;  /* Stay fully awake */
+    }
+    
+    /* Woken by LPTIM - check for SWD connection window */
+    if (g_lptim_wake_triggered)
+    {
+        g_lptim_wake_triggered = false;
+        
+        /* Debug mode - wake fully every minute */
+        if (g_debug_mode)
+        {
+            static uint32_t debug_wake_counter = 0;
+            debug_wake_counter++;
+            
+            /* Wake fully every 2 LPTIM cycles (60 seconds if interval is 30s) */
+            if (debug_wake_counter >= 2)
+            {
+                debug_wake_counter = 0;
+                SleepWake_RestoreFullPower();
+                PWM_SetDutyCycle(10); 
+                return true;  /* Stay awake for debug */
+            }
+        }
+        
+        /* Provide 10-second window for SWD connection */
+        uint32_t swd_window_end = 10 * 10;  /* 10 seconds * 10 ticks/sec */
+        uint32_t swd_check_counter = 0;
+        
+        while (swd_check_counter < swd_window_end)
+        {
+            /* Check if SWD connected */
+            if (SleepWake_IsSWDConnected())
+            {
+                /* SWD detected - restore full power and stay awake */
+                SleepWake_RestoreFullPower();
+                return true;
+            }
+            
+            /* Check if external interrupt occurred during window */
+            if (g_wake_interrupt_triggered)
+            {
+                SleepWake_RestoreFullPower();
+                g_wake_interrupt_triggered = false;
+                return true;
+            }
+            
+            /* Simple delay (~100ms) */
+            for (volatile uint32_t i = 0; i < 50000; i++);
+            swd_check_counter++;
+        }
+        
+        /* No SWD connection - return to ultra-low power */
+        return false;
+    }
+    
+    /* Should not reach here, but return to ultra-low power to be safe */
+    return false;
+}
+
+/**
+ * @brief Restore full power mode
+ */
+void SleepWake_RestoreFullPower(void)
+{
+    if (!g_is_ultra_low_power)
+    {
+        return;  /* Not in ultra-low power */
+    }
+    
+    /* Restore power pins */
+    if (g_saved_lcd_flash_pwr)
+        GPIO_SetBits(LCD_FLASH_PWR_EN_PORT, LCD_FLASH_PWR_EN_PIN);
+    else
+        GPIO_ResetBits(LCD_FLASH_PWR_EN_PORT, LCD_FLASH_PWR_EN_PIN);
+    
+    if (g_saved_lv_cutoff)
+        GPIO_SetBits(LV_CUTOFF_EN_PORT, LV_CUTOFF_EN_PIN);
+    else
+        GPIO_ResetBits(LV_CUTOFF_EN_PORT, LV_CUTOFF_EN_PIN);
+    
+    GPIO_ResetBits(LP4086_ISET_PORT, LP4086_ISET_PIN);
+    
+    if (g_saved_tv1_state)
+        GPIO_SetBits(TV1_PORT, TV1_PIN);
+    else
+        GPIO_ResetBits(TV1_PORT, TV1_PIN);
+    
+    if (g_saved_tv2_state)
+        GPIO_SetBits(TV2_PORT, TV2_PIN);
+    else
+        GPIO_ResetBits(TV2_PORT, TV2_PIN);
+    
+    /* Restore backlight */
+    PWM_SetDutyCycle(g_saved_backlight_brightness);
+    
+    g_is_ultra_low_power = false;
+    g_is_sleeping = false;
+    
+    /* Reset inactivity timer */
+    g_inactivity_counter = 0;
+}
+
+/**
+ * @brief Set debug mode
+ */
+void SleepWake_SetDebugMode(bool enable)
+{
+    g_debug_mode = enable;
+}
+
+/**
+ * @brief Get debug mode status
+ */
+bool SleepWake_IsDebugMode(void)
+{
+    return g_debug_mode;
 }

@@ -81,6 +81,8 @@ project:
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_tim.c
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_adc.c
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_exti.c
+        - file: ../firmware/n32g031_std_periph_driver/src/n32g031_lptim.c
+        - file: ../firmware/n32g031_std_periph_driver/src/n32g031_pwr.c
     - group: USER
       files:
         - file: ../src/main.c

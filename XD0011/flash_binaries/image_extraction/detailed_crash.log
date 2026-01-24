@@ -1,0 +1,187 @@
+Reading onboard_flash_dumpF2.binF...
+File size: 1048576 bytes
+Scanning 1048576 bytes for images (Pass 1: Coarse detection)...
+  Progress: 0.0%
+  Progress: 1.6%
+  Progress: 3.1%
+  Progress: 4.7%
+  Progress: 6.2%
+  Progress: 7.8%
+  Found image at 0x14600: 75x80, score=0.064
+  Found image at 0x14B00: 75x80, score=0.061
+  Found image at 0x15D00: 75x80, score=0.064
+  Found image at 0x16A00: 75x80, score=0.063
+  Found image at 0x17B00: 75x80, score=0.065
+  Progress: 9.4%
+  Progress: 10.9%
+  Found image at 0x1E400: 120x160, score=0.084
+  Found image at 0x1E500: 120x160, score=0.082
+  Found image at 0x1F400: 120x32, score=0.074
+  Progress: 12.5%
+  Found image at 0x20000: 120x160, score=0.083
+  Found image at 0x20100: 120x160, score=0.086
+  Found image at 0x20200: 120x160, score=0.084
+  Found image at 0x20300: 120x160, score=0.083
+  Found image at 0x21200: 120x32, score=0.074
+  Found image at 0x21E00: 120x160, score=0.085
+  Found image at 0x21F00: 120x160, score=0.087
+  Found image at 0x22000: 120x160, score=0.084
+  Found image at 0x22100: 120x160, score=0.084
+  Found image at 0x22F00: 120x32, score=0.080
+  Found image at 0x23000: 120x160, score=0.075
+  Found image at 0x23B00: 120x160, score=0.075
+  Found image at 0x23C00: 120x160, score=0.085
+  Found image at 0x23D00: 120x160, score=0.088
+  Found image at 0x23E00: 120x160, score=0.084
+  Found image at 0x23F00: 120x160, score=0.084
+  Progress: 14.1%
+  Found image at 0x24D00: 120x160, score=0.081
+  Found image at 0x24E00: 120x160, score=0.076
+  Found image at 0x25900: 120x160, score=0.076
+  Found image at 0x25A00: 120x160, score=0.085
+  Found image at 0x25B00: 120x160, score=0.091
+  Found image at 0x25C00: 120x160, score=0.084
+  Found image at 0x25D00: 120x32, score=0.085
+  Found image at 0x26B00: 120x160, score=0.082
+  Found image at 0x26C00: 120x160, score=0.077
+  Found image at 0x27700: 120x32, score=0.074
+  Found image at 0x27800: 120x160, score=0.086
+  Found image at 0x27900: 120x32, score=0.084
+  Found image at 0x27A00: 120x32, score=0.086
+  Found image at 0x27B00: 120x160, score=0.085
+  Progress: 15.6%
+  Found image at 0x28800: 120x160, score=0.089
+  Found image at 0x28900: 120x160, score=0.082
+  Found image at 0x28A00: 120x160, score=0.078
+  Found image at 0x29500: 120x32, score=0.075
+  Found image at 0x29600: 120x32, score=0.082
+  Found image at 0x29700: 120x32, score=0.086
+  Found image at 0x29800: 120x160, score=0.085
+  Found image at 0x29900: 120x160, score=0.086
+  Found image at 0x2A700: 120x160, score=0.083
+  Found image at 0x2A800: 120x160, score=0.080
+  Found image at 0x2B400: 120x32, score=0.082
+  Found image at 0x2B600: 120x160, score=0.086
+  Found image at 0x2B700: 120x160, score=0.087
+  Progress: 17.2%
+  Found image at 0x2C600: 120x160, score=0.081
+  Found image at 0x2D100: 24x24, score=0.062
+  Found image at 0x2D300: 120x160, score=0.094
+  Found image at 0x2D400: 120x160, score=0.087
+  Found image at 0x2D500: 120x160, score=0.088
+  Found image at 0x2E300: 120x160, score=0.085
+  Found image at 0x2E400: 120x160, score=0.083
+  Found image at 0x2F000: 120x160, score=0.095
+  Found image at 0x2F100: 120x160, score=0.095
+  Found image at 0x2F200: 120x160, score=0.090
+  Found image at 0x2F300: 120x160, score=0.089
+  Progress: 18.8%
+  Found image at 0x30100: 120x160, score=0.086
+  Found image at 0x30200: 120x160, score=0.086
+  Found image at 0x30D00: 120x160, score=0.087
+  Found image at 0x30E00: 120x160, score=0.098
+  Found image at 0x30F00: 120x160, score=0.096
+  Found image at 0x31000: 120x160, score=0.092
+  Found image at 0x31100: 120x160, score=0.091
+  Found image at 0x31F00: 120x160, score=0.088
+  Found image at 0x32000: 120x160, score=0.090
+  Found image at 0x32A00: 120x160, score=0.104
+  Found image at 0x32B00: 120x160, score=0.089
+  Found image at 0x32C00: 120x160, score=0.102
+  Found image at 0x32D00: 120x160, score=0.098
+  Found image at 0x32E00: 120x160, score=0.095
+  Found image at 0x32F00: 120x160, score=0.093
+  Found image at 0x33C00: 128x128, score=0.068
+  Found image at 0x33D00: 120x160, score=0.089
+  Found image at 0x33E00: 120x160, score=0.093
+  Found image at 0x33F00: 128x128, score=0.060
+  Progress: 20.3%
+  Found image at 0x34800: 120x160, score=0.107
+  Found image at 0x34900: 120x160, score=0.092
+  Found image at 0x34A00: 120x160, score=0.105
+  Found image at 0x34B00: 120x160, score=0.100
+  Found image at 0x34C00: 120x160, score=0.097
+  Found image at 0x34D00: 120x160, score=0.096
+  Found image at 0x35A00: 120x32, score=0.093
+  Found image at 0x35B00: 120x160, score=0.090
+  Found image at 0x35C00: 120x160, score=0.097
+  Found image at 0x35D00: 128x128, score=0.062
+  Found image at 0x36000: 42x68, score=0.063
+  Found image at 0x36100: 72x36, score=0.063
+  Found image at 0x36500: 120x160, score=0.100
+  Found image at 0x36600: 120x160, score=0.110
+  Found image at 0x36700: 120x160, score=0.093
+  Found image at 0x36800: 120x160, score=0.106
+  Found image at 0x36900: 120x160, score=0.101
+  Found image at 0x36A00: 120x160, score=0.099
+  Found image at 0x36B00: 120x160, score=0.099
+  Found image at 0x37800: 120x32, score=0.098
+  Found image at 0x37900: 120x32, score=0.092
+  Found image at 0x37A00: 120x160, score=0.100
+  Found image at 0x37C00: 128x128, score=0.071
+  Found image at 0x37D00: 128x128, score=0.068
+  Found image at 0x37E00: 128x160, score=0.064
+  Found image at 0x37F00: 128x160, score=0.060
+  Progress: 21.9%
+  Found image at 0x38300: 120x160, score=0.100
+  Found image at 0x38400: 120x160, score=0.109
+  Found image at 0x38500: 120x160, score=0.093
+  Found image at 0x38600: 120x160, score=0.105
+  Found image at 0x38700: 120x160, score=0.100
+  Found image at 0x38800: 120x160, score=0.100
+  Found image at 0x38900: 120x160, score=0.101
+  Found image at 0x39600: 120x32, score=0.100
+  Found image at 0x39700: 120x32, score=0.092
+  Found image at 0x39800: 120x160, score=0.098
+  Found image at 0x39D00: 128x160, score=0.068
+  Found image at 0x39E00: 128x128, score=0.065
+  Found image at 0x39F00: 128x128, score=0.061
+  Found image at 0x3A100: 120x160, score=0.098
+  Found image at 0x3A200: 120x160, score=0.108
+  Found image at 0x3A300: 120x160, score=0.091
+  Found image at 0x3A400: 120x160, score=0.103
+  Found image at 0x3A500: 120x160, score=0.097
+  Found image at 0x3A600: 120x160, score=0.099
+  Found image at 0x3A700: 120x160, score=0.101
+  Found image at 0x3B300: 24x24, score=0.065
+  Found image at 0x3B500: 120x160, score=0.092
+  Found image at 0x3B600: 120x160, score=0.097
+  Found image at 0x3BB00: 128x160, score=0.070
+  Found image at 0x3BC00: 128x128, score=0.068
+  Found image at 0x3BD00: 128x128, score=0.065
+  Found image at 0x3BF00: 120x160, score=0.093
+  Progress: 23.4%
+  Found image at 0x3C000: 120x160, score=0.104
+  Found image at 0x3C100: 120x160, score=0.088
+  Found image at 0x3C200: 120x160, score=0.099
+  Found image at 0x3C300: 120x160, score=0.093
+  Found image at 0x3C400: 120x160, score=0.098
+  Found image at 0x3C500: 120x160, score=0.099
+  Found image at 0x3CF00: 128x160, score=0.074
+  Found image at 0x3D000: 128x128, score=0.074
+  Found image at 0x3D100: 24x24, score=0.062
+  Found image at 0x3D200: 120x160, score=0.095
+  Found image at 0x3D300: 120x160, score=0.091
+  Found image at 0x3D400: 120x160, score=0.095
+  Found image at 0x3DA00: 128x128, score=0.069
+  Found image at 0x3DB00: 128x128, score=0.066
+  Found image at 0x3DD00: 120x32, score=0.093
+  Found image at 0x3DE00: 120x32, score=0.106
+  Found image at 0x3DF00: 120x160, score=0.086
+  Found image at 0x3E000: 120x160, score=0.096
+  Found image at 0x3E100: 120x160, score=0.090
+  Found image at 0x3E200: 120x160, score=0.096
+  Found image at 0x3E300: 120x32, score=0.102
+  Found image at 0x3ED00: 128x160, score=0.072
+  Found image at 0x3F000: 120x160, score=0.093
+  Found image at 0x3F100: 120x160, score=0.090
+  Found image at 0x3F200: 120x160, score=0.094
+  Found image at 0x3FB00: 120x32, score=0.092
+  Found image at 0x3FC00: 120x32, score=0.105
+  Found image at 0x3FD00: 120x32, score=0.086
+  Found image at 0x3FE00: 120x160, score=0.093
+  Found image at 0x3FF00: 120x160, score=0.088
+  Progress: 25.0%
+  Found image at 0x40000: 120x160, score=0.094
+  Found image at 0x40100: 120x32, score=0.101
+  Found image at 0x40B00: 128x160, score=0.070

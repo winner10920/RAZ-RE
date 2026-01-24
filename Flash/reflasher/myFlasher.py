@@ -6,14 +6,14 @@ import pylink
 
 
 
-DATA_BUFFER_ADDR        = 0x20000015
-LEVEL_BUFFER_ADDR       = 0x20001049
-STATUS_REG_ADDR         = 0x20001064
-WRITE_FLAG_ADDR         = 0x20001068
-LVL_RESET_FLAG_ADDR     = 0x20001054
-CONTINUE_FLAG_ADDR      = 0x20001018
-PAGE_ADDR               = 0x2000105c
-MAINRAN_ADDR            = 0x20000008
+DATA_BUFFER_ADDR        = 0X20000015
+LEVEL_BUFFER_ADDR       = 0X2000105D
+STATUS_REG_ADDR         = 0X20001078
+WRITE_FLAG_ADDR         = 0X2000107C
+LVL_RESET_FLAG_ADDR     = 0X20001068
+CONTINUE_FLAG_ADDR      = 0X20001018
+PAGE_ADDR               = 0X20001070
+MAINRAN_ADDR            = 0X2000106D
 
 # -------------------------------------
 # MCU PROG MEM
@@ -52,11 +52,13 @@ class StatusValues(Enum):
     IDLE = 0
     READY = 1
     STARTING = 2
-    ERROR = 3
+    LEVEL_RESET = 3
     START_WRITE = 4
     WRITE_DONE = 5
     START_READ = 6
     READ_DONE = 7
+    OPERATION_COMPLETE = 8
+    
 
 
 
@@ -67,8 +69,10 @@ jlink.oem
 print(f"jlink.opened(): {jlink.opened()}")
 print(f"jlink.connected(): {jlink.connected()}")
 jlink.set_tif(pylink.JLinkInterfaces.SWD)
+print(f"Set Speed=4000: {jlink.set_speed(4000)}")
 print(f"jlink.connect(): {jlink.connect('N32G031K8', verbose=True)}")
 print(f"jlink.target_connected(): {jlink.target_connected()}")
+print(f"set Endianess = little: {jlink.set_little_endian()}")
 print(f"jlink.core_id(): {jlink.core_id()}")
 print(f"jlink.device_family(): {jlink.device_family()}")
 print(f"jlink.target_connected(): {jlink.target_connected()}")
@@ -103,7 +107,7 @@ print(f"PAGE: {jlink.memory_read8(PAGE_ADDR, 1)}")
 
 while(int.from_bytes(bytes(jlink.memory_read8(STATUS_REG_ADDR,1)), 'big') != StatusValues.READY.value):
                     time.sleep(1)
-                    print(f"status: {jlink.memory_read8(STATUS_REG_ADDR, 4)}")
+                    print(f"status: {jlink.memory_read8(STATUS_REG_ADDR, 1)}")
                     pass
 
 def dump_flash(self, file_path=""):
@@ -113,6 +117,7 @@ def dump_flash(self, file_path=""):
             
             print("BLOCK_SIZE:\t\t" + str(FLASH_BLOCK_SIZE))
             print("BLOCKS:\t\t\t" + str(FLASH_BLOCKS))
+            start_time = time.time()
             self.memory_write8(CONTINUE_FLAG_ADDR, [1])
             print(f"CONTINUE_FLAG: {self.memory_read8(CONTINUE_FLAG_ADDR, 1)}")
             
@@ -121,10 +126,13 @@ def dump_flash(self, file_path=""):
         
 
             #Wait for read to complete
+            
             while(int.from_bytes(bytes(self.memory_read8(STATUS_REG_ADDR,1)), 'big') != StatusValues.READ_DONE.value):
-                    time.sleep(1)
-                    print(f"status: {self.memory_read8(STATUS_REG_ADDR, 1)}")
+                    #time.sleep(.1)
+                    elapsed_ms = int((time.time() - start_time) * 1000)
+                    print(f"status: {self.memory_read8(STATUS_REG_ADDR, 1)} ({elapsed_ms}ms)")
                     pass
+            
             print(f"PAGE: {jlink.memory_read8(PAGE_ADDR, 1)}")
             # Read data from memory
             data = b''
@@ -132,13 +140,14 @@ def dump_flash(self, file_path=""):
             if file_path != "":
                 
                 for block in range(FLASH_BLOCKS):
-                    if(block % 64 == 0 and block != 0):
-                        print(f"Block: {int(block / 64)}")
+                    block_start_time = time.time()
                     
-
+                
                     #Wait for read to complete
+                    
                     while(int.from_bytes(bytes(self.memory_read8(STATUS_REG_ADDR,1)), 'big') != StatusValues.READ_DONE.value):
-                            #print(f"status: {self.memory_read8(STATUS_REG_ADDR, 1)}")
+                            elapsed_ms = int((time.time() - block_start_time) * 1000)
+                            #print(f"status: {self.memory_read8(STATUS_REG_ADDR, 1)} ({elapsed_ms}ms)")
                             #time.sleep(1)
                             pass
                     # Read from memory and add to existing data buffer
@@ -147,11 +156,14 @@ def dump_flash(self, file_path=""):
                     page += 1
                     self.memory_write8(PAGE_ADDR, [page])
                     print(f"Page: {self.memory_read8(PAGE_ADDR, 1)} data: {d[0:16].hex()}...")
-                
+                    elapsed_ms = int((time.time() - block_start_time) * 1000)
+                    print(f"Block {block} read complete ({elapsed_ms}ms)")
 
                 print("")
                 with open(file_path, 'wb') as f:
                     f.write(data)
+                print("Flash dump complete.")
+                self.memory_write8(STATUS_REG_ADDR, [StatusValues.OPERATION_COMPLETE.value])
         except Exception as e:
             print("Error during flash dump: " + str(e)) 
 
@@ -178,26 +190,32 @@ def upload_flash(self,flash_input_file=""):
                 self.memory_write8(CONTINUE_FLAG_ADDR, [1])
                 
                 # Wait for erase
+                erase_start_time = time.time()
                 while(int.from_bytes(bytes(self.memory_read8(STATUS_REG_ADDR,1)), 'big') != StatusValues.WRITE_DONE.value):
                         pass
-                print(f"Erase done. STATUS_REG: {self.memory_read8(STATUS_REG_ADDR, 1)}")
+                erase_elapsed_ms = int((time.time() - erase_start_time) * 1000)
+                print(f"Erase done. STATUS_REG: {self.memory_read8(STATUS_REG_ADDR, 1)} ({erase_elapsed_ms}ms)")
                 
                 # Write data to memory
                 for block in range(FLASH_BLOCKS):
+                    write_start_time = time.time()
                     bl_data = buffer[block * FLASH_BLOCK_SIZE: (block * FLASH_BLOCK_SIZE) + FLASH_BLOCK_SIZE]
                     print(f"Writing Block {block} / {FLASH_BLOCKS}...")
-                    for offset in range(0, len(bl_data), 4):
-                        d = [bl_data[offset], bl_data[offset+1], bl_data[offset+2], bl_data[offset+3]]
-                        self.memory_write32(DATA_BUFFER_ADDR + offset, d)
+                    for offset in range(0, len(bl_data), 1):
+                        d = [bl_data[offset]]
+                        self.memory_write8(DATA_BUFFER_ADDR + offset, d)
 
                     #Se to 4 to write data to flash
                     self.memory_write8(STATUS_REG_ADDR, [StatusValues.START_WRITE.value]) 
 
                     #Wait for write to complete
+                    
                     while(int.from_bytes(bytes(self.memory_read8(STATUS_REG_ADDR,1)), 'big') != StatusValues.WRITE_DONE.value):
-                            
-                            print(f"status: {self.memory_read8(STATUS_REG_ADDR, 1)}")
-                            time.sleep(1)
+                            elapsed_ms = int((time.time() - write_start_time) * 1000)
+                            print(f"status: {self.memory_read8(STATUS_REG_ADDR, 1)} ({elapsed_ms}ms)")
+                            time.sleep(.1)
+                            if int.from_bytes(bytes(self.memory_read8(STATUS_REG_ADDR,1)), 'big') == StatusValues.OPERATION_COMPLETE.value:
+                                break
                             pass
 
                 self.memory_write8(CONTINUE_FLAG_ADDR, [0])
@@ -207,8 +225,25 @@ def upload_flash(self,flash_input_file=""):
             print(f"Error - Invalid file path: {flash_input_file}")
 
 
-try:
-    #dump_flash(jlink, "flash_dump.bin")
-    upload_flash(jlink, "ReneePatched.binF")
-except Exception as e:
-    print("Error during flash operation: " + str(e))
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Flash read/write utility for MCU')
+    parser.add_argument('action', choices=['dump', 'upload'], help='Action to perform: dump (read) or upload (write)')
+    parser.add_argument('-f', '--file', type=str, help='File path for dump output or upload input')
+    
+    args = parser.parse_args()
+    
+    try:
+        if args.action == 'dump':
+            output_file = args.file if args.file else "flash_dump.binF"
+            dump_flash(jlink, output_file)
+        elif args.action == 'upload':
+            input_file = args.file if args.file else "ReneePatched.binF"
+            upload_flash(jlink, input_file)
+    except Exception as e:
+        print("Error during flash operation: " + str(e))
+        jlink.close()
+
+    jlink.reset()
+    jlink.restart()
+    jlink.write_memory8(MAINRAN_ADDR, [0x0])  # Example: Write to Flash control register
+    jlink.close()
