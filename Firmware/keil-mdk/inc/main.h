@@ -32,6 +32,9 @@ extern "C" {
 #include "spi_flash.h"
 #include "nv3029.h"
 
+void setup(void);
+void mainScreen(void);
+int main(void);
 void Delay(volatile uint32_t count);
 void GPIO_Init(GPIO_Module* GPIOx, uint16_t Pin, uint32_t GpioMode);
 void GPIO_Off(GPIO_Module *GPIOx, uint16_t Pin);

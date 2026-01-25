@@ -17,6 +17,11 @@
 extern "C" {
 #endif
 
+
+
+extern void setup(void);
+
+
 /**
  * @brief Initialize sleep/wake system
  * @param timeout_sec Timeout in seconds before device goes to sleep (0 = disabled)

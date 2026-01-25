@@ -162,6 +162,8 @@ extern "C" {
 #define NV3029_SPI_CLK          RCC_APB2_PERIPH_SPI1
 #define NV3029_SPI_AF           GPIO_AF0_SPI1
 
+#define LCD_FLASH_PWR_EN_PIN GPIOB,GPIO_PIN_4
+
 
 // // NV3029 commands (mapped from ST7735 compatible commands used by this panel)
 // #define NV3029_SWRESET 0x01
@@ -179,7 +181,6 @@ extern "C" {
 
 
 
-
 // Define the signal types based on the function calls
 typedef enum {
         CMD_LOW  = 0, // Maps to lcd_cmd_LOW_SEND_FUN
@@ -192,6 +193,14 @@ typedef struct {
         SignalType type;
             uint8_t value;
 } LcdPacket;
+
+#define BUFFER_SIZE 4096
+
+extern void Delay(volatile uint32_t count);
+extern uint8_t buffer[BUFFER_SIZE];
+extern void GPIO_Init(GPIO_Module* GPIOx, uint16_t Pin, uint32_t GpioMode);
+extern void GPIO_Off(GPIO_Module *GPIOx, uint16_t Pin);
+extern void GPIO_On(GPIO_Module *GPIOx, uint16_t Pin);
 
 void spi1_config(bool sixteen_bit);
 static void spi1_onewire_bitbang(uint8_t tx_byte, uint8_t low_or_high);
@@ -227,18 +236,14 @@ void LCD_test_grid(void);
 void LCD_test_char(void);
 void LCD_Send_Sequence(const LcdPacket* packet_array, uint32_t length);
 void screen_Init(uint8_t screen_type);
-extern void Delay(volatile uint32_t count);
+
+
+void displayPhoto(uint32_t addr, uint32_t byteCount);
+void displayFullPhotoChunked(uint32_t startAddr);
 
 /* Flash-to-LCD DMA streaming API */
 void LCD_flash_dma_init(void);
-bool LCD_display_flash_region(uint32_t flash_addr,
-                              uint8_t x0,
-                              uint8_t y0,
-                              uint8_t x1,
-                              uint8_t y1,
-                              uint32_t wait_ms,
-                              uint8_t* dest_buffer,
-                              uint32_t dest_size);
+
 bool LCD_write_buffer_to_window(const uint16_t* data, uint32_t pixel_count, uint32_t wait_ms);
 void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* dest_buffer, uint32_t dest_size);
 bool LCD_is_flash_read_complete(void);

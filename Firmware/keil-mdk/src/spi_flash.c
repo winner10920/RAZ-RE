@@ -557,6 +557,24 @@ void sFLASH_WaitForWriteEnd(void)
     sFLASH_CS_HIGH();
 }
 
+uint8_t sFLASH_ReadRegister(uint8_t reg)
+{
+    uint8_t flashstatus = 0;
+
+    /*!< Select the FLASH: Chip Select low */
+    sFLASH_CS_LOW();
+
+    /*!< Send "Read Status Register" instruction */
+    sFLASH_SendByte(sFLASH_CMD_RDSR_1);
+    
+    flashstatus = sFLASH_SendByte(reg);
+
+    /*!< Deselect the FLASH: Chip Select high */
+    sFLASH_CS_HIGH();
+		
+		return flashstatus;
+}
+
 /**
  * @}
  */

@@ -3,7 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/Firmware/keil-mdk/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

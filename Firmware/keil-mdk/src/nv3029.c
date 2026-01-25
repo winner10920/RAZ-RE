@@ -855,8 +855,10 @@ static void spi1_onewire_bitbang(uint8_t tx_byte, uint8_t low_or_high) {
 
 void LCD_init(void)
 {
+    GPIO_Init(LCD_FLASH_PWR_EN_PIN, GPIO_MODE_OUTPUT_PP);
+	GPIO_Off(LCD_FLASH_PWR_EN_PIN);
     
-    
+
     LCD_rst_high();
     Delay(50);
     LCD_rst_low();
@@ -872,10 +874,10 @@ void LCD_init(void)
     if(spi_rx_data[0] == 0x33 && spi_rx_data[1] == 0x30 && spi_rx_data[2] == 0x25) {
         spi1_onewire_bitbang(0xd3, 0x00);
         if(spi_rx_data[0] == 0x33 && spi_rx_data[1] == 0x30 && spi_rx_data[2] == 0x25) {
-            screen_type = 2;
+            screen_type = 0;
         }
         else {
-            screen_type = 0; 
+            screen_type = 2; 
         }
     }
     else {
@@ -977,6 +979,8 @@ void LCD_init(void)
     Delay(150);
     LCD_rst_high();
     Delay(200);
+    LCD_SendCommand_DMA(LCD_CMD_SWRESET); // 0x01
+    Delay(150);
     LCD_SendCommand_DMA(LCD_CMD_SLPOUT);
     Delay(200);
 
@@ -1215,6 +1219,53 @@ void LCD_diag(void)
     
 }
 
+void displayPhoto(uint32_t addr, uint32_t byteCount){
+
+
+	/* Initiate async DMA read from flash */
+	LCD_flash_read_async(addr, byteCount, buffer, BUFFER_SIZE);
+	
+	/* Wait for DMA read to complete */
+	while(!LCD_is_flash_read_complete());
+	
+	/* Write buffer to LCD */
+	LCD_cs_low();
+	LCD_SetWindow(80, 0, 119, 39);
+	LCD_write_buffer_to_window((uint16_t*)buffer, 0x0BE0/2, 5000);
+	LCD_cs_high();
+    }
+
+void displayFullPhotoChunked(uint32_t startAddr){
+	LCD_fill_screen(COLOR_BLACK);
+	uint8_t imageWidth = NV3029_WIDTH;
+	uint8_t imageHeight = NV3029_HEIGHT;
+	uint32_t totalBytes = imageWidth * imageHeight *2;
+	uint32_t addr = startAddr;
+	uint32_t bytesPerChunk = BUFFER_SIZE;
+	uint32_t bytesRemaining = totalBytes;
+
+	LCD_cs_low();
+	LCD_SetWindow(0, 0, 127, 159);
+
+	while(bytesRemaining > 0){
+		uint32_t bytesToRead = (bytesRemaining > bytesPerChunk) ? bytesPerChunk : bytesRemaining;
+
+		{/* Initiate async DMA read from flash */
+		LCD_flash_read_async(addr, bytesToRead, buffer, BUFFER_SIZE);
+		
+		/* Wait for DMA read to complete */
+		while(!LCD_is_flash_read_complete());
+		}
+		
+		/* Write buffer to LCD */
+		LCD_write_buffer_to_window((uint16_t*)buffer, bytesToRead/2, 5000);
+		addr += bytesToRead;
+		bytesRemaining -= bytesToRead;
+	}
+	
+		LCD_cs_high();
+
+    }
 
 /**
  * Flash-to-LCD DMA streaming functions
@@ -1242,103 +1293,7 @@ void LCD_flash_dma_init(void)
     DMA_RequestRemap(DMA_REMAP_SPI2_TX, DMA, DMA_CH5, ENABLE);
 }
 
-/**
- * @brief Read a rectangular region from flash and display on LCD
- * 
- * @param flash_addr Starting address in flash memory
- * @param x0,y0,x1,y1 LCD window coordinates
- * @param wait_ms Timeout in milliseconds
- * 
- * Calculates pixel count from window, reads that many bytes from flash,
- * and streams them to LCD display.
- */
-bool LCD_display_flash_region(uint32_t flash_addr,
-                              uint8_t x0,
-                              uint8_t y0,
-                              uint8_t x1,
-                              uint8_t y1,
-                              uint32_t wait_ms,
-                              uint8_t* dest_buffer,
-                              uint32_t dest_size)
-{
-    // Calculate pixel dimensions
-    uint16_t width = x1 - x0 + 1;
-    uint16_t height = y1 - y0 + 1;
-    uint32_t pixel_count = (uint32_t)width * height;
-    
-    // Each pixel is 2 bytes (RGB565)
-    uint32_t byte_count = pixel_count * 2;
-    
-    // Caller-provided buffer must be large enough
-    if (dest_buffer == NULL || dest_size < byte_count) {
-        return false;
-    }
-    flash_buffer_ptr = dest_buffer;
-    flash_buffer_size = dest_size;
-    
-    // 1) Prepare flash READ stream: keep CS low and set 24-bit address
-    sFLASH_StartReadSequence(flash_addr);
 
-    // 2) Enable SPI2 DMA requests
-    SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_RX, ENABLE);
-    SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_TX, ENABLE);
-
-    // 3) Start TX DMA to send dummy bytes (generate RX clocks)
-    dma_start_transfer(
-        DMA_CH5,
-        (uint32_t)&sFLASH_SPI->DAT,
-        (uint32_t)&spi2_dummy_tx,
-        (uint16_t)byte_count,
-        DMA_DIR_PERIPH_DST,
-        DMA_PERIPH_INC_DISABLE,
-        DMA_MEM_INC_DISABLE,
-        DMA_PERIPH_DATA_SIZE_BYTE,
-        DMA_MemoryDataSize_Byte,
-        DMA_MODE_NORMAL,
-        DMA_PRIORITY_HIGH,
-        DMA_M2M_DISABLE
-    );
-
-    // 4) Start RX DMA to capture data into buffer
-    dma_start_transfer(
-        DMA_CH4,
-        (uint32_t)&sFLASH_SPI->DAT,
-        (uint32_t)dest_buffer,
-        (uint16_t)byte_count,
-        DMA_DIR_PERIPH_SRC,
-        DMA_PERIPH_INC_DISABLE,
-        DMA_MEM_INC_ENABLE,
-        DMA_PERIPH_DATA_SIZE_BYTE,
-        DMA_MemoryDataSize_Byte,
-        DMA_MODE_NORMAL,
-        DMA_PRIORITY_HIGH,
-        DMA_M2M_DISABLE
-    );
-
-    // 5) Wait for RX to complete (TX completes concurrently)
-    if (!dma_wait_complete(DMA_CH4, wait_ms)) {
-        DMA_EnableChannel(DMA_CH4, DISABLE);
-        DMA_EnableChannel(DMA_CH5, DISABLE);
-        sFLASH_CS_HIGH();
-        return false;
-    }
-
-    // Stop TX channel if still running
-    DMA_EnableChannel(DMA_CH5, DISABLE);
-
-    // Deassert flash CS (end read stream)
-    sFLASH_CS_HIGH();
-
-    // 6) Push the buffer to LCD via SPI1 DMA
-    LCD_cs_low();
-    LCD_SetWindow(x0, y0, x1, y1);
-    spi1_config(true);
-    LCD_dc_data();
-    SPI1_tx_dma(dest_buffer, byte_count, wait_ms);
-    
-    LCD_cs_high();
-    return true;
-}
 
 /**
  * @brief Write buffer directly to LCD window (for use after flash read)
@@ -1388,11 +1343,11 @@ void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* des
     sFLASH_StartReadSequence(flash_addr);
     
     //sFLASH_ReadByte();
-   /* 2) Enable SPI2 DMA requests for both RX and TX */
+    //sFLASH_ReadByte();
+    /* 2) Enable SPI2 DMA requests for both RX and TX */
     SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_RX, ENABLE);
     SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_TX, ENABLE);
    
-    
     /* 4) Start RX DMA to capture data into buffer */
     dma_start_transfer(
         DMA_CH4,
@@ -1407,8 +1362,8 @@ void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* des
         DMA_MODE_NORMAL,
         DMA_PRIORITY_MEDIUM,
         DMA_M2M_DISABLE
-    );
-      /* 3) Start TX DMA to send dummy bytes (generate RX clocks) */
+    ); 
+    /* 3) Start TX DMA to send dummy bytes (generate RX clocks) */
     dma_start_transfer(
         DMA_CH5,
         (uint32_t)&sFLASH_SPI->DAT,
@@ -1423,6 +1378,9 @@ void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* des
         DMA_PRIORITY_HIGH,
         DMA_M2M_DISABLE
     );
+    
+
+
 
     
 }

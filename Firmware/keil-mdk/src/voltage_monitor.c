@@ -112,17 +112,19 @@ uint16_t VoltageMonitor_ReadChannel(uint8_t channel)
  */
 void VoltageMonitor_UpdateReadings(void)
 {
+    
+
     /* Read all 4 channels and update the struct */
     g_voltage_readings.pa0_analog = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA0));
     
     //GPIO_On(TV1_PIN);  /* Power on voltage sense circuitry if needed */
     //Delay(1);
-    g_voltage_readings.pa1_tv1_sense = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA1));
+    g_voltage_readings.pa1_tv1_sense = 2* VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA1));
     //GPIO_Off(TV1_PIN); /* Power off to save energy */
     
     //GPIO_On(TV2_PIN);  /* Power on voltage sense circuitry if needed */
     Delay(1);
-    g_voltage_readings.pa2_tv2_sense = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA2));
+    g_voltage_readings.pa2_tv2_sense = 2*VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA2));
     //GPIO_Off(TV2_PIN); /* Power off to save energy */
     
     

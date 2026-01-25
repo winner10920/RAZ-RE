@@ -11,6 +11,8 @@
 #include "n32g031_pwr.h"
 #include "n32g031_lptim.h"
 #include "core_cm0.h"
+#include "nv3029.h"
+#include "dma.h"
 
 /* Sleep/Wake state machine */
 static bool g_is_sleeping = false;
@@ -40,8 +42,7 @@ static bool g_saved_lp4086_iset = false;
 #define MIC_PIN GPIO_PIN_3
 #define MIC_EXTI_LINE EXTI_LINE3
 
-#define LCD_FLASH_PWR_EN_PORT GPIOB
-#define LCD_FLASH_PWR_EN_PIN GPIO_PIN_4
+
 
 #define LV_CUTOFF_EN_PORT GPIOA
 #define LV_CUTOFF_EN_PIN GPIO_PIN_12
@@ -58,7 +59,27 @@ static bool g_saved_lp4086_iset = false;
 #define LCD_BACKLIGHT_PIN GPIOA,GPIO_PIN_6
 
 /* Timer tick counter (assuming 100ms per call to SleepWake_CheckTimeout) */
-#define TICKS_PER_SECOND 10
+#define TICKS_PER_SECOND 3
+
+/**
+ * @brief Restore system clock after waking from STOP mode
+ * After STOP mode, the system runs on HSI (8MHz). This restores the original clock config.
+ */
+static void SleepWake_RestoreSystemClock(void)
+{
+    /* After wake from STOP, system is running on HSI (8MHz) */
+    /* Need to restore the original clock configuration */
+    
+    /* Call SystemInit to restore clock to configured state (48MHz HSI PLL) */
+    extern void SystemInit(void);
+    SystemInit();
+    
+    /* Alternative manual method if SystemInit doesn't work:
+     * Enable HSI and wait for it to stabilize
+     * Configure PLL if needed
+     * Switch system clock back to PLL or HSE
+     */
+}
 
 /**
  * @brief Initialize sleep/wake system
@@ -280,7 +301,9 @@ void SleepWake_WakeUp(void)
     {
         return;  /* Not sleeping */
     }
-
+    // dma_init();
+	// LCD_flash_dma_init();
+    // LCD_init();
     /* Restore backlight */
     PWM_SetDutyCycle(g_saved_backlight_brightness);
 
@@ -424,8 +447,14 @@ void SleepWake_EnterUltraLowPower(void)
         return;  /* Already in ultra-low power */
     }
     
+    //turn off lcd 
+
+    LCD_SendCommand_DMA(LCD_CMD_DISPOFF); // 0x28
+    Delay(10);
+    LCD_SendCommand_DMA(LCD_CMD_SLPIN); // 0x10
+    Delay(10);
     /* Save current power pin states */
-    g_saved_lcd_flash_pwr = GPIO_ReadOutputDataBit(LCD_FLASH_PWR_EN_PORT, LCD_FLASH_PWR_EN_PIN);
+    g_saved_lcd_flash_pwr = GPIO_ReadOutputDataBit(LCD_FLASH_PWR_EN_PIN);
     g_saved_lv_cutoff = GPIO_ReadOutputDataBit(LV_CUTOFF_EN_PORT, LV_CUTOFF_EN_PIN);
     g_saved_lp4086_iset = GPIO_ReadOutputDataBit(LP4086_ISET_PORT, LP4086_ISET_PIN);
     g_saved_tv1_state = GPIO_ReadOutputDataBit(TV1_PORT, TV1_PIN);
@@ -433,7 +462,7 @@ void SleepWake_EnterUltraLowPower(void)
     g_saved_backlight_brightness = PWM_GetDutyCycle();
     
     /* Turn off power-consuming peripherals */
-    GPIO_ResetBits(LCD_FLASH_PWR_EN_PORT, LCD_FLASH_PWR_EN_PIN);  /* LCD Flash power off */
+    GPIO_SetBits(LCD_FLASH_PWR_EN_PIN);  /* LCD Flash power off */
     GPIO_ResetBits(LV_CUTOFF_EN_PORT, LV_CUTOFF_EN_PIN);          /* LV cutoff disable */
     GPIO_ResetBits(LP4086_ISET_PORT, LP4086_ISET_PIN);            /* Keep LP4086 ISET low */
     GPIO_ResetBits(TV1_PORT, TV1_PIN);                            /* TV1 off */
@@ -450,7 +479,13 @@ void SleepWake_EnterUltraLowPower(void)
     
     /* Enter STOP mode - CPU clock stopped, peripherals can run on LSI */
     /* Wake sources: EXTI (button/mic) and LPTIM */
+
+    Delay(100);
     PWR_EnterSTOPMode(PWR_PDEntry_WFI);
+    
+    /* ===== EXECUTION RESUMES HERE AFTER WAKE ===== */
+    /* System clock is now HSI (8MHz) - must restore before using peripherals */
+    SleepWake_RestoreSystemClock();
 }
 
 /**
@@ -539,18 +574,28 @@ void SleepWake_RestoreFullPower(void)
         return;  /* Not in ultra-low power */
     }
     
-    /* Restore power pins */
-    if (g_saved_lcd_flash_pwr)
-        GPIO_SetBits(LCD_FLASH_PWR_EN_PORT, LCD_FLASH_PWR_EN_PIN);
-    else
-        GPIO_ResetBits(LCD_FLASH_PWR_EN_PORT, LCD_FLASH_PWR_EN_PIN);
+    /* Small delay to allow clock to stabilize after restoration */
+    for (volatile uint32_t i = 0; i < 10000; i++);
     
-    if (g_saved_lv_cutoff)
-        GPIO_SetBits(LV_CUTOFF_EN_PORT, LV_CUTOFF_EN_PIN);
-    else
-        GPIO_ResetBits(LV_CUTOFF_EN_PORT, LV_CUTOFF_EN_PIN);
+    /* Power cycle LCD to fully reset controller state */
+    GPIO_ResetBits(GPIOB, GPIO_PIN_4);  /* LCD_FLASH_PWR_EN off */
+    for (volatile uint32_t i = 0; i < 100000; i++);  /* Wait for power down */
+    GPIO_SetBits(GPIOB, GPIO_PIN_4);    /* LCD_FLASH_PWR_EN on */
+    for (volatile uint32_t i = 0; i < 100000; i++);  /* Wait for power up */
     
-    GPIO_ResetBits(LP4086_ISET_PORT, LP4086_ISET_PIN);
+    /* Force LCD hardware reset before reinit to clear controller state */
+    /* LCD may have retained orientation/config registers during sleep */
+    GPIO_ResetBits(GPIOB, GPIO_PIN_6);  /* LCD_RST low */
+    for (volatile uint32_t i = 0; i < 50000; i++);  /* Hold reset longer */
+    GPIO_SetBits(GPIOB, GPIO_PIN_6);    /* LCD_RST high */
+    for (volatile uint32_t i = 0; i < 50000; i++);  /* Wait for LCD to stabilize */
+    
+    /* Restore power pins and reinitialize peripherals */
+    setup();
+    
+    
+    
+
     
     if (g_saved_tv1_state)
         GPIO_SetBits(TV1_PORT, TV1_PIN);
@@ -562,6 +607,8 @@ void SleepWake_RestoreFullPower(void)
     else
         GPIO_ResetBits(TV2_PORT, TV2_PIN);
     
+
+
     /* Restore backlight */
     PWM_SetDutyCycle(g_saved_backlight_brightness);
     
