@@ -1193,6 +1193,7 @@ Section Cross References
     nv3029.o(.text.displayPhoto) refers to main.o(.bss.buffer) for buffer
     nv3029.o(.ARM.exidx.text.displayPhoto) refers to nv3029.o(.text.displayPhoto) for [Anonymous Symbol]
     nv3029.o(.text.LCD_flash_read_async) refers to spi_flash.o(.text.sFLASH_StartReadSequence) for sFLASH_StartReadSequence
+    nv3029.o(.text.LCD_flash_read_async) refers to spi_flash.o(.text.sFLASH_ReadByte) for sFLASH_ReadByte
     nv3029.o(.text.LCD_flash_read_async) refers to n32g031_spi.o(.text.SPI_I2S_EnableDma) for SPI_I2S_EnableDma
     nv3029.o(.text.LCD_flash_read_async) refers to dma.o(.text.dma_start_transfer) for dma_start_transfer
     nv3029.o(.text.LCD_flash_read_async) refers to nv3029.o(.bss.flash_dma_busy) for [Anonymous Symbol]
@@ -1416,12 +1417,9 @@ Section Cross References
     sleep_wake.o(.text.SleepWake_EnterUltraLowPower) refers to sleep_wake.o(.bss.g_wake_interrupt_triggered) for [Anonymous Symbol]
     sleep_wake.o(.ARM.exidx.text.SleepWake_EnterUltraLowPower) refers to sleep_wake.o(.text.SleepWake_EnterUltraLowPower) for [Anonymous Symbol]
     sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake) refers to sleep_wake.o(.text.SleepWake_RestoreFullPower) for SleepWake_RestoreFullPower
-    sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake) refers to pwm.o(.text.PWM_SetDutyCycle) for PWM_SetDutyCycle
     sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake) refers to sleep_wake.o(.bss.g_is_ultra_low_power) for [Anonymous Symbol]
     sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake) refers to sleep_wake.o(.bss.g_wake_interrupt_triggered) for [Anonymous Symbol]
     sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake) refers to sleep_wake.o(.bss.g_lptim_wake_triggered) for [Anonymous Symbol]
-    sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake) refers to sleep_wake.o(.bss.g_debug_mode) for [Anonymous Symbol]
-    sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake) refers to sleep_wake.o(.bss.SleepWake_HandleUltraLowPowerWake.debug_wake_counter) for [Anonymous Symbol]
     sleep_wake.o(.ARM.exidx.text.SleepWake_HandleUltraLowPowerWake) refers to sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake) for [Anonymous Symbol]
     sleep_wake.o(.text.SleepWake_RestoreFullPower) refers to n32g031_gpio.o(.text.GPIO_ResetBits) for GPIO_ResetBits
     sleep_wake.o(.text.SleepWake_RestoreFullPower) refers to n32g031_gpio.o(.text.GPIO_SetBits) for GPIO_SetBits
@@ -2450,7 +2448,6 @@ Removing Unused input sections from the image.
     Removing spi_flash.o(.ARM.exidx.text.sFLASH_ReadBuffer), (8 bytes).
     Removing spi_flash.o(.ARM.exidx.text.sFLASH_ReadID), (8 bytes).
     Removing spi_flash.o(.ARM.exidx.text.sFLASH_StartReadSequence), (8 bytes).
-    Removing spi_flash.o(.text.sFLASH_ReadByte), (52 bytes).
     Removing spi_flash.o(.ARM.exidx.text.sFLASH_ReadByte), (8 bytes).
     Removing spi_flash.o(.text.sFLASH_SendHalfWord), (52 bytes).
     Removing spi_flash.o(.ARM.exidx.text.sFLASH_SendHalfWord), (8 bytes).
@@ -2574,7 +2571,7 @@ Removing Unused input sections from the image.
     Removing sleep_wake.o(.ARM.exidx.text.LPTIM_TIM6_IRQHandler), (8 bytes).
     Removing sleep_wake.o(.text.SleepWake_IsLPTIMWake), (12 bytes).
     Removing sleep_wake.o(.ARM.exidx.text.SleepWake_IsLPTIMWake), (8 bytes).
-    Removing sleep_wake.o(.text.SleepWake_IsSWDConnected), (16 bytes).
+    Removing sleep_wake.o(.text.SleepWake_IsSWDConnected), (64 bytes).
     Removing sleep_wake.o(.ARM.exidx.text.SleepWake_IsSWDConnected), (8 bytes).
     Removing sleep_wake.o(.ARM.exidx.text.SleepWake_EnterUltraLowPower), (8 bytes).
     Removing sleep_wake.o(.ARM.exidx.text.SleepWake_HandleUltraLowPowerWake), (8 bytes).
@@ -2597,7 +2594,7 @@ Removing Unused input sections from the image.
     Removing depilogue.o(.text), (190 bytes).
     Removing depilogue.o(i.__ARM_clz), (46 bytes).
 
-849 unused section(s) (total 40488 bytes) removed from the image.
+848 unused section(s) (total 40484 bytes) removed from the image.
 
 ==============================================================================
 
@@ -2850,345 +2847,338 @@ Image Symbol Table
     [Anonymous Symbol]                       0x08001850   Section        0  nv3029.o(.text.LCD_flash_dma_init)
     __arm_cp.31_0                            0x08001874   Number         4  nv3029.o(.text.LCD_flash_dma_init)
     [Anonymous Symbol]                       0x08001878   Section        0  nv3029.o(.text.LCD_flash_read_async)
-    __arm_cp.27_0                            0x08001908   Number         4  nv3029.o(.text.LCD_flash_read_async)
-    __arm_cp.27_1                            0x0800190c   Number         4  nv3029.o(.text.LCD_flash_read_async)
-    __arm_cp.27_2                            0x08001910   Number         4  nv3029.o(.text.LCD_flash_read_async)
-    __arm_cp.27_3                            0x08001914   Number         4  nv3029.o(.text.LCD_flash_read_async)
-    __arm_cp.27_5                            0x08001918   Number         4  nv3029.o(.text.LCD_flash_read_async)
-    __arm_cp.27_6                            0x0800191c   Number         4  nv3029.o(.text.LCD_flash_read_async)
-    [Anonymous Symbol]                       0x08001920   Section        0  nv3029.o(.text.LCD_flash_write_async)
-    __arm_cp.33_0                            0x080019c8   Number         4  nv3029.o(.text.LCD_flash_write_async)
-    __arm_cp.33_1                            0x080019cc   Number         4  nv3029.o(.text.LCD_flash_write_async)
-    __arm_cp.33_2                            0x080019d0   Number         4  nv3029.o(.text.LCD_flash_write_async)
-    __arm_cp.33_3                            0x080019d4   Number         4  nv3029.o(.text.LCD_flash_write_async)
-    __arm_cp.33_4                            0x080019d8   Number         4  nv3029.o(.text.LCD_flash_write_async)
-    __arm_cp.33_5                            0x080019dc   Number         4  nv3029.o(.text.LCD_flash_write_async)
-    __arm_cp.33_6                            0x080019e0   Number         4  nv3029.o(.text.LCD_flash_write_async)
-    __arm_cp.33_7                            0x080019e4   Number         4  nv3029.o(.text.LCD_flash_write_async)
-    [Anonymous Symbol]                       0x080019e8   Section        0  nv3029.o(.text.LCD_init)
-    __arm_cp.18_0                            0x08001c10   Number         4  nv3029.o(.text.LCD_init)
-    __arm_cp.18_2                            0x08001c14   Number         4  nv3029.o(.text.LCD_init)
-    __arm_cp.18_3                            0x08001c18   Number         4  nv3029.o(.text.LCD_init)
-    __arm_cp.18_4                            0x08001c1c   Number         4  nv3029.o(.text.LCD_init)
-    [Anonymous Symbol]                       0x08001c20   Section        0  nv3029.o(.text.LCD_is_flash_read_complete)
-    __arm_cp.28_0                            0x08001c98   Number         4  nv3029.o(.text.LCD_is_flash_read_complete)
-    __arm_cp.28_2                            0x08001c9c   Number         4  nv3029.o(.text.LCD_is_flash_read_complete)
-    [Anonymous Symbol]                       0x08001ca0   Section        0  nv3029.o(.text.LCD_is_flash_write_complete)
-    __arm_cp.34_0                            0x08001e3c   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
-    __arm_cp.34_1                            0x08001e40   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
-    __arm_cp.34_2                            0x08001e44   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
-    __arm_cp.34_3                            0x08001e48   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
-    __arm_cp.34_4                            0x08001e4c   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
-    __arm_cp.34_5                            0x08001e50   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
-    __arm_cp.34_6                            0x08001e54   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
-    __arm_cp.34_7                            0x08001e58   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
-    [Anonymous Symbol]                       0x08001e5c   Section        0  n32g031_lptim.o(.text.LPTIM_ClearFLAG_ARRM)
-    [Anonymous Symbol]                       0x08001e66   Section        0  n32g031_lptim.o(.text.LPTIM_ClearFLAG_CMPM)
-    [Anonymous Symbol]                       0x08001e70   Section        0  n32g031_lptim.o(.text.LPTIM_DeInit)
-    [Anonymous Symbol]                       0x08001e90   Section        0  n32g031_lptim.o(.text.LPTIM_Enable)
-    [Anonymous Symbol]                       0x08001e9a   Section        0  n32g031_lptim.o(.text.LPTIM_EnableIT_ARRM)
-    [Anonymous Symbol]                       0x08001ea4   Section        0  n32g031_lptim.o(.text.LPTIM_Init)
-    __arm_cp.3_1                             0x08001f50   Number         4  n32g031_lptim.o(.text.LPTIM_Init)
-    __arm_cp.3_3                             0x08001f8c   Number         4  n32g031_lptim.o(.text.LPTIM_Init)
-    __arm_cp.3_4                             0x08001f90   Number         4  n32g031_lptim.o(.text.LPTIM_Init)
-    __arm_cp.3_5                             0x08001f94   Number         4  n32g031_lptim.o(.text.LPTIM_Init)
-    [Anonymous Symbol]                       0x08001f98   Section        0  n32g031_lptim.o(.text.LPTIM_IsActiveFlag_ARRM)
-    [Anonymous Symbol]                       0x08001fa0   Section        0  n32g031_lptim.o(.text.LPTIM_IsActiveFlag_CMPM)
-    [Anonymous Symbol]                       0x08001fa8   Section        0  n32g031_lptim.o(.text.LPTIM_SetAutoReload)
-    [Anonymous Symbol]                       0x08001fae   Section        0  n32g031_lptim.o(.text.LPTIM_StartCounter)
-    [Anonymous Symbol]                       0x08001fbc   Section        0  sleep_wake.o(.text.LPTIM_TIM6_IRQHandler)
-    __arm_cp.17_0                            0x08001ff0   Number         4  sleep_wake.o(.text.LPTIM_TIM6_IRQHandler)
-    __arm_cp.17_1                            0x08001ff4   Number         4  sleep_wake.o(.text.LPTIM_TIM6_IRQHandler)
-    [Anonymous Symbol]                       0x08001ff8   Section        0  n32g031_it.o(.text.NMI_Handler)
-    [Anonymous Symbol]                       0x08001ffc   Section        0  pwm.o(.text.PWM_GetDutyCycle)
-    [Anonymous Symbol]                       0x08002004   Section        0  pwm.o(.text.PWM_Init)
-    __arm_cp.0_0                             0x0800208c   Number         4  pwm.o(.text.PWM_Init)
-    __arm_cp.0_1                             0x08002090   Number         4  pwm.o(.text.PWM_Init)
-    __arm_cp.0_2                             0x08002094   Number         4  pwm.o(.text.PWM_Init)
-    __arm_cp.0_4                             0x08002098   Number         4  pwm.o(.text.PWM_Init)
-    [Anonymous Symbol]                       0x0800209c   Section        0  pwm.o(.text.PWM_SetDutyCycle)
-    __arm_cp.1_0                             0x080020bc   Number         4  pwm.o(.text.PWM_SetDutyCycle)
-    __arm_cp.1_1                             0x080020c0   Number         4  pwm.o(.text.PWM_SetDutyCycle)
-    __arm_cp.1_2                             0x080020c4   Number         4  pwm.o(.text.PWM_SetDutyCycle)
-    [Anonymous Symbol]                       0x080020c8   Section        0  n32g031_pwr.o(.text.PWR_EnterSTOPMode)
-    __arm_cp.6_1                             0x08002130   Number         4  n32g031_pwr.o(.text.PWR_EnterSTOPMode)
-    __arm_cp.6_2                             0x08002134   Number         4  n32g031_pwr.o(.text.PWR_EnterSTOPMode)
-    __arm_cp.6_3                             0x08002138   Number         4  n32g031_pwr.o(.text.PWR_EnterSTOPMode)
-    [Anonymous Symbol]                       0x0800213c   Section        0  n32g031_it.o(.text.PendSV_Handler)
-    [Anonymous Symbol]                       0x08002140   Section        0  n32g031_rcc.o(.text.RCC_ConfigAdcHclk)
-    __arm_cp.20_2                            0x08002190   Number         4  n32g031_rcc.o(.text.RCC_ConfigAdcHclk)
-    [Anonymous Symbol]                       0x08002194   Section        0  n32g031_rcc.o(.text.RCC_ConfigLPTIMClk)
-    __arm_cp.21_2                            0x080021e8   Number         4  n32g031_rcc.o(.text.RCC_ConfigLPTIMClk)
-    __arm_cp.21_3                            0x080021ec   Number         4  n32g031_rcc.o(.text.RCC_ConfigLPTIMClk)
-    [Anonymous Symbol]                       0x080021f0   Section        0  n32g031_rcc.o(.text.RCC_EnableAHBPeriphClk)
-    __arm_cp.35_0                            0x08002230   Number         4  n32g031_rcc.o(.text.RCC_EnableAHBPeriphClk)
-    __arm_cp.35_1                            0x08002234   Number         4  n32g031_rcc.o(.text.RCC_EnableAHBPeriphClk)
-    __arm_cp.35_5                            0x0800225c   Number         4  n32g031_rcc.o(.text.RCC_EnableAHBPeriphClk)
-    [Anonymous Symbol]                       0x08002260   Section        0  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphClk)
-    __arm_cp.37_0                            0x080022a0   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphClk)
-    __arm_cp.37_1                            0x080022a4   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphClk)
-    __arm_cp.37_5                            0x080022cc   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphClk)
-    [Anonymous Symbol]                       0x080022d0   Section        0  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphReset)
-    __arm_cp.40_0                            0x08002310   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphReset)
-    __arm_cp.40_1                            0x08002314   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphReset)
-    __arm_cp.40_5                            0x08002344   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphReset)
-    [Anonymous Symbol]                       0x08002348   Section        0  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
-    __arm_cp.36_0                            0x08002388   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
-    __arm_cp.36_1                            0x0800238c   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
-    __arm_cp.36_2                            0x08002390   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
-    __arm_cp.36_5                            0x08002394   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
-    [Anonymous Symbol]                       0x08002398   Section        0  n32g031_rcc.o(.text.RCC_EnableLsi)
-    __arm_cp.27_1                            0x080023c0   Number         4  n32g031_rcc.o(.text.RCC_EnableLsi)
-    __arm_cp.27_2                            0x080023c4   Number         4  n32g031_rcc.o(.text.RCC_EnableLsi)
-    __arm_cp.27_3                            0x080023c8   Number         4  n32g031_rcc.o(.text.RCC_EnableLsi)
-    [Anonymous Symbol]                       0x080023cc   Section        0  nv3029.o(.text.SPI1_tx_dma_fill)
-    [Anonymous Symbol]                       0x0800245c   Section        0  nv3029.o(.text.SPI1_tx_dma_mode)
-    __arm_cp.2_0                             0x08002500   Number         4  nv3029.o(.text.SPI1_tx_dma_mode)
-    __arm_cp.2_2                             0x08002504   Number         4  nv3029.o(.text.SPI1_tx_dma_mode)
-    [Anonymous Symbol]                       0x08002508   Section        0  n32g031_spi.o(.text.SPI_Enable)
-    [Anonymous Symbol]                       0x0800254c   Section        0  n32g031_spi.o(.text.SPI_I2S_EnableDma)
-    __arm_cp.8_0                             0x080025a4   Number         4  n32g031_spi.o(.text.SPI_I2S_EnableDma)
-    __arm_cp.8_1                             0x080025a8   Number         4  n32g031_spi.o(.text.SPI_I2S_EnableDma)
-    __arm_cp.8_2                             0x080025ac   Number         4  n32g031_spi.o(.text.SPI_I2S_EnableDma)
-    __arm_cp.8_3                             0x080025b0   Number         4  n32g031_spi.o(.text.SPI_I2S_EnableDma)
-    __arm_cp.8_4                             0x080025b4   Number         4  n32g031_spi.o(.text.SPI_I2S_EnableDma)
-    [Anonymous Symbol]                       0x080025d8   Section        0  n32g031_spi.o(.text.SPI_I2S_GetStatus)
-    __arm_cp.19_0                            0x08002660   Number         4  n32g031_spi.o(.text.SPI_I2S_GetStatus)
-    __arm_cp.19_1                            0x08002664   Number         4  n32g031_spi.o(.text.SPI_I2S_GetStatus)
-    __arm_cp.19_2                            0x08002668   Number         4  n32g031_spi.o(.text.SPI_I2S_GetStatus)
-    __arm_cp.19_3                            0x0800266c   Number         4  n32g031_spi.o(.text.SPI_I2S_GetStatus)
-    __arm_cp.19_4                            0x08002670   Number         4  n32g031_spi.o(.text.SPI_I2S_GetStatus)
-    [Anonymous Symbol]                       0x08002698   Section        0  n32g031_spi.o(.text.SPI_I2S_ReceiveData)
-    [Anonymous Symbol]                       0x080026bc   Section        0  n32g031_spi.o(.text.SPI_I2S_TransmitData)
-    __arm_cp.9_0                             0x080026e8   Number         4  n32g031_spi.o(.text.SPI_I2S_TransmitData)
-    [Anonymous Symbol]                       0x080026ec   Section        0  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_0                             0x08002814   Number         4  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_1                             0x08002818   Number         4  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_2                             0x0800281c   Number         4  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_3                             0x08002820   Number         4  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_4                             0x08002824   Number         4  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_8                             0x080028ac   Number         4  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_9                             0x080028b0   Number         4  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_10                            0x080028b4   Number         4  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_11                            0x080028b8   Number         4  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_12                            0x080028bc   Number         4  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_13                            0x080028c0   Number         4  n32g031_spi.o(.text.SPI_Init)
-    __arm_cp.1_14                            0x080028c4   Number         4  n32g031_spi.o(.text.SPI_Init)
-    [Anonymous Symbol]                       0x080028c8   Section        0  n32g031_spi.o(.text.SPI_InitStruct)
-    [Anonymous Symbol]                       0x080028e0   Section        0  n32g031_it.o(.text.SVC_Handler)
-    [Anonymous Symbol]                       0x080028e4   Section        0  sleep_wake.o(.text.SleepWake_CheckTimeout)
-    [Anonymous Symbol]                       0x08002910   Section        0  sleep_wake.o(.text.SleepWake_ClearWakeInterrupt)
-    [Anonymous Symbol]                       0x08002918   Section        0  sleep_wake.o(.text.SleepWake_EnterUltraLowPower)
-    __arm_cp.20_1                            0x080029ec   Number         4  sleep_wake.o(.text.SleepWake_EnterUltraLowPower)
-    __arm_cp.20_2                            0x080029f0   Number         4  sleep_wake.o(.text.SleepWake_EnterUltraLowPower)
-    [Anonymous Symbol]                       0x080029f4   Section        0  sleep_wake.o(.text.SleepWake_GetTimeRemaining)
-    [Anonymous Symbol]                       0x08002a1c   Section        0  sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake)
-    __arm_cp.21_4                            0x08002ac0   Number         4  sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake)
-    __arm_cp.21_6                            0x08002ac4   Number         4  sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake)
-    [Anonymous Symbol]                       0x08002ac8   Section        0  sleep_wake.o(.text.SleepWake_Init)
-    __arm_cp.0_2                             0x08002b48   Number         4  sleep_wake.o(.text.SleepWake_Init)
-    __arm_cp.0_4                             0x08002b4c   Number         4  sleep_wake.o(.text.SleepWake_Init)
-    __arm_cp.0_7                             0x08002b50   Number         4  sleep_wake.o(.text.SleepWake_Init)
-    __arm_cp.0_9                             0x08002b54   Number         4  sleep_wake.o(.text.SleepWake_Init)
-    [Anonymous Symbol]                       0x08002b58   Section        0  sleep_wake.o(.text.SleepWake_InitLPTIM)
-    __arm_cp.2_1                             0x08002be8   Number         4  sleep_wake.o(.text.SleepWake_InitLPTIM)
-    __arm_cp.2_2                             0x08002bec   Number         4  sleep_wake.o(.text.SleepWake_InitLPTIM)
-    __arm_cp.2_3                             0x08002bf0   Number         4  sleep_wake.o(.text.SleepWake_InitLPTIM)
-    __arm_cp.2_4                             0x08002bf4   Number         4  sleep_wake.o(.text.SleepWake_InitLPTIM)
-    [Anonymous Symbol]                       0x08002bf8   Section        0  sleep_wake.o(.text.SleepWake_IsSleeping)
-    [Anonymous Symbol]                       0x08002c00   Section        0  sleep_wake.o(.text.SleepWake_IsWakeInterruptTriggered)
-    __arm_cp.5_0                             0x08002c08   Number         4  sleep_wake.o(.text.SleepWake_IsWakeInterruptTriggered)
-    [Anonymous Symbol]                       0x08002c0c   Section        0  sleep_wake.o(.text.SleepWake_ResetTimer)
-    __arm_cp.9_0                             0x08002c1c   Number         4  sleep_wake.o(.text.SleepWake_ResetTimer)
-    __arm_cp.9_1                             0x08002c20   Number         4  sleep_wake.o(.text.SleepWake_ResetTimer)
-    [Anonymous Symbol]                       0x08002c24   Section        0  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    __arm_cp.22_0                            0x08002cf8   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    __arm_cp.22_1                            0x08002cfc   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    __arm_cp.22_2                            0x08002d00   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    __arm_cp.22_3                            0x08002d04   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    __arm_cp.22_4                            0x08002d08   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    __arm_cp.22_5                            0x08002d0c   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    __arm_cp.22_6                            0x08002d10   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    __arm_cp.22_7                            0x08002d14   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    __arm_cp.22_8                            0x08002d18   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    __arm_cp.22_9                            0x08002d1c   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    [Anonymous Symbol]                       0x08002d20   Section        0  sleep_wake.o(.text.SleepWake_SetDebugMode)
-    __arm_cp.23_0                            0x08002d28   Number         4  sleep_wake.o(.text.SleepWake_SetDebugMode)
-    [Anonymous Symbol]                       0x08002d2c   Section        0  sleep_wake.o(.text.SleepWake_WakeUp)
-    __arm_cp.14_0                            0x08002d78   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
-    __arm_cp.14_1                            0x08002d7c   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
-    __arm_cp.14_2                            0x08002d80   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
-    __arm_cp.14_4                            0x08002d84   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
-    __arm_cp.14_5                            0x08002d88   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
-    __arm_cp.14_6                            0x08002d8c   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
-    [Anonymous Symbol]                       0x08002d90   Section        0  n32g031_it.o(.text.SysTick_Handler)
-    [Anonymous Symbol]                       0x08002d94   Section        0  system_n32g031.o(.text.SystemInit)
-    __arm_cp.0_0                             0x08002e50   Number         4  system_n32g031.o(.text.SystemInit)
-    __arm_cp.0_1                             0x08002e54   Number         4  system_n32g031.o(.text.SystemInit)
-    __arm_cp.0_2                             0x08002e58   Number         4  system_n32g031.o(.text.SystemInit)
-    __arm_cp.0_3                             0x08002e5c   Number         4  system_n32g031.o(.text.SystemInit)
-    __arm_cp.0_4                             0x08002e60   Number         4  system_n32g031.o(.text.SystemInit)
-    __arm_cp.0_5                             0x08002e64   Number         4  system_n32g031.o(.text.SystemInit)
-    __arm_cp.0_6                             0x08002e68   Number         4  system_n32g031.o(.text.SystemInit)
-    __arm_cp.0_7                             0x08002e6c   Number         4  system_n32g031.o(.text.SystemInit)
-    [Anonymous Symbol]                       0x08002e70   Section        0  voltage_monitor.o(.text.VoltageMonitor_Init)
-    __arm_cp.0_0                             0x08002ef4   Number         4  voltage_monitor.o(.text.VoltageMonitor_Init)
-    __arm_cp.0_1                             0x08002ef8   Number         4  voltage_monitor.o(.text.VoltageMonitor_Init)
-    [Anonymous Symbol]                       0x08002efc   Section        0  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
-    __arm_cp.2_0                             0x080030cc   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
-    __arm_cp.2_1                             0x080030d0   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
-    __arm_cp.2_2                             0x080030d4   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
-    __arm_cp.2_3                             0x080030d8   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
-    __arm_cp.2_4                             0x080030dc   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
-    __arm_cp.2_5                             0x080030e0   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
-    __arm_cp.2_6                             0x080030e4   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
-    [Anonymous Symbol]                       0x080030e8   Section        0  main.o(.text.assert_failed)
-    [Anonymous Symbol]                       0x080030ec   Section        0  nv3029.o(.text.displayFullPhotoChunked)
-    [Anonymous Symbol]                       0x080031a4   Section        0  nv3029.o(.text.displayPhoto)
-    __arm_cp.26_0                            0x080031f8   Number         4  nv3029.o(.text.displayPhoto)
-    __arm_cp.26_1                            0x080031fc   Number         4  nv3029.o(.text.displayPhoto)
-    __arm_cp.26_2                            0x08003200   Number         4  nv3029.o(.text.displayPhoto)
-    __arm_cp.26_3                            0x08003204   Number         4  nv3029.o(.text.displayPhoto)
-    [Anonymous Symbol]                       0x08003208   Section        0  dma.o(.text.dma_clear_flags)
-    [Anonymous Symbol]                       0x08003210   Section        0  dma.o(.text.dma_init)
-    [Anonymous Symbol]                       0x0800321c   Section        0  dma.o(.text.dma_start_transfer)
-    [Anonymous Symbol]                       0x0800327c   Section        0  dma.o(.text.dma_wait_complete)
-    __arm_cp.7_0                             0x080032c4   Number         4  dma.o(.text.dma_wait_complete)
-    __arm_cp.7_1                             0x080032c8   Number         4  dma.o(.text.dma_wait_complete)
-    __arm_cp.7_2                             0x080032cc   Number         4  dma.o(.text.dma_wait_complete)
-    [Anonymous Symbol]                       0x080032e4   Section        0  main.o(.text.flashScreen)
-    __arm_cp.6_0                             0x080035b0   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_1                             0x080035b4   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_2                             0x080035b8   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_3                             0x080035bc   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_4                             0x080035c0   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_5                             0x080035c4   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_6                             0x080035c8   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_7                             0x080035cc   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_8                             0x080035d0   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_9                             0x080035d4   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_10                            0x080035d8   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_11                            0x080035dc   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_12                            0x080035e0   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_14                            0x080035f0   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_15                            0x080035f4   Number         4  main.o(.text.flashScreen)
-    __arm_cp.6_17                            0x080035fc   Number         4  main.o(.text.flashScreen)
-    [Anonymous Symbol]                       0x08003618   Section        0  main.o(.text.main)
-    __arm_cp.7_1                             0x0800367c   Number         4  main.o(.text.main)
-    __arm_cp.7_2                             0x08003680   Number         4  main.o(.text.main)
-    [Anonymous Symbol]                       0x08003684   Section        0  main.o(.text.mainScreen)
-    __arm_cp.4_0                             0x08003910   Number         4  main.o(.text.mainScreen)
-    __arm_cp.4_1                             0x08003914   Number         4  main.o(.text.mainScreen)
-    __arm_cp.4_2                             0x08003918   Number         4  main.o(.text.mainScreen)
-    __arm_cp.4_3                             0x0800391c   Number         4  main.o(.text.mainScreen)
-    __arm_cp.4_4                             0x08003920   Number         4  main.o(.text.mainScreen)
-    __arm_cp.4_5                             0x08003924   Number         4  main.o(.text.mainScreen)
-    __arm_cp.4_6                             0x08003928   Number         4  main.o(.text.mainScreen)
-    __arm_cp.4_11                            0x0800394c   Number         4  main.o(.text.mainScreen)
-    __arm_cp.4_13                            0x08003958   Number         4  main.o(.text.mainScreen)
-    [Anonymous Symbol]                       0x080039ac   Section        0  spi_flash.o(.text.sFLASH_EraseBulk)
-    [Anonymous Symbol]                       0x080039f8   Section        0  spi_flash.o(.text.sFLASH_EraseSector)
-    [Anonymous Symbol]                       0x08003ac0   Section        0  spi_flash.o(.text.sFLASH_Init)
-    [Anonymous Symbol]                       0x08003b5c   Section        0  spi_flash.o(.text.sFLASH_ReadBuffer)
-    [Anonymous Symbol]                       0x08003c50   Section        0  spi_flash.o(.text.sFLASH_ReadID)
-    __arm_cp.12_0                            0x08003d1c   Number         4  spi_flash.o(.text.sFLASH_ReadID)
-    [Anonymous Symbol]                       0x08003d20   Section        0  spi_flash.o(.text.sFLASH_SendByte)
-    __arm_cp.6_0                             0x08003d50   Number         4  spi_flash.o(.text.sFLASH_SendByte)
-    [Anonymous Symbol]                       0x08003d54   Section        0  spi_flash.o(.text.sFLASH_StartReadSequence)
-    [Anonymous Symbol]                       0x08003e04   Section        0  spi_flash.o(.text.sFLASH_WaitForWriteEnd)
-    __arm_cp.7_0                             0x08003e70   Number         4  spi_flash.o(.text.sFLASH_WaitForWriteEnd)
-    __arm_cp.7_1                             0x08003e74   Number         4  spi_flash.o(.text.sFLASH_WaitForWriteEnd)
-    [Anonymous Symbol]                       0x08003e78   Section        0  spi_flash.o(.text.sFLASH_WriteBuffer)
-    [Anonymous Symbol]                       0x08003f14   Section        0  spi_flash.o(.text.sFLASH_WriteEnable)
-    __arm_cp.5_0                             0x08003f58   Number         4  spi_flash.o(.text.sFLASH_WriteEnable)
-    __arm_cp.5_1                             0x08003f5c   Number         4  spi_flash.o(.text.sFLASH_WriteEnable)
-    [Anonymous Symbol]                       0x08003f60   Section        0  spi_flash.o(.text.sFLASH_WritePage)
-    __arm_cp.9_0                             0x0800405c   Number         4  spi_flash.o(.text.sFLASH_WritePage)
-    __arm_cp.9_1                             0x08004060   Number         4  spi_flash.o(.text.sFLASH_WritePage)
-    [Anonymous Symbol]                       0x08004064   Section        0  main.o(.text.setup)
-    __arm_cp.0_1                             0x0800425c   Number         4  main.o(.text.setup)
-    __arm_cp.0_2                             0x08004260   Number         4  main.o(.text.setup)
-    [Anonymous Symbol]                       0x08004264   Section        0  nv3029.o(.text.spi1_config)
-    __arm_cp.11_0                            0x0800431c   Number         4  nv3029.o(.text.spi1_config)
-    __arm_cp.11_1                            0x08004320   Number         4  nv3029.o(.text.spi1_config)
-    spi1_onewire_bitbang                     0x08004325   Thumb Code   320  nv3029.o(.text.spi1_onewire_bitbang)
-    [Anonymous Symbol]                       0x08004324   Section        0  nv3029.o(.text.spi1_onewire_bitbang)
-    __arm_cp.19_0                            0x08004464   Number         4  nv3029.o(.text.spi1_onewire_bitbang)
-    __arm_cp.19_1                            0x08004468   Number         4  nv3029.o(.text.spi1_onewire_bitbang)
-    __arm_cp.19_2                            0x0800446c   Number         4  nv3029.o(.text.spi1_onewire_bitbang)
-    __arm_cp.19_3                            0x08004470   Number         4  nv3029.o(.text.spi1_onewire_bitbang)
-    i.__0snprintf$1                          0x08004474   Section        0  printf1.o(i.__0snprintf$1)
-    i.__scatterload_copy                     0x080044ac   Section       14  handlers.o(i.__scatterload_copy)
-    i.__scatterload_null                     0x080044ba   Section        2  handlers.o(i.__scatterload_null)
-    i.__scatterload_zeroinit                 0x080044bc   Section       14  handlers.o(i.__scatterload_zeroinit)
-    _printf_core                             0x080044cd   Thumb Code   332  printf1.o(i._printf_core)
-    i._printf_core                           0x080044cc   Section        0  printf1.o(i._printf_core)
-    _snputc                                  0x0800461d   Thumb Code    22  printf1.o(i._snputc)
-    i._snputc                                0x0800461c   Section        0  printf1.o(i._snputc)
-    screen_init_seq_0                        0x08004812   Data         212  nv3029.o(.rodata.screen_init_seq_0)
-    [Anonymous Symbol]                       0x08004812   Section        0  nv3029.o(.rodata.screen_init_seq_0)
-    screen_init_seq_1_alt                    0x080048e6   Data         212  nv3029.o(.rodata.screen_init_seq_1_alt)
-    [Anonymous Symbol]                       0x080048e6   Section        0  nv3029.o(.rodata.screen_init_seq_1_alt)
-    [Anonymous Symbol]                       0x080049ba   Section        0  n32g031_gpio.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x08004b1d   Section        0  n32g031_spi.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x08004d3a   Section        0  n32g031_rcc.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x08004dd0   Section        0  n32g031_dma.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x08004f5c   Section        0  n32g031_adc.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x080050ca   Section        0  n32g031_exti.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x0800518b   Section        0  n32g031_lptim.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x08005249   Section        0  n32g031_pwr.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x080052a2   Section        0  main.o(.rodata.str1.1)
+    __arm_cp.27_0                            0x0800190c   Number         4  nv3029.o(.text.LCD_flash_read_async)
+    __arm_cp.27_1                            0x08001910   Number         4  nv3029.o(.text.LCD_flash_read_async)
+    __arm_cp.27_2                            0x08001914   Number         4  nv3029.o(.text.LCD_flash_read_async)
+    __arm_cp.27_3                            0x08001918   Number         4  nv3029.o(.text.LCD_flash_read_async)
+    __arm_cp.27_5                            0x0800191c   Number         4  nv3029.o(.text.LCD_flash_read_async)
+    __arm_cp.27_6                            0x08001920   Number         4  nv3029.o(.text.LCD_flash_read_async)
+    [Anonymous Symbol]                       0x08001924   Section        0  nv3029.o(.text.LCD_flash_write_async)
+    __arm_cp.33_0                            0x080019cc   Number         4  nv3029.o(.text.LCD_flash_write_async)
+    __arm_cp.33_1                            0x080019d0   Number         4  nv3029.o(.text.LCD_flash_write_async)
+    __arm_cp.33_2                            0x080019d4   Number         4  nv3029.o(.text.LCD_flash_write_async)
+    __arm_cp.33_3                            0x080019d8   Number         4  nv3029.o(.text.LCD_flash_write_async)
+    __arm_cp.33_4                            0x080019dc   Number         4  nv3029.o(.text.LCD_flash_write_async)
+    __arm_cp.33_5                            0x080019e0   Number         4  nv3029.o(.text.LCD_flash_write_async)
+    __arm_cp.33_6                            0x080019e4   Number         4  nv3029.o(.text.LCD_flash_write_async)
+    __arm_cp.33_7                            0x080019e8   Number         4  nv3029.o(.text.LCD_flash_write_async)
+    [Anonymous Symbol]                       0x080019ec   Section        0  nv3029.o(.text.LCD_init)
+    __arm_cp.18_0                            0x08001c14   Number         4  nv3029.o(.text.LCD_init)
+    __arm_cp.18_2                            0x08001c18   Number         4  nv3029.o(.text.LCD_init)
+    __arm_cp.18_3                            0x08001c1c   Number         4  nv3029.o(.text.LCD_init)
+    __arm_cp.18_4                            0x08001c20   Number         4  nv3029.o(.text.LCD_init)
+    [Anonymous Symbol]                       0x08001c24   Section        0  nv3029.o(.text.LCD_is_flash_read_complete)
+    __arm_cp.28_0                            0x08001c9c   Number         4  nv3029.o(.text.LCD_is_flash_read_complete)
+    __arm_cp.28_2                            0x08001ca0   Number         4  nv3029.o(.text.LCD_is_flash_read_complete)
+    [Anonymous Symbol]                       0x08001ca4   Section        0  nv3029.o(.text.LCD_is_flash_write_complete)
+    __arm_cp.34_0                            0x08001e40   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
+    __arm_cp.34_1                            0x08001e44   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
+    __arm_cp.34_2                            0x08001e48   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
+    __arm_cp.34_3                            0x08001e4c   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
+    __arm_cp.34_4                            0x08001e50   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
+    __arm_cp.34_5                            0x08001e54   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
+    __arm_cp.34_6                            0x08001e58   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
+    __arm_cp.34_7                            0x08001e5c   Number         4  nv3029.o(.text.LCD_is_flash_write_complete)
+    [Anonymous Symbol]                       0x08001e60   Section        0  n32g031_lptim.o(.text.LPTIM_ClearFLAG_ARRM)
+    [Anonymous Symbol]                       0x08001e6a   Section        0  n32g031_lptim.o(.text.LPTIM_ClearFLAG_CMPM)
+    [Anonymous Symbol]                       0x08001e74   Section        0  n32g031_lptim.o(.text.LPTIM_DeInit)
+    [Anonymous Symbol]                       0x08001e94   Section        0  n32g031_lptim.o(.text.LPTIM_Enable)
+    [Anonymous Symbol]                       0x08001e9e   Section        0  n32g031_lptim.o(.text.LPTIM_EnableIT_ARRM)
+    [Anonymous Symbol]                       0x08001ea8   Section        0  n32g031_lptim.o(.text.LPTIM_Init)
+    __arm_cp.3_1                             0x08001f54   Number         4  n32g031_lptim.o(.text.LPTIM_Init)
+    __arm_cp.3_3                             0x08001f90   Number         4  n32g031_lptim.o(.text.LPTIM_Init)
+    __arm_cp.3_4                             0x08001f94   Number         4  n32g031_lptim.o(.text.LPTIM_Init)
+    __arm_cp.3_5                             0x08001f98   Number         4  n32g031_lptim.o(.text.LPTIM_Init)
+    [Anonymous Symbol]                       0x08001f9c   Section        0  n32g031_lptim.o(.text.LPTIM_IsActiveFlag_ARRM)
+    [Anonymous Symbol]                       0x08001fa4   Section        0  n32g031_lptim.o(.text.LPTIM_IsActiveFlag_CMPM)
+    [Anonymous Symbol]                       0x08001fac   Section        0  n32g031_lptim.o(.text.LPTIM_SetAutoReload)
+    [Anonymous Symbol]                       0x08001fb2   Section        0  n32g031_lptim.o(.text.LPTIM_StartCounter)
+    [Anonymous Symbol]                       0x08001fc0   Section        0  sleep_wake.o(.text.LPTIM_TIM6_IRQHandler)
+    __arm_cp.17_0                            0x08001ff4   Number         4  sleep_wake.o(.text.LPTIM_TIM6_IRQHandler)
+    __arm_cp.17_1                            0x08001ff8   Number         4  sleep_wake.o(.text.LPTIM_TIM6_IRQHandler)
+    [Anonymous Symbol]                       0x08001ffc   Section        0  n32g031_it.o(.text.NMI_Handler)
+    [Anonymous Symbol]                       0x08002000   Section        0  pwm.o(.text.PWM_GetDutyCycle)
+    [Anonymous Symbol]                       0x08002008   Section        0  pwm.o(.text.PWM_Init)
+    __arm_cp.0_0                             0x08002090   Number         4  pwm.o(.text.PWM_Init)
+    __arm_cp.0_1                             0x08002094   Number         4  pwm.o(.text.PWM_Init)
+    __arm_cp.0_2                             0x08002098   Number         4  pwm.o(.text.PWM_Init)
+    __arm_cp.0_4                             0x0800209c   Number         4  pwm.o(.text.PWM_Init)
+    [Anonymous Symbol]                       0x080020a0   Section        0  pwm.o(.text.PWM_SetDutyCycle)
+    __arm_cp.1_0                             0x080020c0   Number         4  pwm.o(.text.PWM_SetDutyCycle)
+    __arm_cp.1_1                             0x080020c4   Number         4  pwm.o(.text.PWM_SetDutyCycle)
+    __arm_cp.1_2                             0x080020c8   Number         4  pwm.o(.text.PWM_SetDutyCycle)
+    [Anonymous Symbol]                       0x080020cc   Section        0  n32g031_pwr.o(.text.PWR_EnterSTOPMode)
+    __arm_cp.6_1                             0x08002134   Number         4  n32g031_pwr.o(.text.PWR_EnterSTOPMode)
+    __arm_cp.6_2                             0x08002138   Number         4  n32g031_pwr.o(.text.PWR_EnterSTOPMode)
+    __arm_cp.6_3                             0x0800213c   Number         4  n32g031_pwr.o(.text.PWR_EnterSTOPMode)
+    [Anonymous Symbol]                       0x08002140   Section        0  n32g031_it.o(.text.PendSV_Handler)
+    [Anonymous Symbol]                       0x08002144   Section        0  n32g031_rcc.o(.text.RCC_ConfigAdcHclk)
+    __arm_cp.20_2                            0x08002194   Number         4  n32g031_rcc.o(.text.RCC_ConfigAdcHclk)
+    [Anonymous Symbol]                       0x08002198   Section        0  n32g031_rcc.o(.text.RCC_ConfigLPTIMClk)
+    __arm_cp.21_2                            0x080021ec   Number         4  n32g031_rcc.o(.text.RCC_ConfigLPTIMClk)
+    __arm_cp.21_3                            0x080021f0   Number         4  n32g031_rcc.o(.text.RCC_ConfigLPTIMClk)
+    [Anonymous Symbol]                       0x080021f4   Section        0  n32g031_rcc.o(.text.RCC_EnableAHBPeriphClk)
+    __arm_cp.35_0                            0x08002234   Number         4  n32g031_rcc.o(.text.RCC_EnableAHBPeriphClk)
+    __arm_cp.35_1                            0x08002238   Number         4  n32g031_rcc.o(.text.RCC_EnableAHBPeriphClk)
+    __arm_cp.35_5                            0x08002260   Number         4  n32g031_rcc.o(.text.RCC_EnableAHBPeriphClk)
+    [Anonymous Symbol]                       0x08002264   Section        0  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphClk)
+    __arm_cp.37_0                            0x080022a4   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphClk)
+    __arm_cp.37_1                            0x080022a8   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphClk)
+    __arm_cp.37_5                            0x080022d0   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphClk)
+    [Anonymous Symbol]                       0x080022d4   Section        0  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphReset)
+    __arm_cp.40_0                            0x08002314   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphReset)
+    __arm_cp.40_1                            0x08002318   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphReset)
+    __arm_cp.40_5                            0x08002348   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphReset)
+    [Anonymous Symbol]                       0x0800234c   Section        0  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
+    __arm_cp.36_0                            0x0800238c   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
+    __arm_cp.36_1                            0x08002390   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
+    __arm_cp.36_2                            0x08002394   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
+    __arm_cp.36_5                            0x08002398   Number         4  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
+    [Anonymous Symbol]                       0x0800239c   Section        0  n32g031_rcc.o(.text.RCC_EnableLsi)
+    __arm_cp.27_1                            0x080023c4   Number         4  n32g031_rcc.o(.text.RCC_EnableLsi)
+    __arm_cp.27_2                            0x080023c8   Number         4  n32g031_rcc.o(.text.RCC_EnableLsi)
+    __arm_cp.27_3                            0x080023cc   Number         4  n32g031_rcc.o(.text.RCC_EnableLsi)
+    [Anonymous Symbol]                       0x080023d0   Section        0  nv3029.o(.text.SPI1_tx_dma_fill)
+    [Anonymous Symbol]                       0x08002460   Section        0  nv3029.o(.text.SPI1_tx_dma_mode)
+    __arm_cp.2_0                             0x08002504   Number         4  nv3029.o(.text.SPI1_tx_dma_mode)
+    __arm_cp.2_2                             0x08002508   Number         4  nv3029.o(.text.SPI1_tx_dma_mode)
+    [Anonymous Symbol]                       0x0800250c   Section        0  n32g031_spi.o(.text.SPI_Enable)
+    [Anonymous Symbol]                       0x08002550   Section        0  n32g031_spi.o(.text.SPI_I2S_EnableDma)
+    __arm_cp.8_0                             0x080025a8   Number         4  n32g031_spi.o(.text.SPI_I2S_EnableDma)
+    __arm_cp.8_1                             0x080025ac   Number         4  n32g031_spi.o(.text.SPI_I2S_EnableDma)
+    __arm_cp.8_2                             0x080025b0   Number         4  n32g031_spi.o(.text.SPI_I2S_EnableDma)
+    __arm_cp.8_3                             0x080025b4   Number         4  n32g031_spi.o(.text.SPI_I2S_EnableDma)
+    __arm_cp.8_4                             0x080025b8   Number         4  n32g031_spi.o(.text.SPI_I2S_EnableDma)
+    [Anonymous Symbol]                       0x080025dc   Section        0  n32g031_spi.o(.text.SPI_I2S_GetStatus)
+    __arm_cp.19_0                            0x08002664   Number         4  n32g031_spi.o(.text.SPI_I2S_GetStatus)
+    __arm_cp.19_1                            0x08002668   Number         4  n32g031_spi.o(.text.SPI_I2S_GetStatus)
+    __arm_cp.19_2                            0x0800266c   Number         4  n32g031_spi.o(.text.SPI_I2S_GetStatus)
+    __arm_cp.19_3                            0x08002670   Number         4  n32g031_spi.o(.text.SPI_I2S_GetStatus)
+    __arm_cp.19_4                            0x08002674   Number         4  n32g031_spi.o(.text.SPI_I2S_GetStatus)
+    [Anonymous Symbol]                       0x0800269c   Section        0  n32g031_spi.o(.text.SPI_I2S_ReceiveData)
+    [Anonymous Symbol]                       0x080026c0   Section        0  n32g031_spi.o(.text.SPI_I2S_TransmitData)
+    __arm_cp.9_0                             0x080026ec   Number         4  n32g031_spi.o(.text.SPI_I2S_TransmitData)
+    [Anonymous Symbol]                       0x080026f0   Section        0  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_0                             0x08002818   Number         4  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_1                             0x0800281c   Number         4  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_2                             0x08002820   Number         4  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_3                             0x08002824   Number         4  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_4                             0x08002828   Number         4  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_8                             0x080028b0   Number         4  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_9                             0x080028b4   Number         4  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_10                            0x080028b8   Number         4  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_11                            0x080028bc   Number         4  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_12                            0x080028c0   Number         4  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_13                            0x080028c4   Number         4  n32g031_spi.o(.text.SPI_Init)
+    __arm_cp.1_14                            0x080028c8   Number         4  n32g031_spi.o(.text.SPI_Init)
+    [Anonymous Symbol]                       0x080028cc   Section        0  n32g031_spi.o(.text.SPI_InitStruct)
+    [Anonymous Symbol]                       0x080028e4   Section        0  n32g031_it.o(.text.SVC_Handler)
+    [Anonymous Symbol]                       0x080028e8   Section        0  sleep_wake.o(.text.SleepWake_CheckTimeout)
+    [Anonymous Symbol]                       0x08002914   Section        0  sleep_wake.o(.text.SleepWake_ClearWakeInterrupt)
+    [Anonymous Symbol]                       0x0800291c   Section        0  sleep_wake.o(.text.SleepWake_EnterUltraLowPower)
+    [Anonymous Symbol]                       0x08002a00   Section        0  sleep_wake.o(.text.SleepWake_GetTimeRemaining)
+    [Anonymous Symbol]                       0x08002a28   Section        0  sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake)
+    [Anonymous Symbol]                       0x08002a60   Section        0  sleep_wake.o(.text.SleepWake_Init)
+    __arm_cp.0_2                             0x08002ae0   Number         4  sleep_wake.o(.text.SleepWake_Init)
+    __arm_cp.0_7                             0x08002ae4   Number         4  sleep_wake.o(.text.SleepWake_Init)
+    __arm_cp.0_9                             0x08002ae8   Number         4  sleep_wake.o(.text.SleepWake_Init)
+    [Anonymous Symbol]                       0x08002aec   Section        0  sleep_wake.o(.text.SleepWake_InitLPTIM)
+    __arm_cp.2_1                             0x08002b7c   Number         4  sleep_wake.o(.text.SleepWake_InitLPTIM)
+    __arm_cp.2_2                             0x08002b80   Number         4  sleep_wake.o(.text.SleepWake_InitLPTIM)
+    __arm_cp.2_3                             0x08002b84   Number         4  sleep_wake.o(.text.SleepWake_InitLPTIM)
+    __arm_cp.2_4                             0x08002b88   Number         4  sleep_wake.o(.text.SleepWake_InitLPTIM)
+    [Anonymous Symbol]                       0x08002b8c   Section        0  sleep_wake.o(.text.SleepWake_IsSleeping)
+    [Anonymous Symbol]                       0x08002b94   Section        0  sleep_wake.o(.text.SleepWake_IsWakeInterruptTriggered)
+    __arm_cp.5_0                             0x08002b9c   Number         4  sleep_wake.o(.text.SleepWake_IsWakeInterruptTriggered)
+    [Anonymous Symbol]                       0x08002ba0   Section        0  sleep_wake.o(.text.SleepWake_ResetTimer)
+    __arm_cp.9_0                             0x08002bb0   Number         4  sleep_wake.o(.text.SleepWake_ResetTimer)
+    __arm_cp.9_1                             0x08002bb4   Number         4  sleep_wake.o(.text.SleepWake_ResetTimer)
+    [Anonymous Symbol]                       0x08002bb8   Section        0  sleep_wake.o(.text.SleepWake_RestoreFullPower)
+    __arm_cp.22_0                            0x08002c8c   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
+    __arm_cp.22_1                            0x08002c90   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
+    __arm_cp.22_2                            0x08002c94   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
+    __arm_cp.22_3                            0x08002c98   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
+    __arm_cp.22_4                            0x08002c9c   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
+    __arm_cp.22_5                            0x08002ca0   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
+    __arm_cp.22_6                            0x08002ca4   Number         4  sleep_wake.o(.text.SleepWake_RestoreFullPower)
+    [Anonymous Symbol]                       0x08002ca8   Section        0  sleep_wake.o(.text.SleepWake_SetDebugMode)
+    __arm_cp.23_0                            0x08002cb0   Number         4  sleep_wake.o(.text.SleepWake_SetDebugMode)
+    [Anonymous Symbol]                       0x08002cb4   Section        0  sleep_wake.o(.text.SleepWake_WakeUp)
+    __arm_cp.14_0                            0x08002d00   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
+    __arm_cp.14_1                            0x08002d04   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
+    __arm_cp.14_2                            0x08002d08   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
+    __arm_cp.14_3                            0x08002d0c   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
+    __arm_cp.14_4                            0x08002d10   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
+    __arm_cp.14_5                            0x08002d14   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
+    __arm_cp.14_6                            0x08002d18   Number         4  sleep_wake.o(.text.SleepWake_WakeUp)
+    [Anonymous Symbol]                       0x08002d1c   Section        0  n32g031_it.o(.text.SysTick_Handler)
+    [Anonymous Symbol]                       0x08002d20   Section        0  system_n32g031.o(.text.SystemInit)
+    __arm_cp.0_0                             0x08002ddc   Number         4  system_n32g031.o(.text.SystemInit)
+    __arm_cp.0_1                             0x08002de0   Number         4  system_n32g031.o(.text.SystemInit)
+    __arm_cp.0_2                             0x08002de4   Number         4  system_n32g031.o(.text.SystemInit)
+    __arm_cp.0_3                             0x08002de8   Number         4  system_n32g031.o(.text.SystemInit)
+    __arm_cp.0_4                             0x08002dec   Number         4  system_n32g031.o(.text.SystemInit)
+    __arm_cp.0_5                             0x08002df0   Number         4  system_n32g031.o(.text.SystemInit)
+    __arm_cp.0_6                             0x08002df4   Number         4  system_n32g031.o(.text.SystemInit)
+    __arm_cp.0_7                             0x08002df8   Number         4  system_n32g031.o(.text.SystemInit)
+    [Anonymous Symbol]                       0x08002dfc   Section        0  voltage_monitor.o(.text.VoltageMonitor_Init)
+    __arm_cp.0_0                             0x08002e80   Number         4  voltage_monitor.o(.text.VoltageMonitor_Init)
+    __arm_cp.0_1                             0x08002e84   Number         4  voltage_monitor.o(.text.VoltageMonitor_Init)
+    [Anonymous Symbol]                       0x08002e88   Section        0  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
+    __arm_cp.2_0                             0x08003058   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
+    __arm_cp.2_1                             0x0800305c   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
+    __arm_cp.2_2                             0x08003060   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
+    __arm_cp.2_3                             0x08003064   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
+    __arm_cp.2_4                             0x08003068   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
+    __arm_cp.2_5                             0x0800306c   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
+    __arm_cp.2_6                             0x08003070   Number         4  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
+    [Anonymous Symbol]                       0x08003074   Section        0  main.o(.text.assert_failed)
+    [Anonymous Symbol]                       0x08003078   Section        0  nv3029.o(.text.displayFullPhotoChunked)
+    [Anonymous Symbol]                       0x08003130   Section        0  nv3029.o(.text.displayPhoto)
+    __arm_cp.26_0                            0x08003184   Number         4  nv3029.o(.text.displayPhoto)
+    __arm_cp.26_1                            0x08003188   Number         4  nv3029.o(.text.displayPhoto)
+    __arm_cp.26_2                            0x0800318c   Number         4  nv3029.o(.text.displayPhoto)
+    __arm_cp.26_3                            0x08003190   Number         4  nv3029.o(.text.displayPhoto)
+    [Anonymous Symbol]                       0x08003194   Section        0  dma.o(.text.dma_clear_flags)
+    [Anonymous Symbol]                       0x0800319c   Section        0  dma.o(.text.dma_init)
+    [Anonymous Symbol]                       0x080031a8   Section        0  dma.o(.text.dma_start_transfer)
+    [Anonymous Symbol]                       0x08003208   Section        0  dma.o(.text.dma_wait_complete)
+    __arm_cp.7_0                             0x08003250   Number         4  dma.o(.text.dma_wait_complete)
+    __arm_cp.7_1                             0x08003254   Number         4  dma.o(.text.dma_wait_complete)
+    __arm_cp.7_2                             0x08003258   Number         4  dma.o(.text.dma_wait_complete)
+    [Anonymous Symbol]                       0x08003270   Section        0  main.o(.text.flashScreen)
+    __arm_cp.6_0                             0x0800353c   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_1                             0x08003540   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_2                             0x08003544   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_3                             0x08003548   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_4                             0x0800354c   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_5                             0x08003550   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_6                             0x08003554   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_7                             0x08003558   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_8                             0x0800355c   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_9                             0x08003560   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_10                            0x08003564   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_11                            0x08003568   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_12                            0x0800356c   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_14                            0x0800357c   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_15                            0x08003580   Number         4  main.o(.text.flashScreen)
+    __arm_cp.6_17                            0x08003588   Number         4  main.o(.text.flashScreen)
+    [Anonymous Symbol]                       0x080035a4   Section        0  main.o(.text.main)
+    __arm_cp.7_1                             0x08003608   Number         4  main.o(.text.main)
+    __arm_cp.7_2                             0x0800360c   Number         4  main.o(.text.main)
+    [Anonymous Symbol]                       0x08003610   Section        0  main.o(.text.mainScreen)
+    __arm_cp.4_0                             0x0800389c   Number         4  main.o(.text.mainScreen)
+    __arm_cp.4_1                             0x080038a0   Number         4  main.o(.text.mainScreen)
+    __arm_cp.4_2                             0x080038a4   Number         4  main.o(.text.mainScreen)
+    __arm_cp.4_3                             0x080038a8   Number         4  main.o(.text.mainScreen)
+    __arm_cp.4_4                             0x080038ac   Number         4  main.o(.text.mainScreen)
+    __arm_cp.4_5                             0x080038b0   Number         4  main.o(.text.mainScreen)
+    __arm_cp.4_6                             0x080038b4   Number         4  main.o(.text.mainScreen)
+    __arm_cp.4_7                             0x080038b8   Number         4  main.o(.text.mainScreen)
+    __arm_cp.4_12                            0x080038dc   Number         4  main.o(.text.mainScreen)
+    __arm_cp.4_14                            0x080038e8   Number         4  main.o(.text.mainScreen)
+    [Anonymous Symbol]                       0x0800393c   Section        0  spi_flash.o(.text.sFLASH_EraseBulk)
+    [Anonymous Symbol]                       0x08003988   Section        0  spi_flash.o(.text.sFLASH_EraseSector)
+    [Anonymous Symbol]                       0x08003a50   Section        0  spi_flash.o(.text.sFLASH_Init)
+    [Anonymous Symbol]                       0x08003aec   Section        0  spi_flash.o(.text.sFLASH_ReadBuffer)
+    [Anonymous Symbol]                       0x08003be0   Section        0  spi_flash.o(.text.sFLASH_ReadByte)
+    [Anonymous Symbol]                       0x08003c10   Section        0  spi_flash.o(.text.sFLASH_ReadID)
+    __arm_cp.12_0                            0x08003cdc   Number         4  spi_flash.o(.text.sFLASH_ReadID)
+    [Anonymous Symbol]                       0x08003ce0   Section        0  spi_flash.o(.text.sFLASH_SendByte)
+    __arm_cp.6_0                             0x08003d10   Number         4  spi_flash.o(.text.sFLASH_SendByte)
+    [Anonymous Symbol]                       0x08003d14   Section        0  spi_flash.o(.text.sFLASH_StartReadSequence)
+    [Anonymous Symbol]                       0x08003dc4   Section        0  spi_flash.o(.text.sFLASH_WaitForWriteEnd)
+    __arm_cp.7_0                             0x08003e30   Number         4  spi_flash.o(.text.sFLASH_WaitForWriteEnd)
+    __arm_cp.7_1                             0x08003e34   Number         4  spi_flash.o(.text.sFLASH_WaitForWriteEnd)
+    [Anonymous Symbol]                       0x08003e38   Section        0  spi_flash.o(.text.sFLASH_WriteBuffer)
+    [Anonymous Symbol]                       0x08003ed4   Section        0  spi_flash.o(.text.sFLASH_WriteEnable)
+    __arm_cp.5_0                             0x08003f18   Number         4  spi_flash.o(.text.sFLASH_WriteEnable)
+    __arm_cp.5_1                             0x08003f1c   Number         4  spi_flash.o(.text.sFLASH_WriteEnable)
+    [Anonymous Symbol]                       0x08003f20   Section        0  spi_flash.o(.text.sFLASH_WritePage)
+    __arm_cp.9_0                             0x0800401c   Number         4  spi_flash.o(.text.sFLASH_WritePage)
+    __arm_cp.9_1                             0x08004020   Number         4  spi_flash.o(.text.sFLASH_WritePage)
+    [Anonymous Symbol]                       0x08004024   Section        0  main.o(.text.setup)
+    __arm_cp.0_1                             0x0800421c   Number         4  main.o(.text.setup)
+    __arm_cp.0_2                             0x08004220   Number         4  main.o(.text.setup)
+    [Anonymous Symbol]                       0x08004224   Section        0  nv3029.o(.text.spi1_config)
+    __arm_cp.11_0                            0x080042dc   Number         4  nv3029.o(.text.spi1_config)
+    __arm_cp.11_1                            0x080042e0   Number         4  nv3029.o(.text.spi1_config)
+    spi1_onewire_bitbang                     0x080042e5   Thumb Code   320  nv3029.o(.text.spi1_onewire_bitbang)
+    [Anonymous Symbol]                       0x080042e4   Section        0  nv3029.o(.text.spi1_onewire_bitbang)
+    __arm_cp.19_0                            0x08004424   Number         4  nv3029.o(.text.spi1_onewire_bitbang)
+    __arm_cp.19_1                            0x08004428   Number         4  nv3029.o(.text.spi1_onewire_bitbang)
+    __arm_cp.19_2                            0x0800442c   Number         4  nv3029.o(.text.spi1_onewire_bitbang)
+    __arm_cp.19_3                            0x08004430   Number         4  nv3029.o(.text.spi1_onewire_bitbang)
+    i.__0snprintf$1                          0x08004434   Section        0  printf1.o(i.__0snprintf$1)
+    i.__scatterload_copy                     0x0800446c   Section       14  handlers.o(i.__scatterload_copy)
+    i.__scatterload_null                     0x0800447a   Section        2  handlers.o(i.__scatterload_null)
+    i.__scatterload_zeroinit                 0x0800447c   Section       14  handlers.o(i.__scatterload_zeroinit)
+    _printf_core                             0x0800448d   Thumb Code   332  printf1.o(i._printf_core)
+    i._printf_core                           0x0800448c   Section        0  printf1.o(i._printf_core)
+    _snputc                                  0x080045dd   Thumb Code    22  printf1.o(i._snputc)
+    i._snputc                                0x080045dc   Section        0  printf1.o(i._snputc)
+    screen_init_seq_0                        0x080047d2   Data         212  nv3029.o(.rodata.screen_init_seq_0)
+    [Anonymous Symbol]                       0x080047d2   Section        0  nv3029.o(.rodata.screen_init_seq_0)
+    screen_init_seq_1_alt                    0x080048a6   Data         212  nv3029.o(.rodata.screen_init_seq_1_alt)
+    [Anonymous Symbol]                       0x080048a6   Section        0  nv3029.o(.rodata.screen_init_seq_1_alt)
+    [Anonymous Symbol]                       0x0800497a   Section        0  n32g031_gpio.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x08004add   Section        0  n32g031_spi.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x08004cfa   Section        0  n32g031_rcc.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x08004d90   Section        0  n32g031_dma.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x08004f1c   Section        0  n32g031_adc.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x0800508a   Section        0  n32g031_exti.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x0800514b   Section        0  n32g031_lptim.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x08005209   Section        0  n32g031_pwr.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x08005262   Section        0  main.o(.rodata.str1.1)
     g_pwm_duty_cycle                         0x20000000   Data           1  pwm.o(.data.g_pwm_duty_cycle)
     [Anonymous Symbol]                       0x20000000   Section        0  pwm.o(.data.g_pwm_duty_cycle)
     g_pwm_frequency                          0x20000004   Data           4  pwm.o(.data.g_pwm_frequency)
     [Anonymous Symbol]                       0x20000004   Section        0  pwm.o(.data.g_pwm_frequency)
     spi2_dummy_tx                            0x20000008   Data           1  nv3029.o(.data.spi2_dummy_tx)
     [Anonymous Symbol]                       0x20000008   Section        0  nv3029.o(.data.spi2_dummy_tx)
-    SleepWake_HandleUltraLowPowerWake.debug_wake_counter 0x20000018   Data           4  sleep_wake.o(.bss.SleepWake_HandleUltraLowPowerWake.debug_wake_counter)
-    [Anonymous Symbol]                       0x20000018   Section        0  sleep_wake.o(.bss.SleepWake_HandleUltraLowPowerWake.debug_wake_counter)
-    flash_buffer_ptr                         0x20001020   Data           4  nv3029.o(.bss.flash_buffer_ptr)
-    [Anonymous Symbol]                       0x20001020   Section        0  nv3029.o(.bss.flash_buffer_ptr)
-    flash_dma_busy                           0x20001024   Data           1  nv3029.o(.bss.flash_dma_busy)
-    [Anonymous Symbol]                       0x20001024   Section        0  nv3029.o(.bss.flash_dma_busy)
-    flash_read_addr                          0x20001028   Data           4  nv3029.o(.bss.flash_read_addr)
-    [Anonymous Symbol]                       0x20001028   Section        0  nv3029.o(.bss.flash_read_addr)
-    flash_read_count                         0x2000102c   Data           2  nv3029.o(.bss.flash_read_count)
-    [Anonymous Symbol]                       0x2000102c   Section        0  nv3029.o(.bss.flash_read_count)
-    flash_write_buffer_start                 0x20001030   Data           4  nv3029.o(.bss.flash_write_buffer_start)
-    [Anonymous Symbol]                       0x20001030   Section        0  nv3029.o(.bss.flash_write_buffer_start)
-    flash_write_bytes_written                0x20001034   Data           4  nv3029.o(.bss.flash_write_bytes_written)
-    [Anonymous Symbol]                       0x20001034   Section        0  nv3029.o(.bss.flash_write_bytes_written)
-    flash_write_start_addr                   0x20001038   Data           4  nv3029.o(.bss.flash_write_start_addr)
-    [Anonymous Symbol]                       0x20001038   Section        0  nv3029.o(.bss.flash_write_start_addr)
-    flash_write_state                        0x2000103c   Data           1  nv3029.o(.bss.flash_write_state)
-    [Anonymous Symbol]                       0x2000103c   Section        0  nv3029.o(.bss.flash_write_state)
-    flash_write_total_bytes                  0x20001040   Data           4  nv3029.o(.bss.flash_write_total_bytes)
-    [Anonymous Symbol]                       0x20001040   Section        0  nv3029.o(.bss.flash_write_total_bytes)
-    g_debug_mode                             0x20001044   Data           1  sleep_wake.o(.bss.g_debug_mode)
-    [Anonymous Symbol]                       0x20001044   Section        0  sleep_wake.o(.bss.g_debug_mode)
-    g_inactivity_counter                     0x20001048   Data           4  sleep_wake.o(.bss.g_inactivity_counter)
-    [Anonymous Symbol]                       0x20001048   Section        0  sleep_wake.o(.bss.g_inactivity_counter)
-    g_is_sleeping                            0x2000104c   Data           1  sleep_wake.o(.bss.g_is_sleeping)
-    [Anonymous Symbol]                       0x2000104c   Section        0  sleep_wake.o(.bss.g_is_sleeping)
-    g_is_ultra_low_power                     0x2000104d   Data           1  sleep_wake.o(.bss.g_is_ultra_low_power)
-    [Anonymous Symbol]                       0x2000104d   Section        0  sleep_wake.o(.bss.g_is_ultra_low_power)
-    g_lptim_wake_triggered                   0x2000104e   Data           1  sleep_wake.o(.bss.g_lptim_wake_triggered)
-    [Anonymous Symbol]                       0x2000104e   Section        0  sleep_wake.o(.bss.g_lptim_wake_triggered)
-    g_pwm_period                             0x20001050   Data           2  pwm.o(.bss.g_pwm_period)
-    [Anonymous Symbol]                       0x20001050   Section        0  pwm.o(.bss.g_pwm_period)
-    g_saved_backlight_brightness             0x20001052   Data           1  sleep_wake.o(.bss.g_saved_backlight_brightness)
-    [Anonymous Symbol]                       0x20001052   Section        0  sleep_wake.o(.bss.g_saved_backlight_brightness)
-    g_saved_tv1_state                        0x20001053   Data           1  sleep_wake.o(.bss.g_saved_tv1_state)
-    [Anonymous Symbol]                       0x20001053   Section        0  sleep_wake.o(.bss.g_saved_tv1_state)
-    g_saved_tv2_state                        0x20001054   Data           1  sleep_wake.o(.bss.g_saved_tv2_state)
-    [Anonymous Symbol]                       0x20001054   Section        0  sleep_wake.o(.bss.g_saved_tv2_state)
-    g_timeout_sec                            0x20001058   Data           4  sleep_wake.o(.bss.g_timeout_sec)
-    [Anonymous Symbol]                       0x20001058   Section        0  sleep_wake.o(.bss.g_timeout_sec)
-    g_wake_interrupt_triggered               0x20001068   Data           1  sleep_wake.o(.bss.g_wake_interrupt_triggered)
-    [Anonymous Symbol]                       0x20001068   Section        0  sleep_wake.o(.bss.g_wake_interrupt_triggered)
-    mainScreen.button_prev_state             0x20001078   Data           1  main.o(.bss.mainScreen.button_prev_state)
-    [Anonymous Symbol]                       0x20001078   Section        0  main.o(.bss.mainScreen.button_prev_state)
-    STACK                                    0x20001090   Section     3072  startup_n32g031.o(STACK)
+    flash_buffer_ptr                         0x2000101c   Data           4  nv3029.o(.bss.flash_buffer_ptr)
+    [Anonymous Symbol]                       0x2000101c   Section        0  nv3029.o(.bss.flash_buffer_ptr)
+    flash_dma_busy                           0x20001020   Data           1  nv3029.o(.bss.flash_dma_busy)
+    [Anonymous Symbol]                       0x20001020   Section        0  nv3029.o(.bss.flash_dma_busy)
+    flash_read_addr                          0x20001024   Data           4  nv3029.o(.bss.flash_read_addr)
+    [Anonymous Symbol]                       0x20001024   Section        0  nv3029.o(.bss.flash_read_addr)
+    flash_read_count                         0x20001028   Data           2  nv3029.o(.bss.flash_read_count)
+    [Anonymous Symbol]                       0x20001028   Section        0  nv3029.o(.bss.flash_read_count)
+    flash_write_buffer_start                 0x2000102c   Data           4  nv3029.o(.bss.flash_write_buffer_start)
+    [Anonymous Symbol]                       0x2000102c   Section        0  nv3029.o(.bss.flash_write_buffer_start)
+    flash_write_bytes_written                0x20001030   Data           4  nv3029.o(.bss.flash_write_bytes_written)
+    [Anonymous Symbol]                       0x20001030   Section        0  nv3029.o(.bss.flash_write_bytes_written)
+    flash_write_start_addr                   0x20001034   Data           4  nv3029.o(.bss.flash_write_start_addr)
+    [Anonymous Symbol]                       0x20001034   Section        0  nv3029.o(.bss.flash_write_start_addr)
+    flash_write_state                        0x20001038   Data           1  nv3029.o(.bss.flash_write_state)
+    [Anonymous Symbol]                       0x20001038   Section        0  nv3029.o(.bss.flash_write_state)
+    flash_write_total_bytes                  0x2000103c   Data           4  nv3029.o(.bss.flash_write_total_bytes)
+    [Anonymous Symbol]                       0x2000103c   Section        0  nv3029.o(.bss.flash_write_total_bytes)
+    g_debug_mode                             0x20001040   Data           1  sleep_wake.o(.bss.g_debug_mode)
+    [Anonymous Symbol]                       0x20001040   Section        0  sleep_wake.o(.bss.g_debug_mode)
+    g_inactivity_counter                     0x20001044   Data           4  sleep_wake.o(.bss.g_inactivity_counter)
+    [Anonymous Symbol]                       0x20001044   Section        0  sleep_wake.o(.bss.g_inactivity_counter)
+    g_is_sleeping                            0x20001048   Data           1  sleep_wake.o(.bss.g_is_sleeping)
+    [Anonymous Symbol]                       0x20001048   Section        0  sleep_wake.o(.bss.g_is_sleeping)
+    g_is_ultra_low_power                     0x20001049   Data           1  sleep_wake.o(.bss.g_is_ultra_low_power)
+    [Anonymous Symbol]                       0x20001049   Section        0  sleep_wake.o(.bss.g_is_ultra_low_power)
+    g_lptim_wake_triggered                   0x2000104a   Data           1  sleep_wake.o(.bss.g_lptim_wake_triggered)
+    [Anonymous Symbol]                       0x2000104a   Section        0  sleep_wake.o(.bss.g_lptim_wake_triggered)
+    g_pwm_period                             0x2000104c   Data           2  pwm.o(.bss.g_pwm_period)
+    [Anonymous Symbol]                       0x2000104c   Section        0  pwm.o(.bss.g_pwm_period)
+    g_saved_backlight_brightness             0x2000104e   Data           1  sleep_wake.o(.bss.g_saved_backlight_brightness)
+    [Anonymous Symbol]                       0x2000104e   Section        0  sleep_wake.o(.bss.g_saved_backlight_brightness)
+    g_saved_tv1_state                        0x2000104f   Data           1  sleep_wake.o(.bss.g_saved_tv1_state)
+    [Anonymous Symbol]                       0x2000104f   Section        0  sleep_wake.o(.bss.g_saved_tv1_state)
+    g_saved_tv2_state                        0x20001050   Data           1  sleep_wake.o(.bss.g_saved_tv2_state)
+    [Anonymous Symbol]                       0x20001050   Section        0  sleep_wake.o(.bss.g_saved_tv2_state)
+    g_timeout_sec                            0x20001054   Data           4  sleep_wake.o(.bss.g_timeout_sec)
+    [Anonymous Symbol]                       0x20001054   Section        0  sleep_wake.o(.bss.g_timeout_sec)
+    g_wake_interrupt_triggered               0x20001064   Data           1  sleep_wake.o(.bss.g_wake_interrupt_triggered)
+    [Anonymous Symbol]                       0x20001064   Section        0  sleep_wake.o(.bss.g_wake_interrupt_triggered)
+    mainScreen.button_prev_state             0x20001074   Data           1  main.o(.bss.mainScreen.button_prev_state)
+    [Anonymous Symbol]                       0x20001074   Section        0  main.o(.bss.mainScreen.button_prev_state)
+    STACK                                    0x20001088   Section     3072  startup_n32g031.o(STACK)
 
     Global Symbols
 
@@ -3337,108 +3327,109 @@ Image Symbol Table
     LCD_draw_string                          0x08001795   Thumb Code   100  nv3029.o(.text.LCD_draw_string)
     LCD_fill_screen                          0x080017fd   Thumb Code    76  nv3029.o(.text.LCD_fill_screen)
     LCD_flash_dma_init                       0x08001851   Thumb Code    36  nv3029.o(.text.LCD_flash_dma_init)
-    LCD_flash_read_async                     0x08001879   Thumb Code   144  nv3029.o(.text.LCD_flash_read_async)
-    LCD_flash_write_async                    0x08001921   Thumb Code   168  nv3029.o(.text.LCD_flash_write_async)
-    LCD_init                                 0x080019e9   Thumb Code   552  nv3029.o(.text.LCD_init)
-    LCD_is_flash_read_complete               0x08001c21   Thumb Code   120  nv3029.o(.text.LCD_is_flash_read_complete)
-    LCD_is_flash_write_complete              0x08001ca1   Thumb Code   412  nv3029.o(.text.LCD_is_flash_write_complete)
-    LPTIM_ClearFLAG_ARRM                     0x08001e5d   Thumb Code    10  n32g031_lptim.o(.text.LPTIM_ClearFLAG_ARRM)
-    LPTIM_ClearFLAG_CMPM                     0x08001e67   Thumb Code    10  n32g031_lptim.o(.text.LPTIM_ClearFLAG_CMPM)
-    LPTIM_DeInit                             0x08001e71   Thumb Code    32  n32g031_lptim.o(.text.LPTIM_DeInit)
-    LPTIM_Enable                             0x08001e91   Thumb Code    10  n32g031_lptim.o(.text.LPTIM_Enable)
-    LPTIM_EnableIT_ARRM                      0x08001e9b   Thumb Code    10  n32g031_lptim.o(.text.LPTIM_EnableIT_ARRM)
-    LPTIM_Init                               0x08001ea5   Thumb Code   116  n32g031_lptim.o(.text.LPTIM_Init)
-    LPTIM_IsActiveFlag_ARRM                  0x08001f99   Thumb Code     8  n32g031_lptim.o(.text.LPTIM_IsActiveFlag_ARRM)
-    LPTIM_IsActiveFlag_CMPM                  0x08001fa1   Thumb Code     8  n32g031_lptim.o(.text.LPTIM_IsActiveFlag_CMPM)
-    LPTIM_SetAutoReload                      0x08001fa9   Thumb Code     6  n32g031_lptim.o(.text.LPTIM_SetAutoReload)
-    LPTIM_StartCounter                       0x08001faf   Thumb Code    12  n32g031_lptim.o(.text.LPTIM_StartCounter)
-    LPTIM_TIM6_IRQHandler                    0x08001fbd   Thumb Code    52  sleep_wake.o(.text.LPTIM_TIM6_IRQHandler)
-    NMI_Handler                              0x08001ff9   Thumb Code     2  n32g031_it.o(.text.NMI_Handler)
-    PWM_GetDutyCycle                         0x08001ffd   Thumb Code     8  pwm.o(.text.PWM_GetDutyCycle)
-    PWM_Init                                 0x08002005   Thumb Code   136  pwm.o(.text.PWM_Init)
-    PWM_SetDutyCycle                         0x0800209d   Thumb Code    32  pwm.o(.text.PWM_SetDutyCycle)
-    PWR_EnterSTOPMode                        0x080020c9   Thumb Code    68  n32g031_pwr.o(.text.PWR_EnterSTOPMode)
-    PendSV_Handler                           0x0800213d   Thumb Code     2  n32g031_it.o(.text.PendSV_Handler)
-    RCC_ConfigAdcHclk                        0x08002141   Thumb Code    40  n32g031_rcc.o(.text.RCC_ConfigAdcHclk)
-    RCC_ConfigLPTIMClk                       0x08002195   Thumb Code    44  n32g031_rcc.o(.text.RCC_ConfigLPTIMClk)
-    RCC_EnableAHBPeriphClk                   0x080021f1   Thumb Code    64  n32g031_rcc.o(.text.RCC_EnableAHBPeriphClk)
-    RCC_EnableAPB1PeriphClk                  0x08002261   Thumb Code    64  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphClk)
-    RCC_EnableAPB1PeriphReset                0x080022d1   Thumb Code    64  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphReset)
-    RCC_EnableAPB2PeriphClk                  0x08002349   Thumb Code    64  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
-    RCC_EnableLsi                            0x08002399   Thumb Code    40  n32g031_rcc.o(.text.RCC_EnableLsi)
-    SPI1_tx_dma_fill                         0x080023cd   Thumb Code   144  nv3029.o(.text.SPI1_tx_dma_fill)
-    SPI1_tx_dma_mode                         0x0800245d   Thumb Code   164  nv3029.o(.text.SPI1_tx_dma_mode)
-    SPI_Enable                               0x08002509   Thumb Code    68  n32g031_spi.o(.text.SPI_Enable)
-    SPI_I2S_EnableDma                        0x0800254d   Thumb Code    88  n32g031_spi.o(.text.SPI_I2S_EnableDma)
-    SPI_I2S_GetStatus                        0x080025d9   Thumb Code   136  n32g031_spi.o(.text.SPI_I2S_GetStatus)
-    SPI_I2S_ReceiveData                      0x08002699   Thumb Code    36  n32g031_spi.o(.text.SPI_I2S_ReceiveData)
-    SPI_I2S_TransmitData                     0x080026bd   Thumb Code    44  n32g031_spi.o(.text.SPI_I2S_TransmitData)
-    SPI_Init                                 0x080026ed   Thumb Code   296  n32g031_spi.o(.text.SPI_Init)
-    SPI_InitStruct                           0x080028c9   Thumb Code    24  n32g031_spi.o(.text.SPI_InitStruct)
-    SVC_Handler                              0x080028e1   Thumb Code     2  n32g031_it.o(.text.SVC_Handler)
-    SleepWake_CheckTimeout                   0x080028e5   Thumb Code    44  sleep_wake.o(.text.SleepWake_CheckTimeout)
-    SleepWake_ClearWakeInterrupt             0x08002911   Thumb Code     8  sleep_wake.o(.text.SleepWake_ClearWakeInterrupt)
-    SleepWake_EnterUltraLowPower             0x08002919   Thumb Code   212  sleep_wake.o(.text.SleepWake_EnterUltraLowPower)
-    SleepWake_GetTimeRemaining               0x080029f5   Thumb Code    40  sleep_wake.o(.text.SleepWake_GetTimeRemaining)
-    SleepWake_HandleUltraLowPowerWake        0x08002a1d   Thumb Code   164  sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake)
-    SleepWake_Init                           0x08002ac9   Thumb Code   128  sleep_wake.o(.text.SleepWake_Init)
-    SleepWake_InitLPTIM                      0x08002b59   Thumb Code   144  sleep_wake.o(.text.SleepWake_InitLPTIM)
-    SleepWake_IsSleeping                     0x08002bf9   Thumb Code     8  sleep_wake.o(.text.SleepWake_IsSleeping)
-    SleepWake_IsWakeInterruptTriggered       0x08002c01   Thumb Code     8  sleep_wake.o(.text.SleepWake_IsWakeInterruptTriggered)
-    SleepWake_ResetTimer                     0x08002c0d   Thumb Code    16  sleep_wake.o(.text.SleepWake_ResetTimer)
-    SleepWake_RestoreFullPower               0x08002c25   Thumb Code   212  sleep_wake.o(.text.SleepWake_RestoreFullPower)
-    SleepWake_SetDebugMode                   0x08002d21   Thumb Code     8  sleep_wake.o(.text.SleepWake_SetDebugMode)
-    SleepWake_WakeUp                         0x08002d2d   Thumb Code    76  sleep_wake.o(.text.SleepWake_WakeUp)
-    SysTick_Handler                          0x08002d91   Thumb Code     2  n32g031_it.o(.text.SysTick_Handler)
-    SystemInit                               0x08002d95   Thumb Code   188  system_n32g031.o(.text.SystemInit)
-    VoltageMonitor_Init                      0x08002e71   Thumb Code   132  voltage_monitor.o(.text.VoltageMonitor_Init)
-    VoltageMonitor_UpdateReadings            0x08002efd   Thumb Code   464  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
-    assert_failed                            0x080030e9   Thumb Code     2  main.o(.text.assert_failed)
-    displayFullPhotoChunked                  0x080030ed   Thumb Code   184  nv3029.o(.text.displayFullPhotoChunked)
-    displayPhoto                             0x080031a5   Thumb Code    84  nv3029.o(.text.displayPhoto)
-    dma_clear_flags                          0x08003209   Thumb Code     8  dma.o(.text.dma_clear_flags)
-    dma_init                                 0x08003211   Thumb Code    12  dma.o(.text.dma_init)
-    dma_start_transfer                       0x0800321d   Thumb Code    96  dma.o(.text.dma_start_transfer)
-    dma_wait_complete                        0x0800327d   Thumb Code    72  dma.o(.text.dma_wait_complete)
-    flashScreen                              0x080032e5   Thumb Code   716  main.o(.text.flashScreen)
-    main                                     0x08003619   Thumb Code   100  main.o(.text.main)
-    mainScreen                               0x08003685   Thumb Code   652  main.o(.text.mainScreen)
-    sFLASH_EraseBulk                         0x080039ad   Thumb Code    76  spi_flash.o(.text.sFLASH_EraseBulk)
-    sFLASH_EraseSector                       0x080039f9   Thumb Code   200  spi_flash.o(.text.sFLASH_EraseSector)
-    sFLASH_Init                              0x08003ac1   Thumb Code   156  spi_flash.o(.text.sFLASH_Init)
-    sFLASH_ReadBuffer                        0x08003b5d   Thumb Code   244  spi_flash.o(.text.sFLASH_ReadBuffer)
-    sFLASH_ReadID                            0x08003c51   Thumb Code   204  spi_flash.o(.text.sFLASH_ReadID)
-    sFLASH_SendByte                          0x08003d21   Thumb Code    48  spi_flash.o(.text.sFLASH_SendByte)
-    sFLASH_StartReadSequence                 0x08003d55   Thumb Code   176  spi_flash.o(.text.sFLASH_StartReadSequence)
-    sFLASH_WaitForWriteEnd                   0x08003e05   Thumb Code   108  spi_flash.o(.text.sFLASH_WaitForWriteEnd)
-    sFLASH_WriteBuffer                       0x08003e79   Thumb Code   156  spi_flash.o(.text.sFLASH_WriteBuffer)
-    sFLASH_WriteEnable                       0x08003f15   Thumb Code    68  spi_flash.o(.text.sFLASH_WriteEnable)
-    sFLASH_WritePage                         0x08003f61   Thumb Code   252  spi_flash.o(.text.sFLASH_WritePage)
-    setup                                    0x08004065   Thumb Code   504  main.o(.text.setup)
-    spi1_config                              0x08004265   Thumb Code   184  nv3029.o(.text.spi1_config)
-    __0snprintf$1                            0x08004475   Thumb Code    50  printf1.o(i.__0snprintf$1)
-    __1snprintf$1                            0x08004475   Thumb Code     0  printf1.o(i.__0snprintf$1)
-    __2snprintf                              0x08004475   Thumb Code     0  printf1.o(i.__0snprintf$1)
-    __scatterload_copy                       0x080044ad   Thumb Code    14  handlers.o(i.__scatterload_copy)
-    __scatterload_null                       0x080044bb   Thumb Code     2  handlers.o(i.__scatterload_null)
-    __scatterload_zeroinit                   0x080044bd   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
-    font5x8                                  0x08004632   Data         480  nv3029.o(.rodata.font5x8)
-    Region$$Table$$Base                      0x080052ac   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x080052cc   Number         0  anon$$obj.o(Region$$Table)
+    LCD_flash_read_async                     0x08001879   Thumb Code   148  nv3029.o(.text.LCD_flash_read_async)
+    LCD_flash_write_async                    0x08001925   Thumb Code   168  nv3029.o(.text.LCD_flash_write_async)
+    LCD_init                                 0x080019ed   Thumb Code   552  nv3029.o(.text.LCD_init)
+    LCD_is_flash_read_complete               0x08001c25   Thumb Code   120  nv3029.o(.text.LCD_is_flash_read_complete)
+    LCD_is_flash_write_complete              0x08001ca5   Thumb Code   412  nv3029.o(.text.LCD_is_flash_write_complete)
+    LPTIM_ClearFLAG_ARRM                     0x08001e61   Thumb Code    10  n32g031_lptim.o(.text.LPTIM_ClearFLAG_ARRM)
+    LPTIM_ClearFLAG_CMPM                     0x08001e6b   Thumb Code    10  n32g031_lptim.o(.text.LPTIM_ClearFLAG_CMPM)
+    LPTIM_DeInit                             0x08001e75   Thumb Code    32  n32g031_lptim.o(.text.LPTIM_DeInit)
+    LPTIM_Enable                             0x08001e95   Thumb Code    10  n32g031_lptim.o(.text.LPTIM_Enable)
+    LPTIM_EnableIT_ARRM                      0x08001e9f   Thumb Code    10  n32g031_lptim.o(.text.LPTIM_EnableIT_ARRM)
+    LPTIM_Init                               0x08001ea9   Thumb Code   116  n32g031_lptim.o(.text.LPTIM_Init)
+    LPTIM_IsActiveFlag_ARRM                  0x08001f9d   Thumb Code     8  n32g031_lptim.o(.text.LPTIM_IsActiveFlag_ARRM)
+    LPTIM_IsActiveFlag_CMPM                  0x08001fa5   Thumb Code     8  n32g031_lptim.o(.text.LPTIM_IsActiveFlag_CMPM)
+    LPTIM_SetAutoReload                      0x08001fad   Thumb Code     6  n32g031_lptim.o(.text.LPTIM_SetAutoReload)
+    LPTIM_StartCounter                       0x08001fb3   Thumb Code    12  n32g031_lptim.o(.text.LPTIM_StartCounter)
+    LPTIM_TIM6_IRQHandler                    0x08001fc1   Thumb Code    52  sleep_wake.o(.text.LPTIM_TIM6_IRQHandler)
+    NMI_Handler                              0x08001ffd   Thumb Code     2  n32g031_it.o(.text.NMI_Handler)
+    PWM_GetDutyCycle                         0x08002001   Thumb Code     8  pwm.o(.text.PWM_GetDutyCycle)
+    PWM_Init                                 0x08002009   Thumb Code   136  pwm.o(.text.PWM_Init)
+    PWM_SetDutyCycle                         0x080020a1   Thumb Code    32  pwm.o(.text.PWM_SetDutyCycle)
+    PWR_EnterSTOPMode                        0x080020cd   Thumb Code    68  n32g031_pwr.o(.text.PWR_EnterSTOPMode)
+    PendSV_Handler                           0x08002141   Thumb Code     2  n32g031_it.o(.text.PendSV_Handler)
+    RCC_ConfigAdcHclk                        0x08002145   Thumb Code    40  n32g031_rcc.o(.text.RCC_ConfigAdcHclk)
+    RCC_ConfigLPTIMClk                       0x08002199   Thumb Code    44  n32g031_rcc.o(.text.RCC_ConfigLPTIMClk)
+    RCC_EnableAHBPeriphClk                   0x080021f5   Thumb Code    64  n32g031_rcc.o(.text.RCC_EnableAHBPeriphClk)
+    RCC_EnableAPB1PeriphClk                  0x08002265   Thumb Code    64  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphClk)
+    RCC_EnableAPB1PeriphReset                0x080022d5   Thumb Code    64  n32g031_rcc.o(.text.RCC_EnableAPB1PeriphReset)
+    RCC_EnableAPB2PeriphClk                  0x0800234d   Thumb Code    64  n32g031_rcc.o(.text.RCC_EnableAPB2PeriphClk)
+    RCC_EnableLsi                            0x0800239d   Thumb Code    40  n32g031_rcc.o(.text.RCC_EnableLsi)
+    SPI1_tx_dma_fill                         0x080023d1   Thumb Code   144  nv3029.o(.text.SPI1_tx_dma_fill)
+    SPI1_tx_dma_mode                         0x08002461   Thumb Code   164  nv3029.o(.text.SPI1_tx_dma_mode)
+    SPI_Enable                               0x0800250d   Thumb Code    68  n32g031_spi.o(.text.SPI_Enable)
+    SPI_I2S_EnableDma                        0x08002551   Thumb Code    88  n32g031_spi.o(.text.SPI_I2S_EnableDma)
+    SPI_I2S_GetStatus                        0x080025dd   Thumb Code   136  n32g031_spi.o(.text.SPI_I2S_GetStatus)
+    SPI_I2S_ReceiveData                      0x0800269d   Thumb Code    36  n32g031_spi.o(.text.SPI_I2S_ReceiveData)
+    SPI_I2S_TransmitData                     0x080026c1   Thumb Code    44  n32g031_spi.o(.text.SPI_I2S_TransmitData)
+    SPI_Init                                 0x080026f1   Thumb Code   296  n32g031_spi.o(.text.SPI_Init)
+    SPI_InitStruct                           0x080028cd   Thumb Code    24  n32g031_spi.o(.text.SPI_InitStruct)
+    SVC_Handler                              0x080028e5   Thumb Code     2  n32g031_it.o(.text.SVC_Handler)
+    SleepWake_CheckTimeout                   0x080028e9   Thumb Code    44  sleep_wake.o(.text.SleepWake_CheckTimeout)
+    SleepWake_ClearWakeInterrupt             0x08002915   Thumb Code     8  sleep_wake.o(.text.SleepWake_ClearWakeInterrupt)
+    SleepWake_EnterUltraLowPower             0x0800291d   Thumb Code   228  sleep_wake.o(.text.SleepWake_EnterUltraLowPower)
+    SleepWake_GetTimeRemaining               0x08002a01   Thumb Code    40  sleep_wake.o(.text.SleepWake_GetTimeRemaining)
+    SleepWake_HandleUltraLowPowerWake        0x08002a29   Thumb Code    56  sleep_wake.o(.text.SleepWake_HandleUltraLowPowerWake)
+    SleepWake_Init                           0x08002a61   Thumb Code   128  sleep_wake.o(.text.SleepWake_Init)
+    SleepWake_InitLPTIM                      0x08002aed   Thumb Code   144  sleep_wake.o(.text.SleepWake_InitLPTIM)
+    SleepWake_IsSleeping                     0x08002b8d   Thumb Code     8  sleep_wake.o(.text.SleepWake_IsSleeping)
+    SleepWake_IsWakeInterruptTriggered       0x08002b95   Thumb Code     8  sleep_wake.o(.text.SleepWake_IsWakeInterruptTriggered)
+    SleepWake_ResetTimer                     0x08002ba1   Thumb Code    16  sleep_wake.o(.text.SleepWake_ResetTimer)
+    SleepWake_RestoreFullPower               0x08002bb9   Thumb Code   212  sleep_wake.o(.text.SleepWake_RestoreFullPower)
+    SleepWake_SetDebugMode                   0x08002ca9   Thumb Code     8  sleep_wake.o(.text.SleepWake_SetDebugMode)
+    SleepWake_WakeUp                         0x08002cb5   Thumb Code    76  sleep_wake.o(.text.SleepWake_WakeUp)
+    SysTick_Handler                          0x08002d1d   Thumb Code     2  n32g031_it.o(.text.SysTick_Handler)
+    SystemInit                               0x08002d21   Thumb Code   188  system_n32g031.o(.text.SystemInit)
+    VoltageMonitor_Init                      0x08002dfd   Thumb Code   132  voltage_monitor.o(.text.VoltageMonitor_Init)
+    VoltageMonitor_UpdateReadings            0x08002e89   Thumb Code   464  voltage_monitor.o(.text.VoltageMonitor_UpdateReadings)
+    assert_failed                            0x08003075   Thumb Code     2  main.o(.text.assert_failed)
+    displayFullPhotoChunked                  0x08003079   Thumb Code   184  nv3029.o(.text.displayFullPhotoChunked)
+    displayPhoto                             0x08003131   Thumb Code    84  nv3029.o(.text.displayPhoto)
+    dma_clear_flags                          0x08003195   Thumb Code     8  dma.o(.text.dma_clear_flags)
+    dma_init                                 0x0800319d   Thumb Code    12  dma.o(.text.dma_init)
+    dma_start_transfer                       0x080031a9   Thumb Code    96  dma.o(.text.dma_start_transfer)
+    dma_wait_complete                        0x08003209   Thumb Code    72  dma.o(.text.dma_wait_complete)
+    flashScreen                              0x08003271   Thumb Code   716  main.o(.text.flashScreen)
+    main                                     0x080035a5   Thumb Code   100  main.o(.text.main)
+    mainScreen                               0x08003611   Thumb Code   652  main.o(.text.mainScreen)
+    sFLASH_EraseBulk                         0x0800393d   Thumb Code    76  spi_flash.o(.text.sFLASH_EraseBulk)
+    sFLASH_EraseSector                       0x08003989   Thumb Code   200  spi_flash.o(.text.sFLASH_EraseSector)
+    sFLASH_Init                              0x08003a51   Thumb Code   156  spi_flash.o(.text.sFLASH_Init)
+    sFLASH_ReadBuffer                        0x08003aed   Thumb Code   244  spi_flash.o(.text.sFLASH_ReadBuffer)
+    sFLASH_ReadByte                          0x08003be1   Thumb Code    48  spi_flash.o(.text.sFLASH_ReadByte)
+    sFLASH_ReadID                            0x08003c11   Thumb Code   204  spi_flash.o(.text.sFLASH_ReadID)
+    sFLASH_SendByte                          0x08003ce1   Thumb Code    48  spi_flash.o(.text.sFLASH_SendByte)
+    sFLASH_StartReadSequence                 0x08003d15   Thumb Code   176  spi_flash.o(.text.sFLASH_StartReadSequence)
+    sFLASH_WaitForWriteEnd                   0x08003dc5   Thumb Code   108  spi_flash.o(.text.sFLASH_WaitForWriteEnd)
+    sFLASH_WriteBuffer                       0x08003e39   Thumb Code   156  spi_flash.o(.text.sFLASH_WriteBuffer)
+    sFLASH_WriteEnable                       0x08003ed5   Thumb Code    68  spi_flash.o(.text.sFLASH_WriteEnable)
+    sFLASH_WritePage                         0x08003f21   Thumb Code   252  spi_flash.o(.text.sFLASH_WritePage)
+    setup                                    0x08004025   Thumb Code   504  main.o(.text.setup)
+    spi1_config                              0x08004225   Thumb Code   184  nv3029.o(.text.spi1_config)
+    __0snprintf$1                            0x08004435   Thumb Code    50  printf1.o(i.__0snprintf$1)
+    __1snprintf$1                            0x08004435   Thumb Code     0  printf1.o(i.__0snprintf$1)
+    __2snprintf                              0x08004435   Thumb Code     0  printf1.o(i.__0snprintf$1)
+    __scatterload_copy                       0x0800446d   Thumb Code    14  handlers.o(i.__scatterload_copy)
+    __scatterload_null                       0x0800447b   Thumb Code     2  handlers.o(i.__scatterload_null)
+    __scatterload_zeroinit                   0x0800447d   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
+    font5x8                                  0x080045f2   Data         480  nv3029.o(.rodata.font5x8)
+    Region$$Table$$Base                      0x0800526c   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x0800528c   Number         0  anon$$obj.o(Region$$Table)
     FlashID                                  0x20000010   Data           4  main.o(.bss.FlashID)
     FlashID_error                            0x20000014   Data           1  main.o(.bss.FlashID_error)
-    buffer                                   0x2000001c   Data        4096  main.o(.bss.buffer)
-    continue_flag                            0x2000101c   Data           4  main.o(.bss.continue_flag)
-    g_voltage_readings                       0x2000105c   Data          12  voltage_monitor.o(.bss.g_voltage_readings)
-    lvl_buffer                               0x20001069   Data           5  main.o(.bss.lvl_buffer)
-    lvl_buffer_read                          0x2000106e   Data           5  main.o(.bss.lvl_buffer_read)
-    lvl_reset_flag                           0x20001074   Data           4  main.o(.bss.lvl_reset_flag)
-    mainran                                  0x20001079   Data           1  main.o(.bss.mainran)
-    page                                     0x2000107c   Data           4  main.o(.bss.page)
-    spi_rx_data                              0x20001080   Data           4  nv3029.o(.bss.spi_rx_data)
-    status                                   0x20001084   Data           4  main.o(.bss.status)
-    write_flag                               0x20001088   Data           4  main.o(.bss.write_flag)
-    __initial_sp                             0x20001c90   Data           0  startup_n32g031.o(STACK)
+    buffer                                   0x20000015   Data        4096  main.o(.bss.buffer)
+    continue_flag                            0x20001018   Data           4  main.o(.bss.continue_flag)
+    g_voltage_readings                       0x20001058   Data          12  voltage_monitor.o(.bss.g_voltage_readings)
+    lvl_buffer                               0x20001065   Data           5  main.o(.bss.lvl_buffer)
+    lvl_buffer_read                          0x2000106a   Data           5  main.o(.bss.lvl_buffer_read)
+    lvl_reset_flag                           0x20001070   Data           4  main.o(.bss.lvl_reset_flag)
+    mainran                                  0x20001075   Data           1  main.o(.bss.mainran)
+    page                                     0x20001078   Data           4  main.o(.bss.page)
+    spi_rx_data                              0x2000107c   Data           4  nv3029.o(.bss.spi_rx_data)
+    status                                   0x20001080   Data           4  main.o(.bss.status)
+    write_flag                               0x20001084   Data           4  main.o(.bss.write_flag)
+    __initial_sp                             0x20001c88   Data           0  startup_n32g031.o(STACK)
 
 
 
@@ -3448,28 +3439,28 @@ Memory Map of the image
 
   Image Entry point : 0x080000c1
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000052e0, Max: 0x00010000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000052a0, Max: 0x00010000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x000052cc, Max: 0x00010000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x0000528c, Max: 0x00010000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
     0x08000000   0x08000000   0x000000c0   Data   RO            3    RESET               startup_n32g031.o
-    0x080000c0   0x080000c0   0x00000000   Code   RO         1147  * .ARM.Collect$$$$00000000  mc_p.l(entry.o)
-    0x080000c0   0x080000c0   0x00000004   Code   RO         1421    .ARM.Collect$$$$00000001  mc_p.l(entry2.o)
-    0x080000c4   0x080000c4   0x00000004   Code   RO         1424    .ARM.Collect$$$$00000004  mc_p.l(entry5.o)
-    0x080000c8   0x080000c8   0x00000000   Code   RO         1426    .ARM.Collect$$$$00000008  mc_p.l(entry7b.o)
-    0x080000c8   0x080000c8   0x00000000   Code   RO         1428    .ARM.Collect$$$$0000000A  mc_p.l(entry8b.o)
-    0x080000c8   0x080000c8   0x00000008   Code   RO         1429    .ARM.Collect$$$$0000000B  mc_p.l(entry9a.o)
-    0x080000d0   0x080000d0   0x00000000   Code   RO         1431    .ARM.Collect$$$$0000000D  mc_p.l(entry10a.o)
-    0x080000d0   0x080000d0   0x00000000   Code   RO         1433    .ARM.Collect$$$$0000000F  mc_p.l(entry11a.o)
-    0x080000d0   0x080000d0   0x00000004   Code   RO         1422    .ARM.Collect$$$$00002712  mc_p.l(entry2.o)
+    0x080000c0   0x080000c0   0x00000000   Code   RO         1146  * .ARM.Collect$$$$00000000  mc_p.l(entry.o)
+    0x080000c0   0x080000c0   0x00000004   Code   RO         1420    .ARM.Collect$$$$00000001  mc_p.l(entry2.o)
+    0x080000c4   0x080000c4   0x00000004   Code   RO         1423    .ARM.Collect$$$$00000004  mc_p.l(entry5.o)
+    0x080000c8   0x080000c8   0x00000000   Code   RO         1425    .ARM.Collect$$$$00000008  mc_p.l(entry7b.o)
+    0x080000c8   0x080000c8   0x00000000   Code   RO         1427    .ARM.Collect$$$$0000000A  mc_p.l(entry8b.o)
+    0x080000c8   0x080000c8   0x00000008   Code   RO         1428    .ARM.Collect$$$$0000000B  mc_p.l(entry9a.o)
+    0x080000d0   0x080000d0   0x00000000   Code   RO         1430    .ARM.Collect$$$$0000000D  mc_p.l(entry10a.o)
+    0x080000d0   0x080000d0   0x00000000   Code   RO         1432    .ARM.Collect$$$$0000000F  mc_p.l(entry11a.o)
+    0x080000d0   0x080000d0   0x00000004   Code   RO         1421    .ARM.Collect$$$$00002712  mc_p.l(entry2.o)
     0x080000d4   0x080000d4   0x0000001c   Code   RO            4    .text               startup_n32g031.o
-    0x080000f0   0x080000f0   0x00000024   Code   RO         1158    .text               mc_p.l(memseta.o)
-    0x08000114   0x08000114   0x0000003e   Code   RO         1444    .text               mc_p.l(uidiv_div0.o)
+    0x080000f0   0x080000f0   0x00000024   Code   RO         1157    .text               mc_p.l(memseta.o)
+    0x08000114   0x08000114   0x0000003e   Code   RO         1443    .text               mc_p.l(uidiv_div0.o)
     0x08000152   0x08000152   0x00000002   PAD
-    0x08000154   0x08000154   0x00000050   Code   RO         1446    .text               mc_p.l(idiv_div0.o)
-    0x080001a4   0x080001a4   0x00000030   Code   RO         1463    .text               mc_p.l(init.o)
+    0x08000154   0x08000154   0x00000050   Code   RO         1445    .text               mc_p.l(idiv_div0.o)
+    0x080001a4   0x080001a4   0x00000030   Code   RO         1462    .text               mc_p.l(init.o)
     0x080001d4   0x080001d4   0x00000058   Code   RO          547    .text.ADC_ClearFlag  n32g031_adc.o
     0x0800022c   0x0800022c   0x000000d4   Code   RO          505    .text.ADC_ConfigRegularChannel  n32g031_adc.o
     0x08000300   0x08000300   0x00000038   Code   RO          491    .text.ADC_Enable    n32g031_adc.o
@@ -3515,170 +3506,169 @@ Memory Map of the image
     0x08001794   0x08001794   0x00000068   Code   RO          951    .text.LCD_draw_string  nv3029.o
     0x080017fc   0x080017fc   0x00000054   Code   RO          947    .text.LCD_fill_screen  nv3029.o
     0x08001850   0x08001850   0x00000028   Code   RO          969    .text.LCD_flash_dma_init  nv3029.o
-    0x08001878   0x08001878   0x000000a8   Code   RO          961    .text.LCD_flash_read_async  nv3029.o
-    0x08001920   0x08001920   0x000000c8   Code   RO          973    .text.LCD_flash_write_async  nv3029.o
-    0x080019e8   0x080019e8   0x00000238   Code   RO          943    .text.LCD_init      nv3029.o
-    0x08001c20   0x08001c20   0x00000080   Code   RO          963    .text.LCD_is_flash_read_complete  nv3029.o
-    0x08001ca0   0x08001ca0   0x000001bc   Code   RO          975    .text.LCD_is_flash_write_complete  nv3029.o
-    0x08001e5c   0x08001e5c   0x0000000a   Code   RO          695    .text.LPTIM_ClearFLAG_ARRM  n32g031_lptim.o
-    0x08001e66   0x08001e66   0x0000000a   Code   RO          691    .text.LPTIM_ClearFLAG_CMPM  n32g031_lptim.o
-    0x08001e70   0x08001e70   0x00000020   Code   RO          605    .text.LPTIM_DeInit  n32g031_lptim.o
-    0x08001e90   0x08001e90   0x0000000a   Code   RO          615    .text.LPTIM_Enable  n32g031_lptim.o
-    0x08001e9a   0x08001e9a   0x0000000a   Code   RO          725    .text.LPTIM_EnableIT_ARRM  n32g031_lptim.o
-    0x08001ea4   0x08001ea4   0x000000f4   Code   RO          609    .text.LPTIM_Init    n32g031_lptim.o
-    0x08001f98   0x08001f98   0x00000008   Code   RO          697    .text.LPTIM_IsActiveFlag_ARRM  n32g031_lptim.o
-    0x08001fa0   0x08001fa0   0x00000008   Code   RO          693    .text.LPTIM_IsActiveFlag_CMPM  n32g031_lptim.o
-    0x08001fa8   0x08001fa8   0x00000006   Code   RO          623    .text.LPTIM_SetAutoReload  n32g031_lptim.o
-    0x08001fae   0x08001fae   0x0000000c   Code   RO          617    .text.LPTIM_StartCounter  n32g031_lptim.o
-    0x08001fba   0x08001fba   0x00000002   PAD
-    0x08001fbc   0x08001fbc   0x0000003c   Code   RO         1096    .text.LPTIM_TIM6_IRQHandler  sleep_wake.o
-    0x08001ff8   0x08001ff8   0x00000002   Code   RO          846    .text.NMI_Handler   n32g031_it.o
-    0x08001ffa   0x08001ffa   0x00000002   PAD
-    0x08001ffc   0x08001ffc   0x00000008   Code   RO         1045    .text.PWM_GetDutyCycle  pwm.o
-    0x08002004   0x08002004   0x00000098   Code   RO         1039    .text.PWM_Init      pwm.o
-    0x0800209c   0x0800209c   0x0000002c   Code   RO         1041    .text.PWM_SetDutyCycle  pwm.o
-    0x080020c8   0x080020c8   0x00000074   Code   RO          782    .text.PWR_EnterSTOPMode  n32g031_pwr.o
-    0x0800213c   0x0800213c   0x00000002   Code   RO          852    .text.PendSV_Handler  n32g031_it.o
-    0x0800213e   0x0800213e   0x00000002   PAD
-    0x08002140   0x08002140   0x00000054   Code   RO          167    .text.RCC_ConfigAdcHclk  n32g031_rcc.o
-    0x08002194   0x08002194   0x0000005c   Code   RO          169    .text.RCC_ConfigLPTIMClk  n32g031_rcc.o
-    0x080021f0   0x080021f0   0x00000070   Code   RO          197    .text.RCC_EnableAHBPeriphClk  n32g031_rcc.o
-    0x08002260   0x08002260   0x00000070   Code   RO          201    .text.RCC_EnableAPB1PeriphClk  n32g031_rcc.o
-    0x080022d0   0x080022d0   0x00000078   Code   RO          207    .text.RCC_EnableAPB1PeriphReset  n32g031_rcc.o
-    0x08002348   0x08002348   0x00000050   Code   RO          199    .text.RCC_EnableAPB2PeriphClk  n32g031_rcc.o
-    0x08002398   0x08002398   0x00000034   Code   RO          181    .text.RCC_EnableLsi  n32g031_rcc.o
-    0x080023cc   0x080023cc   0x00000090   Code   RO          919    .text.SPI1_tx_dma_fill  nv3029.o
-    0x0800245c   0x0800245c   0x000000ac   Code   RO          911    .text.SPI1_tx_dma_mode  nv3029.o
-    0x08002508   0x08002508   0x00000044   Code   RO           82    .text.SPI_Enable    n32g031_spi.o
-    0x0800254c   0x0800254c   0x0000008c   Code   RO           88    .text.SPI_I2S_EnableDma  n32g031_spi.o
-    0x080025d8   0x080025d8   0x000000c0   Code   RO          110    .text.SPI_I2S_GetStatus  n32g031_spi.o
-    0x08002698   0x08002698   0x00000024   Code   RO           92    .text.SPI_I2S_ReceiveData  n32g031_spi.o
-    0x080026bc   0x080026bc   0x00000030   Code   RO           90    .text.SPI_I2S_TransmitData  n32g031_spi.o
-    0x080026ec   0x080026ec   0x000001dc   Code   RO           74    .text.SPI_Init      n32g031_spi.o
-    0x080028c8   0x080028c8   0x00000018   Code   RO           78    .text.SPI_InitStruct  n32g031_spi.o
-    0x080028e0   0x080028e0   0x00000002   Code   RO          850    .text.SVC_Handler   n32g031_it.o
-    0x080028e2   0x080028e2   0x00000002   PAD
-    0x080028e4   0x080028e4   0x0000002c   Code   RO         1082    .text.SleepWake_CheckTimeout  sleep_wake.o
-    0x08002910   0x08002910   0x00000008   Code   RO         1074    .text.SleepWake_ClearWakeInterrupt  sleep_wake.o
-    0x08002918   0x08002918   0x000000dc   Code   RO         1102    .text.SleepWake_EnterUltraLowPower  sleep_wake.o
-    0x080029f4   0x080029f4   0x00000028   Code   RO         1084    .text.SleepWake_GetTimeRemaining  sleep_wake.o
-    0x08002a1c   0x08002a1c   0x000000ac   Code   RO         1104    .text.SleepWake_HandleUltraLowPowerWake  sleep_wake.o
-    0x08002ac8   0x08002ac8   0x00000090   Code   RO         1062    .text.SleepWake_Init  sleep_wake.o
-    0x08002b58   0x08002b58   0x000000a0   Code   RO         1066    .text.SleepWake_InitLPTIM  sleep_wake.o
-    0x08002bf8   0x08002bf8   0x00000008   Code   RO         1086    .text.SleepWake_IsSleeping  sleep_wake.o
-    0x08002c00   0x08002c00   0x0000000c   Code   RO         1072    .text.SleepWake_IsWakeInterruptTriggered  sleep_wake.o
-    0x08002c0c   0x08002c0c   0x00000018   Code   RO         1080    .text.SleepWake_ResetTimer  sleep_wake.o
-    0x08002c24   0x08002c24   0x000000fc   Code   RO         1106    .text.SleepWake_RestoreFullPower  sleep_wake.o
-    0x08002d20   0x08002d20   0x0000000c   Code   RO         1108    .text.SleepWake_SetDebugMode  sleep_wake.o
-    0x08002d2c   0x08002d2c   0x00000064   Code   RO         1090    .text.SleepWake_WakeUp  sleep_wake.o
-    0x08002d90   0x08002d90   0x00000002   Code   RO          854    .text.SysTick_Handler  n32g031_it.o
-    0x08002d92   0x08002d92   0x00000002   PAD
-    0x08002d94   0x08002d94   0x000000dc   Code   RO           11    .text.SystemInit    system_n32g031.o
-    0x08002e70   0x08002e70   0x0000008c   Code   RO         1131    .text.VoltageMonitor_Init  voltage_monitor.o
-    0x08002efc   0x08002efc   0x000001ec   Code   RO         1135    .text.VoltageMonitor_UpdateReadings  voltage_monitor.o
-    0x080030e8   0x080030e8   0x00000002   Code   RO          821    .text.assert_failed  main.o
-    0x080030ea   0x080030ea   0x00000002   PAD
-    0x080030ec   0x080030ec   0x000000b8   Code   RO          967    .text.displayFullPhotoChunked  nv3029.o
-    0x080031a4   0x080031a4   0x00000064   Code   RO          959    .text.displayPhoto  nv3029.o
-    0x08003208   0x08003208   0x00000008   Code   RO         1015    .text.dma_clear_flags  dma.o
-    0x08003210   0x08003210   0x0000000c   Code   RO         1005    .text.dma_init      dma.o
-    0x0800321c   0x0800321c   0x00000060   Code   RO         1011    .text.dma_start_transfer  dma.o
-    0x0800327c   0x0800327c   0x00000068   Code   RO         1019    .text.dma_wait_complete  dma.o
-    0x080032e4   0x080032e4   0x00000334   Code   RO          817    .text.flashScreen   main.o
-    0x08003618   0x08003618   0x0000006c   Code   RO          819    .text.main          main.o
-    0x08003684   0x08003684   0x00000328   Code   RO          813    .text.mainScreen    main.o
-    0x080039ac   0x080039ac   0x0000004c   Code   RO          881    .text.sFLASH_EraseBulk  spi_flash.o
-    0x080039f8   0x080039f8   0x000000c8   Code   RO          873    .text.sFLASH_EraseSector  spi_flash.o
-    0x08003ac0   0x08003ac0   0x0000009c   Code   RO          871    .text.sFLASH_Init   spi_flash.o
-    0x08003b5c   0x08003b5c   0x000000f4   Code   RO          887    .text.sFLASH_ReadBuffer  spi_flash.o
-    0x08003c50   0x08003c50   0x000000d0   Code   RO          889    .text.sFLASH_ReadID  spi_flash.o
-    0x08003d20   0x08003d20   0x00000034   Code   RO          877    .text.sFLASH_SendByte  spi_flash.o
-    0x08003d54   0x08003d54   0x000000b0   Code   RO          891    .text.sFLASH_StartReadSequence  spi_flash.o
-    0x08003e04   0x08003e04   0x00000074   Code   RO          879    .text.sFLASH_WaitForWriteEnd  spi_flash.o
-    0x08003e78   0x08003e78   0x0000009c   Code   RO          885    .text.sFLASH_WriteBuffer  spi_flash.o
-    0x08003f14   0x08003f14   0x0000004c   Code   RO          875    .text.sFLASH_WriteEnable  spi_flash.o
-    0x08003f60   0x08003f60   0x00000104   Code   RO          883    .text.sFLASH_WritePage  spi_flash.o
-    0x08004064   0x08004064   0x00000200   Code   RO          805    .text.setup         main.o
-    0x08004264   0x08004264   0x000000c0   Code   RO          929    .text.spi1_config   nv3029.o
-    0x08004324   0x08004324   0x00000150   Code   RO          945    .text.spi1_onewire_bitbang  nv3029.o
-    0x08004474   0x08004474   0x00000038   Code   RO         1206    i.__0snprintf$1     mc_p.l(printf1.o)
-    0x080044ac   0x080044ac   0x0000000e   Code   RO         1479    i.__scatterload_copy  mc_p.l(handlers.o)
-    0x080044ba   0x080044ba   0x00000002   Code   RO         1480    i.__scatterload_null  mc_p.l(handlers.o)
-    0x080044bc   0x080044bc   0x0000000e   Code   RO         1481    i.__scatterload_zeroinit  mc_p.l(handlers.o)
-    0x080044ca   0x080044ca   0x00000002   PAD
-    0x080044cc   0x080044cc   0x00000150   Code   RO         1212    i._printf_core      mc_p.l(printf1.o)
-    0x0800461c   0x0800461c   0x00000016   Code   RO         1213    i._snputc           mc_p.l(printf1.o)
-    0x08004632   0x08004632   0x000001e0   Data   RO          981    .rodata.font5x8     nv3029.o
-    0x08004812   0x08004812   0x000000d4   Data   RO          982    .rodata.screen_init_seq_0  nv3029.o
-    0x080048e6   0x080048e6   0x000000d4   Data   RO          984    .rodata.screen_init_seq_1_alt  nv3029.o
-    0x080049ba   0x080049ba   0x00000163   Data   RO           63    .rodata.str1.1      n32g031_gpio.o
-    0x08004b1d   0x08004b1d   0x0000021d   Data   RO          118    .rodata.str1.1      n32g031_spi.o
-    0x08004d3a   0x08004d3a   0x00000096   Data   RO          223    .rodata.str1.1      n32g031_rcc.o
-    0x08004dd0   0x08004dd0   0x0000018c   Data   RO          257    .rodata.str1.1      n32g031_dma.o
-    0x08004f5c   0x08004f5c   0x0000016e   Data   RO          567    .rodata.str1.1      n32g031_adc.o
-    0x080050ca   0x080050ca   0x000000c1   Data   RO          594    .rodata.str1.1      n32g031_exti.o
-    0x0800518b   0x0800518b   0x000000be   Data   RO          761    .rodata.str1.1      n32g031_lptim.o
-    0x08005249   0x08005249   0x00000059   Data   RO          796    .rodata.str1.1      n32g031_pwr.o
-    0x080052a2   0x080052a2   0x00000009   Data   RO          834    .rodata.str1.1      main.o
-    0x080052ab   0x080052ab   0x00000001   PAD
-    0x080052ac   0x080052ac   0x00000020   Data   RO         1478    Region$$Table       anon$$obj.o
+    0x08001878   0x08001878   0x000000ac   Code   RO          961    .text.LCD_flash_read_async  nv3029.o
+    0x08001924   0x08001924   0x000000c8   Code   RO          973    .text.LCD_flash_write_async  nv3029.o
+    0x080019ec   0x080019ec   0x00000238   Code   RO          943    .text.LCD_init      nv3029.o
+    0x08001c24   0x08001c24   0x00000080   Code   RO          963    .text.LCD_is_flash_read_complete  nv3029.o
+    0x08001ca4   0x08001ca4   0x000001bc   Code   RO          975    .text.LCD_is_flash_write_complete  nv3029.o
+    0x08001e60   0x08001e60   0x0000000a   Code   RO          695    .text.LPTIM_ClearFLAG_ARRM  n32g031_lptim.o
+    0x08001e6a   0x08001e6a   0x0000000a   Code   RO          691    .text.LPTIM_ClearFLAG_CMPM  n32g031_lptim.o
+    0x08001e74   0x08001e74   0x00000020   Code   RO          605    .text.LPTIM_DeInit  n32g031_lptim.o
+    0x08001e94   0x08001e94   0x0000000a   Code   RO          615    .text.LPTIM_Enable  n32g031_lptim.o
+    0x08001e9e   0x08001e9e   0x0000000a   Code   RO          725    .text.LPTIM_EnableIT_ARRM  n32g031_lptim.o
+    0x08001ea8   0x08001ea8   0x000000f4   Code   RO          609    .text.LPTIM_Init    n32g031_lptim.o
+    0x08001f9c   0x08001f9c   0x00000008   Code   RO          697    .text.LPTIM_IsActiveFlag_ARRM  n32g031_lptim.o
+    0x08001fa4   0x08001fa4   0x00000008   Code   RO          693    .text.LPTIM_IsActiveFlag_CMPM  n32g031_lptim.o
+    0x08001fac   0x08001fac   0x00000006   Code   RO          623    .text.LPTIM_SetAutoReload  n32g031_lptim.o
+    0x08001fb2   0x08001fb2   0x0000000c   Code   RO          617    .text.LPTIM_StartCounter  n32g031_lptim.o
+    0x08001fbe   0x08001fbe   0x00000002   PAD
+    0x08001fc0   0x08001fc0   0x0000003c   Code   RO         1096    .text.LPTIM_TIM6_IRQHandler  sleep_wake.o
+    0x08001ffc   0x08001ffc   0x00000002   Code   RO          846    .text.NMI_Handler   n32g031_it.o
+    0x08001ffe   0x08001ffe   0x00000002   PAD
+    0x08002000   0x08002000   0x00000008   Code   RO         1045    .text.PWM_GetDutyCycle  pwm.o
+    0x08002008   0x08002008   0x00000098   Code   RO         1039    .text.PWM_Init      pwm.o
+    0x080020a0   0x080020a0   0x0000002c   Code   RO         1041    .text.PWM_SetDutyCycle  pwm.o
+    0x080020cc   0x080020cc   0x00000074   Code   RO          782    .text.PWR_EnterSTOPMode  n32g031_pwr.o
+    0x08002140   0x08002140   0x00000002   Code   RO          852    .text.PendSV_Handler  n32g031_it.o
+    0x08002142   0x08002142   0x00000002   PAD
+    0x08002144   0x08002144   0x00000054   Code   RO          167    .text.RCC_ConfigAdcHclk  n32g031_rcc.o
+    0x08002198   0x08002198   0x0000005c   Code   RO          169    .text.RCC_ConfigLPTIMClk  n32g031_rcc.o
+    0x080021f4   0x080021f4   0x00000070   Code   RO          197    .text.RCC_EnableAHBPeriphClk  n32g031_rcc.o
+    0x08002264   0x08002264   0x00000070   Code   RO          201    .text.RCC_EnableAPB1PeriphClk  n32g031_rcc.o
+    0x080022d4   0x080022d4   0x00000078   Code   RO          207    .text.RCC_EnableAPB1PeriphReset  n32g031_rcc.o
+    0x0800234c   0x0800234c   0x00000050   Code   RO          199    .text.RCC_EnableAPB2PeriphClk  n32g031_rcc.o
+    0x0800239c   0x0800239c   0x00000034   Code   RO          181    .text.RCC_EnableLsi  n32g031_rcc.o
+    0x080023d0   0x080023d0   0x00000090   Code   RO          919    .text.SPI1_tx_dma_fill  nv3029.o
+    0x08002460   0x08002460   0x000000ac   Code   RO          911    .text.SPI1_tx_dma_mode  nv3029.o
+    0x0800250c   0x0800250c   0x00000044   Code   RO           82    .text.SPI_Enable    n32g031_spi.o
+    0x08002550   0x08002550   0x0000008c   Code   RO           88    .text.SPI_I2S_EnableDma  n32g031_spi.o
+    0x080025dc   0x080025dc   0x000000c0   Code   RO          110    .text.SPI_I2S_GetStatus  n32g031_spi.o
+    0x0800269c   0x0800269c   0x00000024   Code   RO           92    .text.SPI_I2S_ReceiveData  n32g031_spi.o
+    0x080026c0   0x080026c0   0x00000030   Code   RO           90    .text.SPI_I2S_TransmitData  n32g031_spi.o
+    0x080026f0   0x080026f0   0x000001dc   Code   RO           74    .text.SPI_Init      n32g031_spi.o
+    0x080028cc   0x080028cc   0x00000018   Code   RO           78    .text.SPI_InitStruct  n32g031_spi.o
+    0x080028e4   0x080028e4   0x00000002   Code   RO          850    .text.SVC_Handler   n32g031_it.o
+    0x080028e6   0x080028e6   0x00000002   PAD
+    0x080028e8   0x080028e8   0x0000002c   Code   RO         1082    .text.SleepWake_CheckTimeout  sleep_wake.o
+    0x08002914   0x08002914   0x00000008   Code   RO         1074    .text.SleepWake_ClearWakeInterrupt  sleep_wake.o
+    0x0800291c   0x0800291c   0x000000e4   Code   RO         1102    .text.SleepWake_EnterUltraLowPower  sleep_wake.o
+    0x08002a00   0x08002a00   0x00000028   Code   RO         1084    .text.SleepWake_GetTimeRemaining  sleep_wake.o
+    0x08002a28   0x08002a28   0x00000038   Code   RO         1104    .text.SleepWake_HandleUltraLowPowerWake  sleep_wake.o
+    0x08002a60   0x08002a60   0x0000008c   Code   RO         1062    .text.SleepWake_Init  sleep_wake.o
+    0x08002aec   0x08002aec   0x000000a0   Code   RO         1066    .text.SleepWake_InitLPTIM  sleep_wake.o
+    0x08002b8c   0x08002b8c   0x00000008   Code   RO         1086    .text.SleepWake_IsSleeping  sleep_wake.o
+    0x08002b94   0x08002b94   0x0000000c   Code   RO         1072    .text.SleepWake_IsWakeInterruptTriggered  sleep_wake.o
+    0x08002ba0   0x08002ba0   0x00000018   Code   RO         1080    .text.SleepWake_ResetTimer  sleep_wake.o
+    0x08002bb8   0x08002bb8   0x000000f0   Code   RO         1106    .text.SleepWake_RestoreFullPower  sleep_wake.o
+    0x08002ca8   0x08002ca8   0x0000000c   Code   RO         1108    .text.SleepWake_SetDebugMode  sleep_wake.o
+    0x08002cb4   0x08002cb4   0x00000068   Code   RO         1090    .text.SleepWake_WakeUp  sleep_wake.o
+    0x08002d1c   0x08002d1c   0x00000002   Code   RO          854    .text.SysTick_Handler  n32g031_it.o
+    0x08002d1e   0x08002d1e   0x00000002   PAD
+    0x08002d20   0x08002d20   0x000000dc   Code   RO           11    .text.SystemInit    system_n32g031.o
+    0x08002dfc   0x08002dfc   0x0000008c   Code   RO         1130    .text.VoltageMonitor_Init  voltage_monitor.o
+    0x08002e88   0x08002e88   0x000001ec   Code   RO         1134    .text.VoltageMonitor_UpdateReadings  voltage_monitor.o
+    0x08003074   0x08003074   0x00000002   Code   RO          821    .text.assert_failed  main.o
+    0x08003076   0x08003076   0x00000002   PAD
+    0x08003078   0x08003078   0x000000b8   Code   RO          967    .text.displayFullPhotoChunked  nv3029.o
+    0x08003130   0x08003130   0x00000064   Code   RO          959    .text.displayPhoto  nv3029.o
+    0x08003194   0x08003194   0x00000008   Code   RO         1015    .text.dma_clear_flags  dma.o
+    0x0800319c   0x0800319c   0x0000000c   Code   RO         1005    .text.dma_init      dma.o
+    0x080031a8   0x080031a8   0x00000060   Code   RO         1011    .text.dma_start_transfer  dma.o
+    0x08003208   0x08003208   0x00000068   Code   RO         1019    .text.dma_wait_complete  dma.o
+    0x08003270   0x08003270   0x00000334   Code   RO          817    .text.flashScreen   main.o
+    0x080035a4   0x080035a4   0x0000006c   Code   RO          819    .text.main          main.o
+    0x08003610   0x08003610   0x0000032c   Code   RO          813    .text.mainScreen    main.o
+    0x0800393c   0x0800393c   0x0000004c   Code   RO          881    .text.sFLASH_EraseBulk  spi_flash.o
+    0x08003988   0x08003988   0x000000c8   Code   RO          873    .text.sFLASH_EraseSector  spi_flash.o
+    0x08003a50   0x08003a50   0x0000009c   Code   RO          871    .text.sFLASH_Init   spi_flash.o
+    0x08003aec   0x08003aec   0x000000f4   Code   RO          887    .text.sFLASH_ReadBuffer  spi_flash.o
+    0x08003be0   0x08003be0   0x00000030   Code   RO          893    .text.sFLASH_ReadByte  spi_flash.o
+    0x08003c10   0x08003c10   0x000000d0   Code   RO          889    .text.sFLASH_ReadID  spi_flash.o
+    0x08003ce0   0x08003ce0   0x00000034   Code   RO          877    .text.sFLASH_SendByte  spi_flash.o
+    0x08003d14   0x08003d14   0x000000b0   Code   RO          891    .text.sFLASH_StartReadSequence  spi_flash.o
+    0x08003dc4   0x08003dc4   0x00000074   Code   RO          879    .text.sFLASH_WaitForWriteEnd  spi_flash.o
+    0x08003e38   0x08003e38   0x0000009c   Code   RO          885    .text.sFLASH_WriteBuffer  spi_flash.o
+    0x08003ed4   0x08003ed4   0x0000004c   Code   RO          875    .text.sFLASH_WriteEnable  spi_flash.o
+    0x08003f20   0x08003f20   0x00000104   Code   RO          883    .text.sFLASH_WritePage  spi_flash.o
+    0x08004024   0x08004024   0x00000200   Code   RO          805    .text.setup         main.o
+    0x08004224   0x08004224   0x000000c0   Code   RO          929    .text.spi1_config   nv3029.o
+    0x080042e4   0x080042e4   0x00000150   Code   RO          945    .text.spi1_onewire_bitbang  nv3029.o
+    0x08004434   0x08004434   0x00000038   Code   RO         1205    i.__0snprintf$1     mc_p.l(printf1.o)
+    0x0800446c   0x0800446c   0x0000000e   Code   RO         1478    i.__scatterload_copy  mc_p.l(handlers.o)
+    0x0800447a   0x0800447a   0x00000002   Code   RO         1479    i.__scatterload_null  mc_p.l(handlers.o)
+    0x0800447c   0x0800447c   0x0000000e   Code   RO         1480    i.__scatterload_zeroinit  mc_p.l(handlers.o)
+    0x0800448a   0x0800448a   0x00000002   PAD
+    0x0800448c   0x0800448c   0x00000150   Code   RO         1211    i._printf_core      mc_p.l(printf1.o)
+    0x080045dc   0x080045dc   0x00000016   Code   RO         1212    i._snputc           mc_p.l(printf1.o)
+    0x080045f2   0x080045f2   0x000001e0   Data   RO          981    .rodata.font5x8     nv3029.o
+    0x080047d2   0x080047d2   0x000000d4   Data   RO          982    .rodata.screen_init_seq_0  nv3029.o
+    0x080048a6   0x080048a6   0x000000d4   Data   RO          984    .rodata.screen_init_seq_1_alt  nv3029.o
+    0x0800497a   0x0800497a   0x00000163   Data   RO           63    .rodata.str1.1      n32g031_gpio.o
+    0x08004add   0x08004add   0x0000021d   Data   RO          118    .rodata.str1.1      n32g031_spi.o
+    0x08004cfa   0x08004cfa   0x00000096   Data   RO          223    .rodata.str1.1      n32g031_rcc.o
+    0x08004d90   0x08004d90   0x0000018c   Data   RO          257    .rodata.str1.1      n32g031_dma.o
+    0x08004f1c   0x08004f1c   0x0000016e   Data   RO          567    .rodata.str1.1      n32g031_adc.o
+    0x0800508a   0x0800508a   0x000000c1   Data   RO          594    .rodata.str1.1      n32g031_exti.o
+    0x0800514b   0x0800514b   0x000000be   Data   RO          761    .rodata.str1.1      n32g031_lptim.o
+    0x08005209   0x08005209   0x00000059   Data   RO          796    .rodata.str1.1      n32g031_pwr.o
+    0x08005262   0x08005262   0x00000009   Data   RO          834    .rodata.str1.1      main.o
+    0x0800526b   0x0800526b   0x00000001   PAD
+    0x0800526c   0x0800526c   0x00000020   Data   RO         1477    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x080052d0, Size: 0x00001c90, Max: 0x00002000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08005290, Size: 0x00001c88, Max: 0x00002000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x080052d0   0x00000001   Data   RW         1053    .data.g_pwm_duty_cycle  pwm.o
-    0x20000001   0x080052d1   0x00000003   PAD
-    0x20000004   0x080052d4   0x00000004   Data   RW         1051    .data.g_pwm_frequency  pwm.o
-    0x20000008   0x080052d8   0x00000001   Data   RW          991    .data.spi2_dummy_tx  nv3029.o
-    0x20000009   0x080052d9   0x00000007   PAD
+    0x20000000   0x08005290   0x00000001   Data   RW         1053    .data.g_pwm_duty_cycle  pwm.o
+    0x20000001   0x08005291   0x00000003   PAD
+    0x20000004   0x08005294   0x00000004   Data   RW         1051    .data.g_pwm_frequency  pwm.o
+    0x20000008   0x08005298   0x00000001   Data   RW          991    .data.spi2_dummy_tx  nv3029.o
+    0x20000009   0x08005299   0x00000007   PAD
     0x20000010        -       0x00000004   Zero   RW          826    .bss.FlashID        main.o
     0x20000014        -       0x00000001   Zero   RW          824    .bss.FlashID_error  main.o
-    0x20000015   0x080052d9   0x00000003   PAD
-    0x20000018        -       0x00000004   Zero   RW         1122    .bss.SleepWake_HandleUltraLowPowerWake.debug_wake_counter  sleep_wake.o
-    0x2000001c        -       0x00001000   Zero   RW          825    .bss.buffer         main.o
-    0x2000101c        -       0x00000004   Zero   RW          829    .bss.continue_flag  main.o
-    0x20001020        -       0x00000004   Zero   RW          990    .bss.flash_buffer_ptr  nv3029.o
-    0x20001024        -       0x00000001   Zero   RW          987    .bss.flash_dma_busy  nv3029.o
-    0x20001025   0x080052d9   0x00000003   PAD
-    0x20001028        -       0x00000004   Zero   RW          988    .bss.flash_read_addr  nv3029.o
-    0x2000102c        -       0x00000002   Zero   RW          989    .bss.flash_read_count  nv3029.o
-    0x2000102e   0x080052d9   0x00000002   PAD
-    0x20001030        -       0x00000004   Zero   RW          993    .bss.flash_write_buffer_start  nv3029.o
-    0x20001034        -       0x00000004   Zero   RW          996    .bss.flash_write_bytes_written  nv3029.o
-    0x20001038        -       0x00000004   Zero   RW          994    .bss.flash_write_start_addr  nv3029.o
-    0x2000103c        -       0x00000001   Zero   RW          992    .bss.flash_write_state  nv3029.o
-    0x2000103d   0x080052d9   0x00000003   PAD
-    0x20001040        -       0x00000004   Zero   RW          995    .bss.flash_write_total_bytes  nv3029.o
-    0x20001044        -       0x00000001   Zero   RW         1118    .bss.g_debug_mode   sleep_wake.o
-    0x20001045   0x080052d9   0x00000003   PAD
-    0x20001048        -       0x00000004   Zero   RW         1113    .bss.g_inactivity_counter  sleep_wake.o
-    0x2000104c        -       0x00000001   Zero   RW         1114    .bss.g_is_sleeping  sleep_wake.o
-    0x2000104d        -       0x00000001   Zero   RW         1115    .bss.g_is_ultra_low_power  sleep_wake.o
-    0x2000104e        -       0x00000001   Zero   RW         1117    .bss.g_lptim_wake_triggered  sleep_wake.o
-    0x2000104f   0x080052d9   0x00000001   PAD
-    0x20001050        -       0x00000002   Zero   RW         1052    .bss.g_pwm_period   pwm.o
-    0x20001052        -       0x00000001   Zero   RW         1119    .bss.g_saved_backlight_brightness  sleep_wake.o
-    0x20001053        -       0x00000001   Zero   RW         1120    .bss.g_saved_tv1_state  sleep_wake.o
-    0x20001054        -       0x00000001   Zero   RW         1121    .bss.g_saved_tv2_state  sleep_wake.o
-    0x20001055   0x080052d9   0x00000003   PAD
-    0x20001058        -       0x00000004   Zero   RW         1112    .bss.g_timeout_sec  sleep_wake.o
-    0x2000105c        -       0x0000000c   Zero   RW         1139    .bss.g_voltage_readings  voltage_monitor.o
-    0x20001068        -       0x00000001   Zero   RW         1116    .bss.g_wake_interrupt_triggered  sleep_wake.o
-    0x20001069        -       0x00000005   Zero   RW          831    .bss.lvl_buffer     main.o
-    0x2000106e        -       0x00000005   Zero   RW          832    .bss.lvl_buffer_read  main.o
-    0x20001073   0x080052d9   0x00000001   PAD
-    0x20001074        -       0x00000004   Zero   RW          830    .bss.lvl_reset_flag  main.o
-    0x20001078        -       0x00000001   Zero   RW          827    .bss.mainScreen.button_prev_state  main.o
-    0x20001079        -       0x00000001   Zero   RW          823    .bss.mainran        main.o
-    0x2000107a   0x080052d9   0x00000002   PAD
-    0x2000107c        -       0x00000004   Zero   RW          835    .bss.page           main.o
-    0x20001080        -       0x00000004   Zero   RW          979    .bss.spi_rx_data    nv3029.o
-    0x20001084        -       0x00000004   Zero   RW          828    .bss.status         main.o
-    0x20001088        -       0x00000004   Zero   RW          833    .bss.write_flag     main.o
-    0x2000108c   0x080052d9   0x00000004   PAD
-    0x20001090        -       0x00000c00   Zero   RW            1    STACK               startup_n32g031.o
+    0x20000015        -       0x00001000   Zero   RW          825    .bss.buffer         main.o
+    0x20001015   0x08005299   0x00000003   PAD
+    0x20001018        -       0x00000004   Zero   RW          829    .bss.continue_flag  main.o
+    0x2000101c        -       0x00000004   Zero   RW          990    .bss.flash_buffer_ptr  nv3029.o
+    0x20001020        -       0x00000001   Zero   RW          987    .bss.flash_dma_busy  nv3029.o
+    0x20001021   0x08005299   0x00000003   PAD
+    0x20001024        -       0x00000004   Zero   RW          988    .bss.flash_read_addr  nv3029.o
+    0x20001028        -       0x00000002   Zero   RW          989    .bss.flash_read_count  nv3029.o
+    0x2000102a   0x08005299   0x00000002   PAD
+    0x2000102c        -       0x00000004   Zero   RW          993    .bss.flash_write_buffer_start  nv3029.o
+    0x20001030        -       0x00000004   Zero   RW          996    .bss.flash_write_bytes_written  nv3029.o
+    0x20001034        -       0x00000004   Zero   RW          994    .bss.flash_write_start_addr  nv3029.o
+    0x20001038        -       0x00000001   Zero   RW          992    .bss.flash_write_state  nv3029.o
+    0x20001039   0x08005299   0x00000003   PAD
+    0x2000103c        -       0x00000004   Zero   RW          995    .bss.flash_write_total_bytes  nv3029.o
+    0x20001040        -       0x00000001   Zero   RW         1118    .bss.g_debug_mode   sleep_wake.o
+    0x20001041   0x08005299   0x00000003   PAD
+    0x20001044        -       0x00000004   Zero   RW         1113    .bss.g_inactivity_counter  sleep_wake.o
+    0x20001048        -       0x00000001   Zero   RW         1114    .bss.g_is_sleeping  sleep_wake.o
+    0x20001049        -       0x00000001   Zero   RW         1115    .bss.g_is_ultra_low_power  sleep_wake.o
+    0x2000104a        -       0x00000001   Zero   RW         1117    .bss.g_lptim_wake_triggered  sleep_wake.o
+    0x2000104b   0x08005299   0x00000001   PAD
+    0x2000104c        -       0x00000002   Zero   RW         1052    .bss.g_pwm_period   pwm.o
+    0x2000104e        -       0x00000001   Zero   RW         1119    .bss.g_saved_backlight_brightness  sleep_wake.o
+    0x2000104f        -       0x00000001   Zero   RW         1120    .bss.g_saved_tv1_state  sleep_wake.o
+    0x20001050        -       0x00000001   Zero   RW         1121    .bss.g_saved_tv2_state  sleep_wake.o
+    0x20001051   0x08005299   0x00000003   PAD
+    0x20001054        -       0x00000004   Zero   RW         1112    .bss.g_timeout_sec  sleep_wake.o
+    0x20001058        -       0x0000000c   Zero   RW         1138    .bss.g_voltage_readings  voltage_monitor.o
+    0x20001064        -       0x00000001   Zero   RW         1116    .bss.g_wake_interrupt_triggered  sleep_wake.o
+    0x20001065        -       0x00000005   Zero   RW          831    .bss.lvl_buffer     main.o
+    0x2000106a        -       0x00000005   Zero   RW          832    .bss.lvl_buffer_read  main.o
+    0x2000106f   0x08005299   0x00000001   PAD
+    0x20001070        -       0x00000004   Zero   RW          830    .bss.lvl_reset_flag  main.o
+    0x20001074        -       0x00000001   Zero   RW          827    .bss.mainScreen.button_prev_state  main.o
+    0x20001075        -       0x00000001   Zero   RW          823    .bss.mainran        main.o
+    0x20001076   0x08005299   0x00000002   PAD
+    0x20001078        -       0x00000004   Zero   RW          835    .bss.page           main.o
+    0x2000107c        -       0x00000004   Zero   RW          979    .bss.spi_rx_data    nv3029.o
+    0x20001080        -       0x00000004   Zero   RW          828    .bss.status         main.o
+    0x20001084        -       0x00000004   Zero   RW          833    .bss.write_flag     main.o
+    0x20001088        -       0x00000c00   Zero   RW            1    STACK               startup_n32g031.o
 
 
 ==============================================================================
@@ -3689,7 +3679,7 @@ Image component sizes
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
        220         32          0          0          0       6156   dma.o
-      2394        304          9          0       4133       9495   main.o
+      2398        308          9          0       4133       9504   main.o
        994        328        366          0          0      15275   n32g031_adc.o
       1598        636        396          0          0       6371   n32g031_dma.o
        682        256        193          0          0       4199   n32g031_exti.o
@@ -3699,18 +3689,18 @@ Image component sizes
        116         48         89          0          0       5353   n32g031_pwr.o
        652        272        150          0          0      15952   n32g031_rcc.o
        984        356        541          0          0       9967   n32g031_spi.o
-      3484        196        904          1         32      24693   nv3029.o
+      3488        196        904          1         32      24694   nv3029.o
        204         28          0          5          2       4064   pwm.o
-      1316        140          0          0         20      10106   sleep_wake.o
-      1720         32          0          0          0       9066   spi_flash.o
+      1196        112          0          0         16       9902   sleep_wake.o
+      1768         32          0          0          0       9066   spi_flash.o
         28          8        192          0       3072        736   startup_n32g031.o
        220         32          0          0          0       2642   system_n32g031.o
        632         36          0          0         12       4838   voltage_monitor.o
 
     ----------------------------------------------------------------------
-     17084       3072       3418         12       7300     152807   Object Totals
+     17020       3048       3418         12       7292     152613   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-        20          0          1          6         29          0   (incl. Padding)
+        20          0          1          6         25          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -3751,15 +3741,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     17778       3106       3418         12       7300     153011   Grand Totals
-     17778       3106       3418         12       7300     153011   ELF Image Totals
-     17778       3106       3418         12          0          0   ROM Totals
+     17714       3082       3418         12       7292     152817   Grand Totals
+     17714       3082       3418         12       7292     152817   ELF Image Totals
+     17714       3082       3418         12          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                21196 (  20.70kB)
-    Total RW  Size (RW Data + ZI Data)              7312 (   7.14kB)
-    Total ROM Size (Code + RO Data + RW Data)      21208 (  20.71kB)
+    Total RO  Size (Code + RO Data)                21132 (  20.64kB)
+    Total RW  Size (RW Data + ZI Data)              7304 (   7.13kB)
+    Total ROM Size (Code + RO Data + RW Data)      21144 (  20.65kB)
 
 ==============================================================================
 

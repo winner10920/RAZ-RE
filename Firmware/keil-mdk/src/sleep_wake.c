@@ -433,8 +433,21 @@ bool SleepWake_IsLPTIMWake(void)
 bool SleepWake_IsSWDConnected(void)
 {
     /* Check if debugger is attached by reading DHCSR register */
+    /* Multiple reads to ensure stable connection detection */
     volatile uint32_t *dhcsr = (uint32_t *)0xE000EDF0;
-    return ((*dhcsr & 0x00000001) != 0);  /* C_DEBUGEN bit */
+    
+    /* Check C_DEBUGEN bit multiple times for stability */
+    uint32_t connected_count = 0;
+    for (int i = 0; i < 5; i++) {
+        if ((*dhcsr & 0x00000001) != 0) {
+            connected_count++;
+        }
+        /* Small delay between checks */
+        for (volatile uint32_t j = 0; j < 1000; j++);
+    }
+    
+    /* Require at least 3 out of 5 checks to confirm connection */
+    return (connected_count >= 3);
 }
 
 /**
@@ -486,6 +499,9 @@ void SleepWake_EnterUltraLowPower(void)
     /* ===== EXECUTION RESUMES HERE AFTER WAKE ===== */
     /* System clock is now HSI (8MHz) - must restore before using peripherals */
     SleepWake_RestoreSystemClock();
+    
+    /* Allow extra time for system to fully stabilize after clock restoration */
+    for (volatile uint32_t i = 0; i < 100000; i++);
 }
 
 /**
@@ -508,56 +524,11 @@ bool SleepWake_HandleUltraLowPowerWake(void)
         return true;  /* Stay fully awake */
     }
     
-    /* Woken by LPTIM - check for SWD connection window */
+    /* Woken by LPTIM - return to sleep immediately */
     if (g_lptim_wake_triggered)
     {
         g_lptim_wake_triggered = false;
-        
-        /* Debug mode - wake fully every minute */
-        if (g_debug_mode)
-        {
-            static uint32_t debug_wake_counter = 0;
-            debug_wake_counter++;
-            
-            /* Wake fully every 2 LPTIM cycles (60 seconds if interval is 30s) */
-            if (debug_wake_counter >= 2)
-            {
-                debug_wake_counter = 0;
-                SleepWake_RestoreFullPower();
-                PWM_SetDutyCycle(10); 
-                return true;  /* Stay awake for debug */
-            }
-        }
-        
-        /* Provide 10-second window for SWD connection */
-        uint32_t swd_window_end = 10 * 10;  /* 10 seconds * 10 ticks/sec */
-        uint32_t swd_check_counter = 0;
-        
-        while (swd_check_counter < swd_window_end)
-        {
-            /* Check if SWD connected */
-            if (SleepWake_IsSWDConnected())
-            {
-                /* SWD detected - restore full power and stay awake */
-                SleepWake_RestoreFullPower();
-                return true;
-            }
-            
-            /* Check if external interrupt occurred during window */
-            if (g_wake_interrupt_triggered)
-            {
-                SleepWake_RestoreFullPower();
-                g_wake_interrupt_triggered = false;
-                return true;
-            }
-            
-            /* Simple delay (~100ms) */
-            for (volatile uint32_t i = 0; i < 50000; i++);
-            swd_check_counter++;
-        }
-        
-        /* No SWD connection - return to ultra-low power */
-        return false;
+        return false;  /* Return to ultra-low power */
     }
     
     /* Should not reach here, but return to ultra-low power to be safe */

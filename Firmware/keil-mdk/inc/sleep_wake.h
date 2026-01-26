@@ -111,7 +111,7 @@ void SleepWake_InitLPTIM(uint32_t wake_interval_sec);
 /**
  * @brief Enter ultra-low power mode (STOP mode)
  * Disables LCD_FLASH_PWR_EN and lV_CUTOFF_EN, keeps LP4086_ISET low
- * Wakes on LPTIM timeout or external interrupt
+ * Wakes on LPTIM timeout or external interrupt (button/mic)
  */
 void SleepWake_EnterUltraLowPower(void);
 
@@ -129,8 +129,9 @@ bool SleepWake_IsSWDConnected(void);
 
 /**
  * @brief Handle wake from ultra-low power mode
- * Provides 10-second window for SWD connection or returns to ultra-low power
- * @return true if should remain fully awake (SWD connected or external interrupt)
+ * - Button/mic wake: Full power restoration
+ * - LPTIM wake: Return to sleep immediately
+ * @return true if should remain fully awake, false to return to ultra-low power
  */
 bool SleepWake_HandleUltraLowPowerWake(void);
 

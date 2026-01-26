@@ -1342,7 +1342,7 @@ void LCD_flash_read_async(uint32_t flash_addr, uint16_t byte_count, uint8_t* des
     /* 1) Prepare flash READ stream: keep CS low and set 24-bit address */
     sFLASH_StartReadSequence(flash_addr);
     
-    //sFLASH_ReadByte();
+    sFLASH_ReadByte();
     //sFLASH_ReadByte();
     /* 2) Enable SPI2 DMA requests for both RX and TX */
     SPI_I2S_EnableDma(sFLASH_SPI, SPI_I2S_DMA_RX, ENABLE);

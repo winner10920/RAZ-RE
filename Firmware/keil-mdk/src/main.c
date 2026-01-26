@@ -225,7 +225,7 @@ void mainScreen(void){
     displayFullPhotoChunked(0x0);
 	Delay(10000);
 	LCD_fill_screen(COLOR_BLACK);
-	displayPhoto(0x0A000, 0x0BE0);
+	displayPhoto(0x0E740, 0x0BE0);
 
 
 	if (debugSleep)
@@ -317,7 +317,7 @@ void mainScreen(void){
 		LCD_draw_string(0, 80, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
 		snprintf(voltage_str, sizeof(voltage_str), "CH3: %i mV", ch3_voltage);
 		LCD_draw_string(0, 100, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		displayPhoto(0x0A000, 0x0BE0);
+		displayPhoto(0x0E740, 0x0BE0);
 		
 		char timeRemainingStr[8];
 		uint32_t timeRemaining = SleepWake_GetTimeRemaining();
