@@ -13,6 +13,7 @@
 #include "core_cm0.h"
 #include "nv3029.h"
 #include "dma.h"
+#include "voltage_monitor.h"
 
 /* Sleep/Wake state machine */
 static bool g_is_sleeping = false;
@@ -548,18 +549,7 @@ void SleepWake_RestoreFullPower(void)
     /* Small delay to allow clock to stabilize after restoration */
     for (volatile uint32_t i = 0; i < 10000; i++);
     
-    /* Power cycle LCD to fully reset controller state */
-    GPIO_ResetBits(GPIOB, GPIO_PIN_4);  /* LCD_FLASH_PWR_EN off */
-    for (volatile uint32_t i = 0; i < 100000; i++);  /* Wait for power down */
-    GPIO_SetBits(GPIOB, GPIO_PIN_4);    /* LCD_FLASH_PWR_EN on */
-    for (volatile uint32_t i = 0; i < 100000; i++);  /* Wait for power up */
-    
-    /* Force LCD hardware reset before reinit to clear controller state */
-    /* LCD may have retained orientation/config registers during sleep */
-    GPIO_ResetBits(GPIOB, GPIO_PIN_6);  /* LCD_RST low */
-    for (volatile uint32_t i = 0; i < 50000; i++);  /* Hold reset longer */
-    GPIO_SetBits(GPIOB, GPIO_PIN_6);    /* LCD_RST high */
-    for (volatile uint32_t i = 0; i < 50000; i++);  /* Wait for LCD to stabilize */
+
     
     /* Restore power pins and reinitialize peripherals */
     setup();

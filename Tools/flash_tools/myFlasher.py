@@ -7,13 +7,13 @@ import pylink
 
 
 DATA_BUFFER_ADDR        = 0X20000015
-LEVEL_BUFFER_ADDR       = 0X2000105D
-STATUS_REG_ADDR         = 0X20001078
-WRITE_FLAG_ADDR         = 0X2000107C
-LVL_RESET_FLAG_ADDR     = 0X20001068
+LEVEL_BUFFER_ADDR       = 0X20001065
+STATUS_REG_ADDR         = 0X20001088
+WRITE_FLAG_ADDR         = 0X2000108C
+LVL_RESET_FLAG_ADDR     = 0X20001070
 CONTINUE_FLAG_ADDR      = 0X20001018
-PAGE_ADDR               = 0X20001070
-MAINRAN_ADDR            = 0X2000106D
+PAGE_ADDR               = 0X20001078
+MAINRAN_ADDR            = 0X20001075
 
 # -------------------------------------
 # MCU PROG MEM
@@ -245,5 +245,5 @@ if __name__ == "__main__":
 
     jlink.reset()
     jlink.restart()
-    jlink.write_memory8(MAINRAN_ADDR, [0x0])  # Example: Write to Flash control register
+    #jlink.memory_write8(MAINRAN_ADDR, [0x0])  # Example: Write to Flash control register
     jlink.close()

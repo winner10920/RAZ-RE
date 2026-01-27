@@ -1,5 +1,5 @@
 
-#define USE_GRAPHICAL_STATUS 1
+#define USE_GRAPHICAL_STATUS 0
 #define DEBUG_SLEEP 1
 #define BUFFER_SIZE 4096
 
@@ -195,6 +195,8 @@ void setup(void){
 	GPIO_Init(GPIO_PA4, GPIO_MODE_OUTPUT_PP);
 	GPIO_Off(GPIO_PA4);
 
+	//swd
+
 }
 	dma_init();
 	LCD_flash_dma_init();
@@ -223,7 +225,7 @@ void mainScreen(void){
 
 	displayPhoto(0x0A000, 0x0BE0);
     displayFullPhotoChunked(0x0);
-	Delay(10000);
+	Delay(5000);
 	LCD_fill_screen(COLOR_BLACK);
 	displayPhoto(0x0E740, 0x0BE0);
 
@@ -305,20 +307,27 @@ void mainScreen(void){
 		uint16_t pb2_voltage = g_voltage_readings.pb2_analog ;
 		uint16_t ch3_voltage = g_voltage_readings.ch3_unused ;
 		
-		snprintf(voltage_str, sizeof(voltage_str), "TV1: %i mV", tv1_voltage);
+		snprintf(voltage_str, sizeof(voltage_str), "TV1: %.4i mV", tv1_voltage);
 		LCD_draw_string(0, 0, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		snprintf(voltage_str, sizeof(voltage_str), "TV2: %i mV", tv2_voltage);
+		snprintf(voltage_str, sizeof(voltage_str), "TV2: %.4i mV", tv2_voltage);
+		LCD_draw_string(0, 10, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+		snprintf(voltage_str, sizeof(voltage_str), "PA0: %.4i mV", pa0_voltage);
 		LCD_draw_string(0, 20, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		snprintf(voltage_str, sizeof(voltage_str), "PA0: %i mV", pa0_voltage);
+		snprintf(voltage_str, sizeof(voltage_str), "TMP: %.4i mC", temp_celsius);
+		LCD_draw_string(0, 30, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+		snprintf(voltage_str, sizeof(voltage_str), "PB2: %.4i mV", pb2_voltage);
 		LCD_draw_string(0, 40, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		snprintf(voltage_str, sizeof(voltage_str), "TEMP: %i mC", temp_celsius);
-		LCD_draw_string(0, 60, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		snprintf(voltage_str, sizeof(voltage_str), "PB2: %i mV", pb2_voltage);
-		LCD_draw_string(0, 80, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		snprintf(voltage_str, sizeof(voltage_str), "CH3: %i mV", ch3_voltage);
-		LCD_draw_string(0, 100, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+		snprintf(voltage_str, sizeof(voltage_str), "CH3: %.4i mV", ch3_voltage);
+		LCD_draw_string(0, 500, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
 		displayPhoto(0x0E740, 0x0BE0);
 		
+		char screen_type_str[20];
+		snprintf(screen_type_str, sizeof(screen_type_str), "Scrn id: %s-%s", spi_rx_data_04, spi_rx_data_d3);
+		LCD_draw_string(0, 50, screen_type_str, COLOR_YELLOW, COLOR_BLACK, 1);
+
+
+
+
 		char timeRemainingStr[8];
 		uint32_t timeRemaining = SleepWake_GetTimeRemaining();
 		snprintf(timeRemainingStr, sizeof(timeRemainingStr), "%.2u", timeRemaining);
@@ -338,7 +347,7 @@ void flashScreen(void){
 	bool use_graphical_status = USE_GRAPHICAL_STATUS;
 	/* Original flash check loop */
 	// Check Flash ID
-	if(FlashID == sFLASH_W25Q128_ID || FlashID == sFLASH_M25P64_ID || FlashID == sFLASH_GD25Q80_ID || FlashID == sFLASH_PD32S_ID ){     
+	if(FlashID == sFLASH_W25Q128_ID || FlashID == sFLASH_M25P64_ID || FlashID == sFLASH_GD25Q80_ID || FlashID == sFLASH_PD32S_ID || FlashID == sFlash_unk_ID){     
 		
 		// Wait for continue flag
 		while(continue_flag[0] == 0);

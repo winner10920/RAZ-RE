@@ -32,6 +32,9 @@ extern "C" {
 #include "spi_flash.h"
 #include "nv3029.h"
 
+extern uint8_t spi_rx_data_04[4];
+extern uint8_t spi_rx_data_d3[4];
+
 void setup(void);
 void mainScreen(void);
 int main(void);

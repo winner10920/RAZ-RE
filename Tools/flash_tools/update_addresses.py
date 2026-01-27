@@ -63,8 +63,8 @@ def update_python_script(python_file, address_map):
     for line in lines:
         updated = False
         for py_var, c_var in VARIABLE_MAPPING.items():
-            # Match lines like: "DATA_BUFFER_ADDR        = 0x20000015"
-            pattern = rf'^({py_var}\s*=\s*)0x[0-9a-fA-F]+(.*)$'
+            # Match lines like: "DATA_BUFFER_ADDR        = 0x20000015" or "DATA_BUFFER_ADDR        = 0X20000015"
+            pattern = rf'^({py_var}\s*=\s*)0[xX][0-9a-fA-F]+(.*)$'
             match = re.match(pattern, line)
             
             if match and py_var in address_map:
@@ -87,7 +87,7 @@ def update_python_script(python_file, address_map):
 def main():
     # File paths
     map_file = "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ/ReFlasher.axf.map"
-    python_file = "/home/cody/RAZ-RE/Flash/reflasher/myFlasher.py"
+    python_file = "/home/cody/RAZ-RE/Tools/flash_tools/myFlasher.py"
     
     print("Parsing map file...")
     symbols = parse_map_file(map_file)

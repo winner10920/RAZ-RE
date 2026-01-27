@@ -18,6 +18,7 @@
 volatile uint16_t peek_value[] = {0,0,0,0,0,0,0,0,0,0,0};
 volatile uint32_t peek_len = 0;
 volatile uint8_t spi_rx_data[4] = {0, 0, 0, 0};
+volatile uint8_t spi_rx_data_04[4] = {0,0, 0, 0};
 volatile uint8_t spi_rx_data_d3[4] = {0,0, 0, 0};
 
 
@@ -121,7 +122,7 @@ const uint8_t font5x8[][5] = {
 {0x00,0x00,0x00,0x00,0x00}  //127 DEL
 };
 
-static const LcdPacket screen_init_seq_0[] = {
+static const LcdPacket screen_init_seq_0[] = { //SCREEN TYPE 0
     {CMD_LOW, 0xFF}, {DATA_HIGH, 0xA5},
     {CMD_LOW, 0x3E}, {DATA_HIGH, 0x08},
     {CMD_LOW, LCD_CMD_COLMOD}, {DATA_HIGH, 0x65},
@@ -178,7 +179,7 @@ static const LcdPacket screen_init_seq_0[] = {
 };
 
 // Alternative sequence from decompiled firmware (cVar1 == 1)
-static const LcdPacket screen_init_seq_1_alt[] = {
+static const LcdPacket screen_init_seq_1_alt[] = {  //SCREEN TYPE 1
     {CMD_LOW, 0xFF}, {DATA_HIGH, 0xA5},
     {CMD_LOW, 0x3E}, {DATA_HIGH, 0x08},
     {CMD_LOW, LCD_CMD_COLMOD}, {DATA_HIGH, 0x65},
@@ -234,7 +235,7 @@ static const LcdPacket screen_init_seq_1_alt[] = {
     {CMD_LOW, 0xFF}, {DATA_HIGH, 0x00}
 };
 
-static const LcdPacket screen_init_seq_1[] = {
+static const LcdPacket screen_init_seq_1[] = {  //SCREEN TYPE 2
     {CMD_LOW, 0xFF},  {DATA_HIGH, 0xA5},  
     {CMD_LOW, 0x3E},  {DATA_HIGH, 0x08},  
     {CMD_LOW, 0x3A},  {DATA_HIGH, 0x65},  
@@ -349,7 +350,7 @@ static const LcdPacket screen_init_seq_1[] = {
 // };
 
 
-static const LcdPacket screen_init_seq_2[] = {
+static const LcdPacket screen_init_seq_2[] = {  //SCREEN TYPE 3
     {CMD_LOW, LCD_CMD_FRMCTR1}, {DATA_HIGH, 0x05}, {DATA_HIGH, 0x3C}, {DATA_HIGH, 0x3C},
     {CMD_LOW, LCD_CMD_FRMCTR2}, {DATA_HIGH, 0x05}, {DATA_HIGH, 0x3C}, {DATA_HIGH, 0x3C},
     {CMD_LOW, LCD_CMD_FRMCTR3}, {DATA_HIGH, 0x05}, {DATA_HIGH, 0x3C}, {DATA_HIGH, 0x3C}, {DATA_HIGH, 0x05}, {DATA_HIGH, 0x3C}, {DATA_HIGH, 0x3C},
@@ -864,15 +865,33 @@ void LCD_init(void)
     LCD_rst_low();
     Delay(50);
     LCD_rst_high();
-    Delay(200);
+    Delay(50);
     LCD_cs_low();
     LCD_dc_cmd();
-    volatile uint8_t cmd_byte = 0x4;
-    volatile uint8_t cmd_or_data = 0;
-    spi1_onewire_bitbang(cmd_byte, cmd_or_data);
+    
+    spi1_config(false); // 8-bit mode
+    LCD_rst_low();
+    Delay(10);
+    LCD_rst_high();
+    Delay(20);
+    LCD_SendCommand_DMA(LCD_CMD_SWRESET); // 0x01
+    Delay(10);
+    LCD_SendCommand_DMA(LCD_CMD_SLPOUT);
+    Delay(20);
+    LCD_SendCommand_DMA(LCD_CMD_DISPON); // 0x29
+
+   
+    spi1_onewire_bitbang(0x4, 0x0);
+    spi_rx_data_04[0] = spi_rx_data[0];
+    spi_rx_data_04[1] = spi_rx_data[1];
+    spi_rx_data_04[2] = spi_rx_data[2];
+
     uint8_t screen_type = 0xff;
     if(spi_rx_data[0] == 0x33 && spi_rx_data[1] == 0x30 && spi_rx_data[2] == 0x25) {
         spi1_onewire_bitbang(0xd3, 0x00);
+        spi_rx_data_d3[0] = spi_rx_data[0];
+        spi_rx_data_d3[1] = spi_rx_data[1];
+        spi_rx_data_d3[2] = spi_rx_data[2];
         if(spi_rx_data[0] == 0x33 && spi_rx_data[1] == 0x30 && spi_rx_data[2] == 0x25) {
             screen_type = 0;
         }
@@ -885,8 +904,8 @@ void LCD_init(void)
     }
 
 
-    cmd_byte = 0xd3;
-    spi1_onewire_bitbang(cmd_byte, cmd_or_data);
+    volatile uint8_t cmd_byte = 0x4;
+    volatile uint8_t cmd_or_data = 0;
     volatile uint8_t debug_mode = 0;
      
      while (debug_mode)

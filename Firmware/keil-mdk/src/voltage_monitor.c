@@ -117,19 +117,20 @@ void VoltageMonitor_UpdateReadings(void)
     /* Read all 4 channels and update the struct */
     g_voltage_readings.pa0_analog = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA0));
     
-    //GPIO_On(TV1_PIN);  /* Power on voltage sense circuitry if needed */
-    //Delay(1);
+    GPIO_On(TV1_PIN);  /* Power on voltage sense circuitry if needed */
+    VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA1);
+    VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA1);
     g_voltage_readings.pa1_tv1_sense = 2* VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA1));
-    //GPIO_Off(TV1_PIN); /* Power off to save energy */
+    GPIO_Off(TV1_PIN); /* Power off to save energy */
     
-    //GPIO_On(TV2_PIN);  /* Power on voltage sense circuitry if needed */
-    Delay(1);
+    GPIO_On(TV2_PIN);  /* Power on voltage sense circuitry if needed */
+    VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA2);
+    VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA2);
     g_voltage_readings.pa2_tv2_sense = 2*VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_PA2));
-    //GPIO_Off(TV2_PIN); /* Power off to save energy */
+    GPIO_Off(TV2_PIN); /* Power off to save energy */
     
-    
+    VoltageMonitor_ReadChannel(MONITOR_CHANNEL_TEMP);
     g_voltage_readings.temp_sensor = ((1300-VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_TEMP)))/39)+2500; /* Convert to °C using typical formula */
-    //g_voltage_readings.temp_sensor = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_TEMP)); /* Convert to °C using typical formula */
 
     g_voltage_readings.ch3_unused = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_CH3)); /* Unused channel placeholder */
     g_voltage_readings.pb2_analog = VoltageMonitor_ConvertToMillivolts(VoltageMonitor_ReadChannel(MONITOR_CHANNEL_CH4)); /* Unused channel placeholder */
