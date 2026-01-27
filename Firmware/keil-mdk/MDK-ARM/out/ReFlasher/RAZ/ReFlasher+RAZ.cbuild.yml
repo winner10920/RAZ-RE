@@ -151,6 +151,8 @@ build:
           category: sourceC
         - file: ../../../../src/voltage_monitor.c
           category: sourceC
+        - file: ../../../../src/button.c
+          category: sourceC
   licenses:
     - license: <unknown>
       packs:

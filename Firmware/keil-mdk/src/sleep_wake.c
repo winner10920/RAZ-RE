@@ -12,7 +12,7 @@
 #include "n32g031_lptim.h"
 #include "core_cm0.h"
 #include "nv3029.h"
-#include "dma.h"
+#include "button.h"
 #include "voltage_monitor.h"
 
 /* Sleep/Wake state machine */
@@ -50,12 +50,6 @@ static bool g_saved_lp4086_iset = false;
 
 #define LP4086_ISET_PORT GPIOB
 #define LP4086_ISET_PIN GPIO_PIN_0
-
-#define TV1_PORT GPIOA
-#define TV1_PIN GPIO_PIN_5
-
-#define TV2_PORT GPIOB
-#define TV2_PIN GPIO_PIN_8
 
 #define LCD_BACKLIGHT_PIN GPIOA,GPIO_PIN_6
 
@@ -106,7 +100,7 @@ void SleepWake_Init(uint32_t timeout_sec)
 
 /**
  * @brief Initialize external interrupts for BUTTON and MIC pins
- * Configured for falling edge (button press, activity detection)
+ * Button configured for both edges to track press and release
  */
 void SleepWake_InitExternalInterrupts(void)
 {
@@ -115,10 +109,11 @@ void SleepWake_InitExternalInterrupts(void)
 
 
     /* Configure EXTI for BUTTON_PIN (PA7 -> EXTI7) */
+    /* Use BOTH edges to detect press (falling) and release (rising) */
     EXTI_InitStruct(&exti_init);
     exti_init.EXTI_Line = BUTTON_EXTI_LINE;
     exti_init.EXTI_Mode = EXTI_Mode_Interrupt;
-    exti_init.EXTI_Trigger = EXTI_Trigger_Falling;  /* Button press (low) */
+    exti_init.EXTI_Trigger = EXTI_Trigger_Rising_Falling;  /* Both edges */
     exti_init.EXTI_LineCmd = ENABLE;
     EXTI_InitPeripheral(&exti_init);
 
@@ -342,12 +337,30 @@ void EXTI2_3_IRQHandler(void)
 
 /**
  * @brief EXTI4_15 Interrupt handler (BUTTON_PIN on EXTI7)
+ * Handles both button press (falling) and release (rising) edges
  */
 void EXTI4_15_IRQHandler(void)
 {
     if (EXTI_GetITStatus(EXTI_LINE7) != RESET)
     {
+        /* Check button GPIO state to determine press or release */
+        bool button_state = GPIO_ReadInputDataBit(BUTTON_PORT, BUTTON_PIN);
+        
+        if (!button_state)
+        {
+            /* Button pressed (falling edge, active low) */
+            Button_HandlePressInterrupt();
+        }
+        else
+        {
+            /* Button released (rising edge) */
+            Button_HandleReleaseInterrupt();
+        }
+        
+        /* Set wake flag for sleep/wake system */
         g_wake_interrupt_triggered = true;
+        
+        /* Clear interrupt flag */
         EXTI_ClrITPendBit(EXTI_LINE7);
     }
 }
@@ -467,20 +480,27 @@ void SleepWake_EnterUltraLowPower(void)
     Delay(10);
     LCD_SendCommand_DMA(LCD_CMD_SLPIN); // 0x10
     Delay(10);
+    
+    /* TV pin definitions for this function */
+    GPIO_Module* tv1_port = GPIOA;
+    uint16_t tv1_pin = GPIO_PIN_5;
+    GPIO_Module* tv2_port = GPIOB;
+    uint16_t tv2_pin = GPIO_PIN_8;
+    
     /* Save current power pin states */
     g_saved_lcd_flash_pwr = GPIO_ReadOutputDataBit(LCD_FLASH_PWR_EN_PIN);
     g_saved_lv_cutoff = GPIO_ReadOutputDataBit(LV_CUTOFF_EN_PORT, LV_CUTOFF_EN_PIN);
     g_saved_lp4086_iset = GPIO_ReadOutputDataBit(LP4086_ISET_PORT, LP4086_ISET_PIN);
-    g_saved_tv1_state = GPIO_ReadOutputDataBit(TV1_PORT, TV1_PIN);
-    g_saved_tv2_state = GPIO_ReadOutputDataBit(TV2_PORT, TV2_PIN);
+    g_saved_tv1_state = GPIO_ReadOutputDataBit(tv1_port, tv1_pin);
+    g_saved_tv2_state = GPIO_ReadOutputDataBit(tv2_port, tv2_pin);
     g_saved_backlight_brightness = PWM_GetDutyCycle();
     
     /* Turn off power-consuming peripherals */
     GPIO_SetBits(LCD_FLASH_PWR_EN_PIN);  /* LCD Flash power off */
     GPIO_ResetBits(LV_CUTOFF_EN_PORT, LV_CUTOFF_EN_PIN);          /* LV cutoff disable */
     GPIO_ResetBits(LP4086_ISET_PORT, LP4086_ISET_PIN);            /* Keep LP4086 ISET low */
-    GPIO_ResetBits(TV1_PORT, TV1_PIN);                            /* TV1 off */
-    GPIO_ResetBits(TV2_PORT, TV2_PIN);                            /* TV2 off */
+    GPIO_ResetBits(tv1_port, tv1_pin);                            /* Turn off TV1 */
+    GPIO_ResetBits(tv2_port, tv2_pin);                            /* Turn off TV2 */
     PWM_SetDutyCycle(0);     
     GPIO_SetBits(LCD_BACKLIGHT_PIN);                                      /* Backlight off */
     
@@ -546,6 +566,12 @@ void SleepWake_RestoreFullPower(void)
         return;  /* Not in ultra-low power */
     }
     
+    /* TV pin definitions for this function */
+    GPIO_Module* tv1_port = GPIOA;
+    uint16_t tv1_pin = GPIO_PIN_5;
+    GPIO_Module* tv2_port = GPIOB;
+    uint16_t tv2_pin = GPIO_PIN_8;
+    
     /* Small delay to allow clock to stabilize after restoration */
     for (volatile uint32_t i = 0; i < 10000; i++);
     
@@ -559,14 +585,14 @@ void SleepWake_RestoreFullPower(void)
 
     
     if (g_saved_tv1_state)
-        GPIO_SetBits(TV1_PORT, TV1_PIN);
+        GPIO_SetBits(tv1_port, tv1_pin);
     else
-        GPIO_ResetBits(TV1_PORT, TV1_PIN);
+        GPIO_ResetBits(tv1_port, tv1_pin);
     
     if (g_saved_tv2_state)
-        GPIO_SetBits(TV2_PORT, TV2_PIN);
+        GPIO_SetBits(tv2_port, tv2_pin);
     else
-        GPIO_ResetBits(TV2_PORT, TV2_PIN);
+        GPIO_ResetBits(tv2_port, tv2_pin);
     
 
 

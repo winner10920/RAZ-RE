@@ -58,7 +58,7 @@
 #include "pwm.h"
 #include "sleep_wake.h"
 #include "voltage_monitor.h"
-#include "iwdg.h"
+#include "button.h"
 
 enum StatusValues {
 	STATUS_IDLE = 0,
@@ -207,6 +207,9 @@ void setup(void){
 
 	sFLASH_Init();
 
+	/* Initialize button timing system */
+	Button_Init();
+
 	SleepWake_Init(10);
 
 }
@@ -215,7 +218,7 @@ void mainScreen(void){
 /* Variables for button debouncing and activity tracking */
 	static uint8_t button_prev_state = 0;
 	static uint32_t activity_timer = 0;
-	static bool use_ultra_low_power = true;  /* Enable ultra-low power mode */
+	static bool use_ultra_low_power = false;  /* Enable ultra-low power mode */
 	bool debugSleep = DEBUG_SLEEP;
 	
     bool micInput = false;
@@ -239,6 +242,9 @@ void mainScreen(void){
 
 	while(mainran == 1){
 
+	/* Update button state machine */
+	Button_Update();
+	
 	// /* Check button for wake-up or activity */
 	 	uint8_t button_cur_state = GPIO_ReadInputDataBit(BUTTON_PIN);
 		if (button_cur_state && !button_prev_state)
@@ -246,15 +252,48 @@ void mainScreen(void){
 
 		buttonPressed = !button_cur_state;
 		
+		/* Check for button press types */
+		ButtonState_t button_action = Button_GetLastAction();
+		if (button_action != BUTTON_STATE_NONE)
+		{
+			switch (button_action)
+			{
+				case BUTTON_STATE_SHORT_PRESS:
+					/* Handle short press - example: toggle something */
+					// Your code here
+					break;
+					
+				case BUTTON_STATE_LONG_PRESS:
+					/* Handle long press - example: enter menu */
+					// Your code here
+					break;
+					
+				case BUTTON_STATE_VERY_LONG_PRESS:
+					/* Handle very long press - example: factory reset */
+					// Your code here
+					break;
+					
+				default:
+					break;
+			}
+			
+			/* Clear the action after handling */
+			Button_ClearAction();
+		}
+		
 		{																	// sleep-wake logic
 
 		/* Check for external interrupt wake-up (button or mic) */
 		if (SleepWake_IsWakeInterruptTriggered())
 		{
 			if (SleepWake_IsSleeping()){									// Wake up from sleep via interrupt 
-																			
 				SleepWake_WakeUp();
 				
+				/* Check if button is still pressed after wakeup */
+				if (Button_IsPressed())
+				{
+					Button_SetPressedOnWakeup();
+				}
 			}                                                               // end is sleeping
 			/* Reset inactivity timer on interrupt wake */
 			SleepWake_ResetTimer();
@@ -285,6 +324,7 @@ void mainScreen(void){
 
 		}																	//end sleep-wake logic
 
+		uint32_t press_duration = Button_GetPressDuration();
 		
 		VoltageMonitor_UpdateReadings();									// Update voltage readings periodically
 																			// Read inputs
@@ -332,6 +372,16 @@ void mainScreen(void){
 		uint32_t timeRemaining = SleepWake_GetTimeRemaining();
 		snprintf(timeRemainingStr, sizeof(timeRemainingStr), "%.2u", timeRemaining);
 		LCD_draw_string(80, 120, timeRemainingStr, COLOR_YELLOW, COLOR_BLACK, 2);
+
+		/* Display button timing info */
+		char button_str[20];
+		snprintf(button_str, sizeof(button_str), "BTN: %u ms", (unsigned int)press_duration);
+		LCD_draw_string(0, 60, button_str, COLOR_CYAN, COLOR_BLACK, 1);
+		
+		if (Button_WasPressedOnWakeup())
+		{
+			LCD_draw_string(0, 70, "HELD@WAKE", COLOR_RED, COLOR_BLACK, 1);
+		}
 
 		
 

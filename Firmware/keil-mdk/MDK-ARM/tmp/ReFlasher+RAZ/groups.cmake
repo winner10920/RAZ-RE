@@ -92,6 +92,7 @@ add_library(Group_USER OBJECT
   "${SOLUTION_ROOT}/../src/pwm.c"
   "${SOLUTION_ROOT}/../src/sleep_wake.c"
   "${SOLUTION_ROOT}/../src/voltage_monitor.c"
+  "${SOLUTION_ROOT}/../src/button.c"
 )
 target_include_directories(Group_USER PUBLIC
   $<TARGET_PROPERTY:${CONTEXT},INTERFACE_INCLUDE_DIRECTORIES>
