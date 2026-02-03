@@ -7,13 +7,13 @@ import pylink
 
 
 DATA_BUFFER_ADDR        = 0X20000015
-LEVEL_BUFFER_ADDR       = 0X20001065
-STATUS_REG_ADDR         = 0X20001088
-WRITE_FLAG_ADDR         = 0X2000108C
-LVL_RESET_FLAG_ADDR     = 0X20001070
+LEVEL_BUFFER_ADDR       = 0X20001071
+STATUS_REG_ADDR         = 0X2000116C
+WRITE_FLAG_ADDR         = 0X20001170
+LVL_RESET_FLAG_ADDR     = 0X2000107C
 CONTINUE_FLAG_ADDR      = 0X20001018
-PAGE_ADDR               = 0X20001078
-MAINRAN_ADDR            = 0X20001075
+PAGE_ADDR               = 0X20001084
+MAINRAN_ADDR            = 0X20001081
 
 # -------------------------------------
 # MCU PROG MEM
@@ -37,7 +37,7 @@ MCU_FLASH_KEY_2         = 0xCDEF89AB
 # -------------------------------------
 # SPI FLASH
 # -------------------------------------
-FLASH_BLOCKS            = 256
+FLASH_BLOCKS            = 1024
 FLASH_BLOCK_SIZE        = 4096
 FLASH_START_ADDR        = 0x0
 
@@ -148,14 +148,14 @@ def dump_flash(self, file_path=""):
                     while(int.from_bytes(bytes(self.memory_read8(STATUS_REG_ADDR,1)), 'big') != StatusValues.READ_DONE.value):
                             elapsed_ms = int((time.time() - block_start_time) * 1000)
                             #print(f"status: {self.memory_read8(STATUS_REG_ADDR, 1)} ({elapsed_ms}ms)")
-                            #time.sleep(1)
+                            time.sleep(0.1)
                             pass
-                    # Read from memory and add to existing data buffer
+                    # Read from memory  and add to existing data buffer
                     d = bytes(self.memory_read8(DATA_BUFFER_ADDR, FLASH_BLOCK_SIZE))
                     data += d
                     page += 1
-                    self.memory_write8(PAGE_ADDR, [page])
-                    print(f"Page: {self.memory_read8(PAGE_ADDR, 1)} data: {d[0:16].hex()}...")
+                    self.memory_write16(PAGE_ADDR, [page])
+                    print(f"Page: {self.memory_read16(PAGE_ADDR, 2)} data: {d[0:16].hex()}...")
                     elapsed_ms = int((time.time() - block_start_time) * 1000)
                     print(f"Block {block} read complete ({elapsed_ms}ms)")
 
@@ -234,7 +234,7 @@ if __name__ == "__main__":
     
     try:
         if args.action == 'dump':
-            output_file = args.file if args.file else "flash_dump.binF"
+            output_file = args.file if args.file else "flash_dump.bin"
             dump_flash(jlink, output_file)
         elif args.action == 'upload':
             input_file = args.file if args.file else "ReneePatched.binF"

@@ -83,11 +83,13 @@ project:
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_exti.c
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_lptim.c
         - file: ../firmware/n32g031_std_periph_driver/src/n32g031_pwr.c
+        - file: ../firmware/n32g031_std_periph_driver/src/n32g031_rtc.c
     - group: USER
       files:
         - file: ../src/main.c
         - file: ../src/n32g031_it.c
         - file: ../src/spi_flash.c
+        - file: ../src/spi_flash_sfdp.c
         - file: ../src/nv3029.c
         - file: ../src/dma.c
         - file: ../src/pwm.c

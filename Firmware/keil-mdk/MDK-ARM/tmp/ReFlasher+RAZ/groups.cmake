@@ -64,6 +64,7 @@ add_library(Group_FWLIB OBJECT
   "${SOLUTION_ROOT}/../firmware/n32g031_std_periph_driver/src/n32g031_exti.c"
   "${SOLUTION_ROOT}/../firmware/n32g031_std_periph_driver/src/n32g031_lptim.c"
   "${SOLUTION_ROOT}/../firmware/n32g031_std_periph_driver/src/n32g031_pwr.c"
+  "${SOLUTION_ROOT}/../firmware/n32g031_std_periph_driver/src/n32g031_rtc.c"
 )
 target_include_directories(Group_FWLIB PUBLIC
   $<TARGET_PROPERTY:${CONTEXT},INTERFACE_INCLUDE_DIRECTORIES>
@@ -87,6 +88,7 @@ add_library(Group_USER OBJECT
   "${SOLUTION_ROOT}/../src/main.c"
   "${SOLUTION_ROOT}/../src/n32g031_it.c"
   "${SOLUTION_ROOT}/../src/spi_flash.c"
+  "${SOLUTION_ROOT}/../src/spi_flash_sfdp.c"
   "${SOLUTION_ROOT}/../src/nv3029.c"
   "${SOLUTION_ROOT}/../src/dma.c"
   "${SOLUTION_ROOT}/../src/pwm.c"

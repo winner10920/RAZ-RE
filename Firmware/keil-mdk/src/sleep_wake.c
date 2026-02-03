@@ -184,6 +184,11 @@ void SleepWake_ClearWakeInterrupt(void)
 {
     g_wake_interrupt_triggered = false;
 }
+
+/**
+ * @brief Enable inactivity timeout
+ * @param timeout_sec Number of seconds of inactivity before sleep
+ */
 void SleepWake_EnableTimeout(uint32_t timeout_sec)
 {
     g_timeout_sec = timeout_sec;
@@ -192,7 +197,8 @@ void SleepWake_EnableTimeout(uint32_t timeout_sec)
 }
 
 /**
- * @brief Disable timeout
+ * @brief Disable inactivity timeout (device will not auto-sleep)
+ * Resets all inactivity counters and prevents automatic sleep mode entry
  */
 void SleepWake_DisableTimeout(void)
 {
@@ -250,7 +256,8 @@ uint32_t SleepWake_GetTimeRemaining(void)
 }
 
 /**
- * @brief Check if sleeping
+ * @brief Check if device is currently in sleep mode
+ * @return true if sleeping, false if awake
  */
 bool SleepWake_IsSleeping(void)
 {
@@ -465,7 +472,9 @@ bool SleepWake_IsSWDConnected(void)
 }
 
 /**
- * @brief Enter ultra-low power mode (STOP)
+ * @brief Enter ultra-low power STOP mode
+ * Turns off LCD, peripherals, and enters STOP mode with LPTIM periodic wake.
+ * Can be woken by button press, microphone activity, or LPTIM timer (30 seconds).
  */
 void SleepWake_EnterUltraLowPower(void)
 {
@@ -526,7 +535,9 @@ void SleepWake_EnterUltraLowPower(void)
 }
 
 /**
- * @brief Handle wake from ultra-low power mode
+ * @brief Handle wake event from ultra-low power mode
+ * Determines if device should stay awake (button/mic) or return to sleep (LPTIM timer).
+ * @return true to stay fully awake and restore display, false to return to ultra-low power
  */
 bool SleepWake_HandleUltraLowPowerWake(void)
 {
@@ -607,7 +618,9 @@ void SleepWake_RestoreFullPower(void)
 }
 
 /**
- * @brief Set debug mode
+ * @brief Enable or disable debug mode
+ * When enabled, provides debug output and extended wake windows for SWD debugger connection
+ * @param enable true to enable debug mode, false to disable
  */
 void SleepWake_SetDebugMode(bool enable)
 {
@@ -615,7 +628,8 @@ void SleepWake_SetDebugMode(bool enable)
 }
 
 /**
- * @brief Get debug mode status
+ * @brief Check if debug mode is enabled
+ * @return true if debug mode is active, false otherwise
  */
 bool SleepWake_IsDebugMode(void)
 {

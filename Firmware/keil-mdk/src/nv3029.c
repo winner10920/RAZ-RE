@@ -945,52 +945,17 @@ void LCD_init(void)
     /*
 
 
-    ghidra xd011_f
-      0x4->
-      byte 0 : 0x33 '3' d51
-      byte 1 : 0x30 '0' d48
-      byte 2 : 0x25 '%' d37
-      -> 0
+ghidra xd011_f         0x4 ? 30% : 
 
 
-      ghidra xd011_e
-      0x4->
-      byte 0 : 0x33 '3' d51
-      byte 1 : 0x30 '0' d48
-      byte 2 : 0x25 '%' d37
-      -> 0
+ghidra xd011_e         0x4 ? 30% : d3 | 0
+                       d3 ? 30% : 0 | 1
+                       '|',-0x77,-0x10 -> 2
 
-      0xd3->
-      byte 0 : 0x33 '3' d51
-      byte 1 : 0x30 '0' d48
-      byte 2 : 0x25 '%' d37
-      -> 1
-      
-      byte 0 : 0x7c '|'    d124
-      byte 1 : 0x89 -0x77  d137
-      byte 2 : 0xf0 -0x10  d240
-      -> 2
 
 
 */
 
-
-
-    /*
-    miami mint Firmware output:
-    Successfully recieved bytes:
-    
-    0x4->
-      byte 0 : 0x33 '3' d51
-      byte 1 : 0x30 '0' d48
-      byte 2 : 0x25 '%' d37
-      -> 0
-    
-
-    */
-
-
-    // One-wire SPI protocol: send 0xD3 (with DC low) and receive 3 bytes
 
 
     spi1_config(false); // 8-bit mode
@@ -1005,8 +970,6 @@ void LCD_init(void)
 
 
    
-     //Send the initialization sequence
-     //screen_type = 1; // Set the desired screen type here (0, 1, 2, or 3)
     screen_Init(screen_type); 
 
      

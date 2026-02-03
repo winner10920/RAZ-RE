@@ -2,49 +2,37 @@
 #define USE_GRAPHICAL_STATUS 0
 #define DEBUG_SLEEP 1
 #define BUFFER_SIZE 4096
+#define MODEL XD0011
 
 
 
 
 #define TV1_VOLTAGE_SENSE_PIN GPIOA,GPIO_PIN_1
-
 #define TV2_VOLTAGE_SENSE_PIN GPIOA,GPIO_PIN_2
-
 #define MIC_PIN GPIOA,GPIO_PIN_3
-
 #define GPIO_PA4 GPIOA,GPIO_PIN_4
-
 #define TV1_PIN GPIOA,GPIO_PIN_5
-
 #define LCD_BACKLIGHT_PIN GPIOA,GPIO_PIN_6
-
 #define BUTTON_PIN GPIOA,GPIO_PIN_7
-
+#define FLASH_CS_PIN GPIOA,GPIO_PIN_8
+#define FLASH_SCLK_PIN GPIOA,GPIO_PIN_9
+#define FLASH_MISO_PIN GPIOA,GPIO_PIN_10
+#define FLASH_MOSI_PIN GPIOA,GPIO_PIN_11
 #define lV_CUTOFF_EN GPIOA,GPIO_PIN_12
-
 #define LCD_SPI_CS_PIN GPIOA,GPIO_PIN_15
 
-
-
-
-
 #define LP4086_ISET_PIN GPIOB,GPIO_PIN_0
-
 #define LP4086_CHRG_PIN GPIOB,GPIO_PIN_1
-
 #define LV_CUTOFF_FEEDBACK GPIOB,GPIO_PIN_2
-
 #define LCD_SCLK_PIN GPIOB,GPIO_PIN_3
-
 #define LCD_FLASH_PWR_EN_PIN GPIOB,GPIO_PIN_4
-
 #define LCD_MOSI_PIN GPIOB,GPIO_PIN_5
-
 #define LCD_RST_PIN GPIOB,GPIO_PIN_6
-
 #define LCD_DC_PIN GPIOB,GPIO_PIN_7
-
 #define TV2_PIN GPIOB,GPIO_PIN_8
+
+#define FSLP_PIN GPIOC,GPIO_PIN_14
+#define VPSW_PIN GPIOC,GPIO_PIN_15	
 
 
 
@@ -52,6 +40,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "n32g031_rcc.h"
+#include "n32g031_rtc.h"
 #include "nv3029.h"
 #include "spi_flash.h"
 #include "dma.h"
@@ -59,6 +48,7 @@
 #include "sleep_wake.h"
 #include "voltage_monitor.h"
 #include "button.h"
+#include "spi_flash_sfdp.h"
 
 enum StatusValues {
 	STATUS_IDLE = 0,
@@ -76,7 +66,8 @@ enum StatusValues {
 
  uint8_t mainran = 0;
 
-
+/* Global UTC timestamp - updated from RTC */
+uint32_t current_utc = 0;
 
 volatile int page[1];
 volatile int lvl_reset_flag[1];
@@ -90,14 +81,14 @@ uint8_t buffer[BUFFER_SIZE] = {0};
 uint32_t FlashID = 0;
 uint32_t status_register;
 
-
+SFDP_Params_t sfdp;
 
 /*
 GPIO
 
 PORT & PIN      MODE	SETTINGS	FUNCTION
 GPIOA    
-0 			    INPUT               ?
+0 			    INPUT               A1 NC ?
 1 			    ANALOG  HSR         TV1_VOLTAGE_SENSE        
 2               ANALOG  HSR         TV2_VOLTAGE_SENSE
 3			    INPUT   PULLDOWN?   MIC ?
@@ -109,7 +100,7 @@ GPIOA
 9               OUTPUT  PP,LOW      SPI2_SCLK, FLASH_SPI_SCLK
 10 			    OUTPUT  PP,LOW      SPI2_MISO, FLASH_SPI_MISO
 11 			    INPUT   PULLUP      SPI2_MOSI, FLASH_SPI_MOSI
-12              OUTPUT  PP,HIGH     Low Voltage Cutoff Enable?
+12              OUTPUT  PP,HIGH     Low Voltage Cutoff Enable
 13				INPUT   PULLUP      SWCLK
 14              INPUT   PULLDOWN    SWDIO
 15              OUTPUT  PP,HIGH     LCD_SPI_CS
@@ -138,13 +129,285 @@ GPIOF
 7              ANALOG  HSR         UNKOWN_ANALOG
 */
 
+/**
+ * @brief Initialize all hardware peripherals and subsystems
+ * Configures GPIOs, DMA, LCD, SPI flash, PWM backlight, voltage monitoring,
+ * button timing, and sleep/wake system.
+ */
+/**
+ * @brief Initialize RTC peripheral
+ * Checks if RTC is already initialized, configures clock source (LSE), and sets up RTC prescalers.
+ * After initialization, reads current UTC time from RTC.
+ */
+void rtcSetup(void) {
+	RTC_InitType RTC_InitStructure;
+	RTC_TimeType RTC_TimeStructure;
+	RTC_DateType RTC_DateStructure;
+	uint32_t timeout = 0;
+	uint32_t rtcClockSource;
 
+	/* Check if RTC clock is already configured (don't touch it if already running) */
+	/* Reference: N32G031 RCC driver - RCC_GetRTCClkSrc() reads RCC->LSCTRL bits [9:8] */
+	rtcClockSource = RCC_GetRTCClkSrc();
+	
+	/* CRITICAL: Shadow bypass MUST be enabled BEFORE RTC_ConfigCalendar() to avoid DMA interference */
+	/* Reference: n32g031_rtc.c line 663 - RTC_ConfigCalendar() internally calls RTC_WaitForSynchro() */
+	/* Reference: n32g031_rtc.c line 323 - RTC_WaitForSynchro() blocks up to 5.5 seconds with delay_ms() */
+	/* Reference: n32g031_rtc.c line 294 - delay_ms() is a tight busy-wait loop that blocks ALL interrupts/DMA */
+	/* Solution: Enable bypass shadow BEFORE any RTC register writes to skip sync waits entirely */
+	RTC_EnableBypassShadow(ENABLE);
+	
+	if (rtcClockSource == RCC_RTCCLK_SRC_NONE) {
+		/* RTC not initialized - configure it */
+		/* This only happens on first boot or after power loss */
+		
+		/* Temporarily enable PWR clock to access backup domain */
+		/* Reference: N32G031 datasheet - PWR peripheral on APB1 bus controls backup domain access */
+		/* IMPORTANT: Must disable this clock after init to avoid APB1/AHB bus arbitration conflicts with DMA */
+		RCC_EnableAPB1PeriphClk(RCC_APB1_PERIPH_PWR, ENABLE);
 
+		
+		/* Reference: N32G031 datasheet - LSI is less accurate but always available */
+		RCC_EnableLsi(ENABLE);
+		while (RCC_GetFlagStatus(RCC_LSCTRL_FLAG_LSIRD) == RESET);  /* Wait for LSI ready */
+		RCC_ConfigRtcClk(RCC_RTCCLK_SRC_LSI);
+			
+	
 
+		/* Enable RTC clock */
+		/* Reference: N32G031 RCC driver - RCC_EnableRtcClk() sets LSCTRL bit 15 (RTC clock enable) */
+		RCC_EnableRtcClk(ENABLE);
 
+		/* Brief delay for RTC peripheral to stabilize after clock enable */
+		/* ~2ms delay at 48MHz (100000 iterations) - enough for hardware to settle */
+		for (volatile uint32_t i = 0; i < 100000; i++);
 
+		/* Disable write protection to allow RTC register modifications */
+		/* Reference: n32g031_rtc.c - RTC registers are write-protected by default for safety */
+		/* Must write magic values 0xCA, 0x53 to RTC->WRP to unlock (done inside function) */
+		RTC_EnableWriteProtection(DISABLE);
 
+		/* Enter initialization mode (required to write calendar/prescaler registers) */
+		/* Reference: n32g031_rtc.c line 241 - RTC_EnterInitMode() implementation */
+		/* WARNING: Contains unbounded while(RTC->SUBS <=3) loop at line 252! */
+		/* SUBS register must be >3 to ensure safe register access (hardware requirement) */
+		if (RTC_EnterInitMode() == ERROR) {
+			/* Failed to enter init mode - clean up and abort */
+			RCC_EnableAPB1PeriphClk(RCC_APB1_PERIPH_PWR, DISABLE);
+			return;
+		}
 
+		/* Configure RTC prescaler to generate 1Hz tick from 32.768kHz LSE */
+		/* Reference: N32G031 RTC documentation - ck_spre(1Hz) = RTCCLK / ((AsynchPrediv + 1) * (SynchPrediv + 1)) */
+		/* Calculation: 32768 Hz / (128 * 256) = 32768 / 32768 = 1 Hz */
+		RTC_InitStructure.RTC_AsynchPrediv = 0x7F;  /* 127 + 1 = 128 */
+		RTC_InitStructure.RTC_SynchPrediv = 0xFF;   /* 255 + 1 = 256 */
+		RTC_InitStructure.RTC_HourFormat = RTC_24HOUR_FORMAT;
+
+		/* Set default date and time */
+		/* Default: 2026-01-01 00:00:00 (Wednesday) */
+		/* Reference: RTC stores year as 0-99 (last 2 digits), month 1-12, date 1-31, weekday 1-7 */
+		RTC_TimeStructure.Hours = 0;
+		RTC_TimeStructure.Minutes = 0;
+		RTC_TimeStructure.Seconds = 0;
+		RTC_TimeStructure.H12 = RTC_AM_H12;  /* Ignored in 24-hour format */
+
+		RTC_DateStructure.Year = 26;   /* 2026 (stored as 26 in RTC) */
+		RTC_DateStructure.Month = 1;   /* January */
+		RTC_DateStructure.Date = 1;    /* 1st */
+		RTC_DateStructure.WeekDay = 3; /* Wednesday (1=Monday, 7=Sunday) */
+
+		/* Configure calendar with date and time */
+		/* Reference: n32g031_rtc.c line 474 - RTC_ConfigCalendar() implementation */
+		/* CRITICAL ISSUE FOUND: This function calls RTC_ExitInitMode() at line 660 */
+		/* Then at line 663 it checks if shadow bypass is enabled (RTC_CTRL_BYPS bit) */
+		/* If bypass NOT enabled, it calls RTC_WaitForSynchro() which blocks 5.5 seconds! */
+		/* SOLUTION: Shadow bypass was enabled at line 163 BEFORE entering this block */
+		/* This ensures RTC_ConfigCalendar skips the sync wait at line 663-669 */
+		/* DISABLE parameter = no 1.1s pre-delay (RTC_Delay_Flag wait at line 623) */
+		RTC_ConfigCalendar(RTC_FORMAT_BIN, &RTC_InitStructure, &RTC_DateStructure, 
+		                   &RTC_TimeStructure, DISABLE);
+
+		/* NOTE: RTC_ConfigCalendar() already called RTC_ExitInitMode() internally at line 660 */
+		/* So calendar is now counting. No need to call RTC_ExitInitMode() again. */
+
+		/* Enable write protection to prevent accidental RTC register modifications */
+		/* Reference: n32g031_rtc.c - Write protection is a safety feature */
+		RTC_EnableWriteProtection(ENABLE);
+		
+		/* Disable PWR clock immediately after initialization complete */
+		/* Reference: dma.c line 12 - DMA is on AHB bus, PWR is on APB1 bus */
+		/* Having PWR clock enabled causes bus arbitration conflicts with DMA transfers */
+		/* This was the root cause of LCD DMA transfer failures! */
+		RCC_EnableAPB1PeriphClk(RCC_APB1_PERIPH_PWR, DISABLE);
+	}
+
+	/* Shadow bypass remains enabled for all subsequent RTC reads */
+	/* This allows rtcGetUTC() to read RTC registers directly without sync delays */
+	/* Reference: n32g031_rtc.h - RTC_CTRL_BYPS bit bypasses shadow register synchronization */
+
+	/* Initial time read (no sync wait needed with bypass enabled) */
+	/* Reference: n32g031_rtc.c - RTC_GetTime/GetDate touch registers to lock values atomically */
+	RTC_GetTime(RTC_FORMAT_BIN, &RTC_TimeStructure);
+	RTC_GetDate(RTC_FORMAT_BIN, &RTC_DateStructure);
+
+	/* Optionally log the current time (if you have UART or other logging) */
+	/* printf("RTC Initialized - Date: %02d/%02d/20%02d Time: %02d:%02d:%02d\n",
+	        RTC_DateStructure.Date, RTC_DateStructure.Month, RTC_DateStructure.Year,
+	        RTC_TimeStructure.Hours, RTC_TimeStructure.Minutes, RTC_TimeStructure.Seconds); */
+
+	/* Uncomment below function to set RTC from UTC timestamp */
+	// rtcSetFromUTC(1737936000);  /* Example: January 27, 2026 00:00:00 UTC */
+}
+
+/**
+ * @brief Get current UTC timestamp from RTC
+ * Reads RTC registers and converts date/time to Unix timestamp.
+ * Updates the global current_utc variable.
+ * @return Current UTC timestamp (seconds since January 1, 1970 00:00:00 UTC)
+ */
+uint32_t rtcGetUTC(void) {
+	RTC_TimeType RTC_TimeStructure;
+	RTC_DateType RTC_DateStructure;
+	uint32_t year, days = 0;
+	uint32_t i;
+	const uint32_t daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+	/* Read current time and date from RTC */
+	RTC_GetTime(RTC_FORMAT_BIN, &RTC_TimeStructure);
+	RTC_GetDate(RTC_FORMAT_BIN, &RTC_DateStructure);
+
+	/* Calculate full year (RTC stores only last 2 digits) */
+	year = 2000 + RTC_DateStructure.Year;
+
+	/* Calculate days since Unix epoch (1970-01-01) */
+	/* Count leap years and regular years */
+	for (i = 1970; i < year; i++) {
+		if ((i % 4 == 0 && i % 100 != 0) || (i % 400 == 0)) {
+			days += 366;  /* Leap year */
+		} else {
+			days += 365;  /* Regular year */
+		}
+	}
+
+	/* Add days for months in current year */
+	for (i = 1; i < RTC_DateStructure.Month; i++) {
+		days += daysInMonth[i - 1];
+		/* Add leap day if February and current year is leap year */
+		if (i == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
+			days += 1;
+		}
+	}
+
+	/* Add days in current month */
+	days += RTC_DateStructure.Date - 1;
+
+	/* Convert to timestamp */
+	current_utc = (days * 86400) + 
+	              (RTC_TimeStructure.Hours * 3600) + 
+	              (RTC_TimeStructure.Minutes * 60) + 
+	              RTC_TimeStructure.Seconds;
+
+	return current_utc;
+}
+
+/* 
+ * @brief Set RTC time and date from Unix UTC timestamp
+ * @param utcTimestamp Unix timestamp (seconds since January 1, 1970 00:00:00 UTC)
+ * 
+ * Example usage:
+ *   rtcSetFromUTC(1737936000);  // Sets RTC to January 27, 2026 00:00:00 UTC
+ */
+/*
+void rtcSetFromUTC(uint32_t utcTimestamp) {
+	RTC_TimeType RTC_TimeStructure;
+	RTC_DateType RTC_DateStructure;
+	uint32_t days, seconds;
+	uint32_t year = 1970, month = 1, date = 1;
+	uint32_t hours, minutes, secs;
+	const uint32_t daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	uint32_t weekday;
+
+	// Calculate days and remaining seconds
+	days = utcTimestamp / 86400;
+	seconds = utcTimestamp % 86400;
+
+	// Calculate time components
+	hours = seconds / 3600;
+	minutes = (seconds % 3600) / 60;
+	secs = seconds % 60;
+
+	// Calculate date components
+	while (1) {
+		uint32_t daysInYear = 365;
+		if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+			daysInYear = 366;  // Leap year
+		}
+
+		if (days >= daysInYear) {
+			days -= daysInYear;
+			year++;
+		} else {
+			break;
+		}
+	}
+
+	// Calculate month and date
+	for (month = 1; month <= 12; month++) {
+		uint32_t daysThisMonth = daysInMonth[month - 1];
+		if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
+			daysThisMonth = 29;  // February in leap year
+		}
+
+		if (days >= daysThisMonth) {
+			days -= daysThisMonth;
+		} else {
+			break;
+		}
+	}
+	date = days + 1;
+
+	// Calculate day of week (Zeller's congruence simplified)
+	// January 1, 1970 was Thursday (4)
+	weekday = ((utcTimestamp / 86400) + 4) % 7;
+	if (weekday == 0) weekday = 7;  // RTC uses 1=Monday...7=Sunday
+
+	// Disable write protection
+	RTC_EnableWriteProtection(DISABLE);
+	
+	// Enter initialization mode
+	if (RTC_EnterInitMode() == ERROR) {
+		RTC_EnableWriteProtection(ENABLE);
+		return;  // Failed to enter init mode
+	}
+
+	// Set time
+	RTC_TimeStructure.Hours = hours;
+	RTC_TimeStructure.Minutes = minutes;
+	RTC_TimeStructure.Seconds = secs;
+	RTC_TimeStructure.H12 = RTC_AM_H12;
+
+	// Set date (RTC year is 0-99, storing last 2 digits)
+	RTC_DateStructure.Year = year % 100;
+	RTC_DateStructure.Month = month;
+	RTC_DateStructure.Date = date;
+	RTC_DateStructure.WeekDay = weekday;
+	
+	// Configure calendar
+	RTC_InitType RTC_InitStructure;
+	RTC_InitStructure.RTC_AsynchPrediv = 0x7F;
+	RTC_InitStructure.RTC_SynchPrediv = 0xFF;
+	RTC_InitStructure.RTC_HourFormat = RTC_24HOUR_FORMAT;
+	RTC_ConfigCalendar(RTC_FORMAT_BIN, &RTC_InitStructure, &RTC_DateStructure, 
+	                   &RTC_TimeStructure, DISABLE);
+	
+	// Exit initialization mode
+	RTC_ExitInitMode();
+	
+	// Enable write protection
+	RTC_EnableWriteProtection(ENABLE);
+}
+*/
 
 void setup(void){
 
@@ -154,10 +417,27 @@ void setup(void){
 
 	/* Initialize voltage monitoring on analog inputs */
 	VoltageMonitor_Init();
+    
 
 	
 
 { // gpio init
+
+	//spare
+	GPIO_Init(FSLP_PIN, GPIO_MODE_INPUT);
+	GPIO_Init(VPSW_PIN, GPIO_MODE_INPUT);
+
+    // Conditional Hardwired Pause when VPSW is LOW
+    if (GPIO_ReadInputDataBit(VPSW_PIN) == RESET) {
+		while (GPIO_ReadInputDataBit(VPSW_PIN) == RESET) {
+			// Wait here until VPSW goes HIGH
+			Delay(100);  // Small delay to avoid busy-waiting
+		}
+	}
+
+
+	// outputs
+
 	GPIO_Init(LCD_FLASH_PWR_EN_PIN, GPIO_MODE_OUTPUT_PP);
 	GPIO_Off(LCD_FLASH_PWR_EN_PIN);
 
@@ -195,9 +475,14 @@ void setup(void){
 	GPIO_Init(GPIO_PA4, GPIO_MODE_OUTPUT_PP);
 	GPIO_Off(GPIO_PA4);
 
-	//swd
+	//spare
+	GPIO_Init(FSLP_PIN, GPIO_MODE_INPUT);
+	GPIO_Init(VPSW_PIN, GPIO_MODE_INPUT);
 
 }
+	/* Initialize and configure RTC */
+	//rtcSetup();
+	//rtcGetUTC();
 	dma_init();
 	LCD_flash_dma_init();
 	LCD_init();
@@ -207,13 +492,22 @@ void setup(void){
 
 	sFLASH_Init();
 
+
+
 	/* Initialize button timing system */
 	Button_Init();
 
 	SleepWake_Init(10);
 
+	
+
 }
 
+/**
+ * @brief Main application screen loop
+ * Handles button input, sleep/wake logic, voltage monitoring, and LCD display updates.
+ * Supports short/long/very long button press detection and ultra-low power sleep mode.
+ */
 void mainScreen(void){
 /* Variables for button debouncing and activity tracking */
 	static uint8_t button_prev_state = 0;
@@ -391,7 +685,34 @@ void mainScreen(void){
 	}
 }
 
+/**
+ * @brief Flash memory programming and verification screen
+ * Handles bulk erase, page-by-page write, and page-by-page read operations.
+ * Displays progress on LCD if USE_GRAPHICAL_STATUS is enabled.
+ */
 void flashScreen(void){
+
+		// Check if SFDP is supported
+if (SFDP_IsSupported())
+{
+    // Read and parse SFDP
+    if (SFDP_ReadAndParse(&sfdp))
+    {
+        // Get flash size
+        uint32_t size_mb = SFDP_GetDensityMegabits(&sfdp);
+        
+        // Get optimal parameters
+        uint16_t page_size = SFDP_GetPageSize(&sfdp);
+        uint32_t sector_size = SFDP_GetSectorSize(&sfdp);
+        uint8_t erase_cmd = SFDP_GetSectorEraseOpcode(&sfdp);
+        
+        // Check capabilities
+        if (SFDP_SupportsFastRead(&sfdp))
+        {
+            // Enable fast read mode
+        }
+    }
+}
 	
 		status[0] = 1;
 	bool use_graphical_status = USE_GRAPHICAL_STATUS;
@@ -515,9 +836,14 @@ void flashScreen(void){
 
 }
 
+/**
+ * @brief Main program entry point
+ * Initializes hardware, verifies flash ID, and enters mainScreen() loop.
+ * @return Never returns (infinite loop)
+ */
 int main(void)
 {
-	mainran = 0;
+	mainran = 2;
 	setup();
 
 	while(1){
@@ -546,19 +872,38 @@ int main(void)
 
 } // end main
 
-
-
-
-
-
-
+/**
+ * @brief Simple delay function
+ * @param count Delay count (actual delay is count * 0x500 iterations)
+ * Not precise - for accurate timing use hardware timers
+ */
 void Delay(volatile uint32_t count)
 {
 	volatile uint32_t t_delay = count * 0x500;
 	for (; t_delay >0; t_delay--);
 }
+
+/**
+ * @brief Turn off a GPIO pin (set to LOW)
+ * @param GPIOx GPIO port (GPIOA, GPIOB, etc.)
+ * @param Pin GPIO pin number
+ */
 void GPIO_Off(GPIO_Module *GPIOx, uint16_t Pin) {  GPIO_ResetBits(GPIOx, Pin); }
+
+/**
+ * @brief Turn on a GPIO pin (set to HIGH)
+ * @param GPIOx GPIO port (GPIOA, GPIOB, etc.)
+ * @param Pin GPIO pin number
+ */
 void GPIO_On(GPIO_Module* GPIOx, uint16_t Pin) { GPIO_SetBits(GPIOx, Pin); }
+
+/**
+ * @brief Initialize a GPIO pin with specified mode
+ * Enables the GPIO clock and configures the pin. Input pins are set with pull-up by default.
+ * @param GPIOx GPIO port (GPIOA, GPIOB, GPIOC, or GPIOF)
+ * @param Pin GPIO pin number (GPIO_PIN_0 through GPIO_PIN_15)
+ * @param GpioMode GPIO mode (GPIO_MODE_INPUT, GPIO_MODE_OUTPUT_PP, GPIO_MODE_ANALOG, etc.)
+ */
 void GPIO_Init(GPIO_Module* GPIOx, uint16_t Pin, uint32_t GpioMode) {
     GPIO_InitType GPIO_InitStructure;
 
@@ -601,9 +946,13 @@ void GPIO_Init(GPIO_Module* GPIOx, uint16_t Pin, uint32_t GpioMode) {
 }
 
 
-/* Assert failed function by user.
- * @param file The name of the call that failed.
- * @param line The source line number of the call that failed.
+/**
+ * @brief Assert failed handler
+ * Called when an assertion fails in debug builds (USE_FULL_ASSERT defined).
+ * Enters an infinite loop to halt execution for debugging.
+ * @param expr The expression that failed
+ * @param file The source file name where assertion failed
+ * @param line The line number where assertion failed
  */
 #ifdef USE_FULL_ASSERT
 void assert_failed(const uint8_t* expr, const uint8_t* file, uint32_t line)

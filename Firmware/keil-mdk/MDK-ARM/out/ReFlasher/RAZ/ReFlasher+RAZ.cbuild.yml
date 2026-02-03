@@ -133,6 +133,8 @@ build:
           category: sourceC
         - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_pwr.c
           category: sourceC
+        - file: ../../../../firmware/n32g031_std_periph_driver/src/n32g031_rtc.c
+          category: sourceC
     - group: USER
       files:
         - file: ../../../../src/main.c
@@ -140,6 +142,8 @@ build:
         - file: ../../../../src/n32g031_it.c
           category: sourceC
         - file: ../../../../src/spi_flash.c
+          category: sourceC
+        - file: ../../../../src/spi_flash_sfdp.c
           category: sourceC
         - file: ../../../../src/nv3029.c
           category: sourceC
