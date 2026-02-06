@@ -843,7 +843,7 @@ if (SFDP_IsSupported())
  */
 int main(void)
 {
-	mainran = 2;
+	mainran = 3;
 	setup();
 
 	while(1){
@@ -857,6 +857,16 @@ int main(void)
 		mainran = 1;
 		mainScreen();
 		}
+
+	while(mainran == 3) {
+		{
+		uint32_t anim_addr = 0x124710;
+		LCD_Window lcdAnimWindow = {0, 0, 128 - 1, 160 - 1};
+		LCD_animation(lcdAnimWindow, 52, anim_addr);
+		}
+		
+		//Delay(1000);
+		}//end while mainran 1
 
 			
 

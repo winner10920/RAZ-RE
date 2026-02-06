@@ -194,6 +194,13 @@ typedef struct {
             uint8_t value;
 } LcdPacket;
 
+typedef struct {
+    uint8_t x0;
+    uint8_t y0;
+    uint8_t x1;
+    uint8_t y1;
+} LCD_Window;
+
 #define BUFFER_SIZE 4096
 
 extern void Delay(volatile uint32_t count);
@@ -211,6 +218,8 @@ void spi1_config(bool sixteen_bit);
 /* LCD control pin functions */
 void LCD_cs_low(void);
 void LCD_cs_high(void);
+void LCD_dc_cmd(void); 
+void LCD_dc_data(void);
 
 void LCD_init(void);
 void LCD_fill_screen(uint16_t color);
@@ -219,7 +228,7 @@ void LCD_FillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color);
 void LCD_SetWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1) ;
 void LCD_draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint16_t bgcolor, uint8_t scale);
 void LCD_draw_string(uint16_t x, uint16_t y, const char* s, uint16_t color, uint16_t bgcolor, uint8_t scale);
-
+void LCD_animation(LCD_Window lcdAnimWindow, uint8_t frame_count, uint32_t anim_addr);
 /* DMA-based SPI transmit functions */
 bool SPI1_tx_dma_mode(const uint8_t* buff, uint16_t len, uint32_t timeout_ms, uint8_t mode);
 bool SPI1_tx_dma(const uint8_t* buff, uint16_t len, uint32_t timeout_ms);

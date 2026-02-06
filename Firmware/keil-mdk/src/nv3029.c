@@ -371,8 +371,8 @@ static const LcdPacket screen_init_seq_2[] = {  //SCREEN TYPE 3
 
 void LCD_cs_low(void)  { GPIO_ResetBits(NV3029_CS_GPIO_PORT, NV3029_CS_PIN); }
 void LCD_cs_high(void) { GPIO_SetBits(NV3029_CS_GPIO_PORT, NV3029_CS_PIN); }
-static void LCD_dc_cmd(void)  { GPIO_ResetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN); }
-static void LCD_dc_data(void) { GPIO_SetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN); }
+void LCD_dc_cmd(void)  { GPIO_ResetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN); }
+void LCD_dc_data(void) { GPIO_SetBits(NV3029_DC_GPIO_PORT, NV3029_DC_PIN); }
 static void LCD_rst_low(void) { GPIO_ResetBits(NV3029_RST_GPIO_PORT, NV3029_RST_PIN); }
 static void LCD_rst_high(void){ GPIO_SetBits(NV3029_RST_GPIO_PORT, NV3029_RST_PIN); }
 static void LCD_sclk_high(void){ GPIO_SetBits(NV3029_SCLK_GPIO_PORT, NV3029_SCLK_PIN); }
@@ -467,8 +467,10 @@ bool SPI1_tx_dma_mode(const uint8_t* buff, uint16_t len, uint32_t timeout_ms, ui
     bool ok = dma_wait_complete(DMA_CH3, timeout_ms);
 
     /* Wait for SPI to finish transmitting the last byte */
-    uint32_t wait_count = 10000;
-    while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_BUSY_FLAG) == SET && wait_count--)
+    // uint32_t wait_count = 10000;
+    // while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_BUSY_FLAG) == SET && wait_count--)
+    //     ;
+    while (SPI_I2S_GetStatus(NV3029_SPI, SPI_I2S_BUSY_FLAG) == SET)
         ;
 
     return ok;
@@ -1248,6 +1250,39 @@ void displayFullPhotoChunked(uint32_t startAddr){
 		LCD_cs_high();
 
     }
+
+
+    void LCD_animation(LCD_Window lcdAnimWindow, uint8_t frame_count, uint32_t anim_addr){
+
+		const uint32_t frame_size = (lcdAnimWindow.x1+1 - lcdAnimWindow.x0) * (lcdAnimWindow.y1+1 - lcdAnimWindow.y0) * 2; // bytes per frame
+		const uint8_t chunks_per_frame = frame_size / BUFFER_SIZE;  // 40960 / 4096 = 10 chunks
+		const uint16_t pixels_per_chunk = BUFFER_SIZE / 2;  // 2048 pixels per chunk
+		
+		// Set LCD window once for full screen
+		LCD_SetWindow(lcdAnimWindow.x0, lcdAnimWindow.y0, lcdAnimWindow.x1, lcdAnimWindow.y1);
+		
+	
+		spi1_config(true);  // Reconfigure SPI1 for data mode after command
+		// Animation loop - continuously stream chunks to LCD
+		for(uint8_t frame = 0; frame < frame_count; frame++) {
+			uint32_t frame_addr = anim_addr + (frame * frame_size);
+			
+			// Stream frame in 4KB chunks
+			for(uint8_t chunk = 0; chunk < chunks_per_frame; chunk++) {
+				uint32_t chunk_addr = frame_addr + (chunk * BUFFER_SIZE);
+				
+				// Read chunk from flash via DMA
+				LCD_flash_read_async(chunk_addr, BUFFER_SIZE, buffer, BUFFER_SIZE);
+				while(!LCD_is_flash_read_complete());
+				
+				// Send chunk to LCD via DMA
+				LCD_cs_low();
+				LCD_dc_data();
+				SPI1_tx_dma_16bit((const uint16_t*)buffer, pixels_per_chunk, 1000);
+				LCD_cs_high();
+			}
+    }
+}
 
 /**
  * Flash-to-LCD DMA streaming functions
