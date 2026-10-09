@@ -1,11 +1,11 @@
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION ${CMAKE_VERSION}) # this file comes with cmake
 
-set(command "/usr/bin/cmake;--build;/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1;--target;database")
+set(command "/usr/bin/cmake;--build;/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1;--target;database")
 set(log_merged "")
 set(log_output_on_failure "ON")
-set(stdout_log "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-database-out.log")
-set(stderr_log "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-database-err.log")
+set(stdout_log "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-database-out.log")
+set(stderr_log "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-database-err.log")
 execute_process(
   COMMAND ${command}
   RESULT_VARIABLE result
@@ -31,7 +31,7 @@ if(result)
   if (${log_merged})
     set(msg "${msg}\nSee also\n  ${stderr_log}")
   else()
-    set(msg "${msg}\nSee also\n  /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-database-*.log")
+    set(msg "${msg}\nSee also\n  /home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-database-*.log")
   endif()
   if (${log_output_on_failure})
     message(SEND_ERROR "${msg}")
@@ -50,7 +50,7 @@ if(result)
   endif()
 else()
   if(NOT "Ninja" MATCHES "Ninja")
-    set(msg "ReFlasher+RAZ database command succeeded.  See also /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-database-*.log")
+    set(msg "ReFlasher+RAZ database command succeeded.  See also /home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-database-*.log")
     message(STATUS "${msg}")
   endif()
 endif()

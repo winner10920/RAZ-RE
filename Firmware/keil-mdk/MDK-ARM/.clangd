@@ -1,5 +1,5 @@
 CompileFlags:
-  CompilationDatabase: /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ
+  CompilationDatabase: /home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/out/ReFlasher/RAZ
   Add:
     - '-D_ILP32=1'
     - '-D_USE_STATIC_INLINE=1'
@@ -393,18 +393,19 @@ CompileFlags:
     - '-D__thumb__=1'
     - '-D__ARMCOMPILER_LIBCXX=1'
     - >-
-      -I/home/cody/.cache/arm/packs/NSING/N32G031_DFP/1.0.5/firmware/CMSIS/device
-    - '-I/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../inc'
-    - '-I/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../src'
-    - '-I/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../firmware/CMSIS/core'
-    - '-I/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../firmware/CMSIS/device'
+      -I/home/richfedor/.cache/arm/packs/NSING/N32G031_DFP/1.0.5/firmware/CMSIS/device
+    - '-I/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../inc'
+    - '-I/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../src'
+    - '-I/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../firmware/CMSIS/core'
     - >-
-      -I/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../firmware/CMSIS/device/startup
+      -I/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../firmware/CMSIS/device
     - >-
-      -I/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../firmware/n32g031_std_periph_driver/inc
+      -I/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../firmware/CMSIS/device/startup
     - >-
-      -I/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../firmware/n32g031_std_periph_driver/src
-    - '-I/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ'
+      -I/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../firmware/n32g031_std_periph_driver/inc
+    - >-
+      -I/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/../firmware/n32g031_std_periph_driver/src
+    - '-I/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ'
 Diagnostics:
   UnusedIncludes: None
   MissingIncludes: None

@@ -2,31 +2,31 @@
 	"sources" : 
 	[
 		{
-			"file" : "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/CMakeFiles/ReFlasher+RAZ-executes"
+			"file" : "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/CMakeFiles/ReFlasher+RAZ-executes"
 		},
 		{
-			"file" : "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/CMakeFiles/ReFlasher+RAZ-executes.rule"
+			"file" : "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/CMakeFiles/ReFlasher+RAZ-executes.rule"
 		},
 		{
-			"file" : "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-executes.rule"
+			"file" : "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-executes.rule"
 		},
 		{
-			"file" : "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-build.rule"
+			"file" : "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-build.rule"
 		},
 		{
-			"file" : "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-configure.rule"
+			"file" : "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-configure.rule"
 		},
 		{
-			"file" : "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-patch.rule"
+			"file" : "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-patch.rule"
 		},
 		{
-			"file" : "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-update.rule"
+			"file" : "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-update.rule"
 		},
 		{
-			"file" : "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-download.rule"
+			"file" : "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-download.rule"
 		},
 		{
-			"file" : "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-mkdir.rule"
+			"file" : "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-mkdir.rule"
 		}
 	],
 	"target" : 

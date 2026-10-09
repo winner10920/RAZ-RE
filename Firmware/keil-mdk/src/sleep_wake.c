@@ -14,6 +14,8 @@
 #include "nv3029.h"
 #include "button.h"
 #include "voltage_monitor.h"
+#include "spi_flash.h"
+
 
 /* Sleep/Wake state machine */
 static bool g_is_sleeping = false;
@@ -511,7 +513,11 @@ void SleepWake_EnterUltraLowPower(void)
     GPIO_ResetBits(tv1_port, tv1_pin);                            /* Turn off TV1 */
     GPIO_ResetBits(tv2_port, tv2_pin);                            /* Turn off TV2 */
     PWM_SetDutyCycle(0);     
-    GPIO_SetBits(LCD_BACKLIGHT_PIN);                                      /* Backlight off */
+    GPIO_SetBits(LCD_BACKLIGHT_PIN);   
+    
+    /* Disable SPI peripherals */
+    SPI_Enable(NV3029_SPI, DISABLE);
+    SPI_Enable(sFLASH_SPI, DISABLE);/* Backlight off */
     
     g_is_ultra_low_power = true;
     g_is_sleeping = true;
@@ -533,6 +539,7 @@ void SleepWake_EnterUltraLowPower(void)
     /* Allow extra time for system to fully stabilize after clock restoration */
     for (volatile uint32_t i = 0; i < 100000; i++);
 }
+
 
 /**
  * @brief Handle wake event from ultra-low power mode
@@ -560,7 +567,7 @@ bool SleepWake_HandleUltraLowPowerWake(void)
     if (g_lptim_wake_triggered)
     {
         g_lptim_wake_triggered = false;
-        return false;  /* Return to ultra-low power */
+        return SleepWake_IsSWDConnected();  /* Return to ultra-low power */
     }
     
     /* Should not reach here, but return to ultra-low power to be safe */

@@ -1,11 +1,11 @@
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION ${CMAKE_VERSION}) # this file comes with cmake
 
-set(command "/usr/bin/cmake;-G;Ninja;-S;/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ;-B;/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1;-DSOLUTION_ROOT=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM;-DCMSIS_PACK_ROOT=/home/cody/.cache/arm/packs;-DCMSIS_COMPILER_ROOT=/home/cody/.vcpkg/artifacts/2139c4c6/tools.open.cmsis.pack.cmsis.toolbox/2.12.0/etc")
+set(command "/usr/bin/cmake;-G;Ninja;-S;/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ;-B;/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/1;-DSOLUTION_ROOT=/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM;-DCMSIS_PACK_ROOT=/home/richfedor/.cache/arm/packs;-DCMSIS_COMPILER_ROOT=/home/richfedor/.vcpkg/artifacts/2139c4c6/tools.open.cmsis.pack.cmsis.toolbox/2.12.0/etc")
 set(log_merged "")
 set(log_output_on_failure "ON")
-set(stdout_log "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-configure-out.log")
-set(stderr_log "/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-configure-err.log")
+set(stdout_log "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-configure-out.log")
+set(stderr_log "/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-configure-err.log")
 execute_process(
   COMMAND ${command}
   RESULT_VARIABLE result
@@ -31,7 +31,7 @@ if(result)
   if (${log_merged})
     set(msg "${msg}\nSee also\n  ${stderr_log}")
   else()
-    set(msg "${msg}\nSee also\n  /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-configure-*.log")
+    set(msg "${msg}\nSee also\n  /home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-configure-*.log")
   endif()
   if (${log_output_on_failure})
     message(SEND_ERROR "${msg}")
@@ -50,7 +50,7 @@ if(result)
   endif()
 else()
   if(NOT "Ninja" MATCHES "Ninja")
-    set(msg "ReFlasher+RAZ configure command succeeded.  See also /home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-configure-*.log")
+    set(msg "ReFlasher+RAZ configure command succeeded.  See also /home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ/src/ReFlasher+RAZ-stamp/ReFlasher+RAZ-configure-*.log")
     message(STATUS "${msg}")
   endif()
 endif()

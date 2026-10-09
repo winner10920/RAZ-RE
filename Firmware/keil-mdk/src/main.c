@@ -118,8 +118,8 @@ GPIOB
 
 GPIOC
 13              ANALOG  HSR         UNKNOWN_ANALOG
-14 			    INPUT 			    FSLP     
-15              INPUT               VPSW
+14 			    INPUT 			    FSLP    (FORCE SLEEP)  (PULL LOW TO TRIGER SLEEP)
+15              INPUT               VPSW    (SAME AS BUTTON)  (PULL LOW TO SWITCH )
 
 GPIOF
 0              ANALOG  HSR         UNKOWN_ANALOG
@@ -411,7 +411,7 @@ void rtcSetFromUTC(uint32_t utcTimestamp) {
 
 void setup(void){
 
- RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB | RCC_APB2_PERIPH_GPIOC, ENABLE);
+    RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA | RCC_APB2_PERIPH_GPIOB | RCC_APB2_PERIPH_GPIOC, ENABLE);
     RCC_ConfigAdcHclk(RCC_ADCHCLK_DIV6);
 	RCC_EnableAHBPeriphClk(RCC_AHBPCLKEN_ADCEN, ENABLE);
 
@@ -467,7 +467,6 @@ void setup(void){
 
 	GPIO_Init(TV1_VOLTAGE_SENSE_PIN, GPIO_MODE_ANALOG);
 	GPIO_Init(TV2_VOLTAGE_SENSE_PIN, GPIO_MODE_ANALOG);
-    //GPIO_Init(LV_CUTOFF_FEEDBACK, GPIO_MODE_ANALOG);
 
 
 

@@ -4,6 +4,6 @@
 
 method=source_dir
 command=
-source_dir=/home/cody/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ
+source_dir=/home/richfedor/RAZ-RE/Firmware/keil-mdk/MDK-ARM/tmp/ReFlasher+RAZ
 work_dir=
 
