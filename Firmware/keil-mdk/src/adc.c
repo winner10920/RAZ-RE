@@ -52,11 +52,11 @@ void ADC_MeasureInit(void)
 
     /* Configure ADC */
     ADC_InitStruct(&adc_init_struct);
-    adc_init_struct.ClkDiv = ADC_CLK_DIV_8;           /* ADC clock = APB1 / 8 */
-    adc_init_struct.ScanConvMode = DISABLE;           /* Single channel mode for simplicity */
-    adc_init_struct.ContinConvMode = DISABLE;         /* Single conversion mode */
+    RCC_ConfigAdcHclk(RCC_ADCHCLK_DIV8);           /* ADC clock = APB1 / 8 */
+    adc_init_struct.MultiChEn = DISABLE;           /* Single channel mode for simplicity */
+    adc_init_struct.ContinueConvEn = DISABLE;         /* Single conversion mode */
     adc_init_struct.ExtTrigSelect = ADC_EXT_TRIGCONV_NONE;  /* Software trigger */
-    adc_init_struct.DataAlign = ADC_DAT_ALIGN_R;      /* Right aligned */
+    adc_init_struct.DatAlign = ADC_DAT_ALIGN_R;      /* Right aligned */
     adc_init_struct.ChsNumber = 1;                    /* Single channel */
     ADC_Init(ADC, &adc_init_struct);
 
@@ -87,7 +87,7 @@ uint16_t ADC_MeasureReadChannel(uint8_t channel)
     
     /* Wait for conversion to complete */
     uint32_t timeout = 0;
-    while ((ADC->STAT & 0x0002) == 0 && timeout < 1000000)  /* EOC flag */
+    while ((ADC->STS & 0x0002) == 0 && timeout < 1000000)  /* EOC flag */
         timeout++;
     
     /* Read the converted value */
@@ -104,7 +104,7 @@ void ADC_MeasureReadChannels(void)
     g_adc_measurements.ch1_batt = ADC_MeasureReadChannel(ADC_CHANNEL_PA1);
     g_adc_measurements.ch2_tv2_sense = ADC_MeasureReadChannel(ADC_CHANNEL_PA2);
     g_adc_measurements.ch3_unknown = ADC_MeasureReadChannel(ADC_CHANNEL_PA3);
-    g_adc_measurements.pch4_tempVref = ADC_MeasureReadChannel(ADC_CHANNEL_PA4);
+    g_adc_measurements.ch4_tempVref = ADC_MeasureReadChannel(ADC_CHANNEL_PA4);
     g_adc_measurements.ch12_intTemp = ADC_MeasureReadChannel(ADC_CHANNEL_12);
 }
 
