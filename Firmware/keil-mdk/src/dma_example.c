@@ -1,3 +1,5 @@
+#include <stddef.h>
+#include <stddef.h>
 /* dma_example.c - demonstrates using Libraries/n32g031_dma wrapper
  * 
  * Example 1: Simple SPI1 TX with DMA (memory to SPI1 data register)

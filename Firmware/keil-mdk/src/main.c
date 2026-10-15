@@ -66,8 +66,19 @@ enum StatusValues {
 
  uint8_t mainran = 0;
 
+
 /* Global UTC timestamp - updated from RTC */
 uint32_t current_utc = 0;
+
+typedef enum {
+	PAGE_STATS = 0,
+	PAGE_PHOTO,
+	PAGE_FLASH,
+	PAGE_PROGRAMMING,
+	PAGE_UART_DEBUG,
+	PAGE_MAX
+} PageState_t;
+
 
 volatile int page[1];
 volatile int lvl_reset_flag[1];
@@ -503,6 +514,61 @@ void setup(void){
 }
 
 /**
+ * @brief Helper for de-initializing UART correctly
+ */
+void disable_uart_debug(void) {
+	/* Clean up USART2 */
+	USART_Enable(USART2, DISABLE);
+	RCC_EnableAPB1PeriphClk(RCC_APB1_PERIPH_USART2, DISABLE);
+
+	/* Restore PA13 and PA14 to SWD functions (AF0) */
+	GPIO_InitType GPIO_InitStructure;
+	GPIO_InitStruct(&GPIO_InitStructure);
+	GPIO_InitStructure.Pin            = GPIO_PIN_13 | GPIO_PIN_14;
+	GPIO_InitStructure.GPIO_Mode      = GPIO_MODE_AF_PP;
+	GPIO_InitStructure.GPIO_Alternate = GPIO_AF0_SWD;
+	GPIO_InitPeripheral(GPIOA, &GPIO_InitStructure);
+}
+
+/**
+ * @brief Helper for initializing UART correctly
+ */
+void enable_uart_debug(void) {
+	/* Enable Clocks */
+	RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA, ENABLE);
+	RCC_EnableAPB1PeriphClk(RCC_APB1_PERIPH_USART2, ENABLE);
+
+	/* Configure PA13 (RX) and PA14 (TX) for USART2 */
+	GPIO_InitType GPIO_InitStructure;
+	GPIO_InitStruct(&GPIO_InitStructure);
+
+	/* PA14 is TX (needs AF Push-Pull) */
+	GPIO_InitStructure.Pin            = GPIO_PIN_14;
+	GPIO_InitStructure.GPIO_Mode      = GPIO_MODE_AF_PP;
+	GPIO_InitStructure.GPIO_Alternate = GPIO_AF1_USART2;
+	GPIO_InitPeripheral(GPIOA, &GPIO_InitStructure);
+
+	/* PA13 is RX (needs AF Push-Pull) */
+	GPIO_InitStructure.Pin            = GPIO_PIN_13;
+	GPIO_InitStructure.GPIO_Mode      = GPIO_MODE_AF_PP;
+	GPIO_InitStructure.GPIO_Alternate = GPIO_AF1_USART2;
+	GPIO_InitPeripheral(GPIOA, &GPIO_InitStructure);
+
+	/* Initialize USART2 */
+	USART_InitType USART_InitStructure;
+	USART_StructInit(&USART_InitStructure);
+	USART_InitStructure.BaudRate            = 115200;
+	USART_InitStructure.WordLength          = USART_WL_8B;
+	USART_InitStructure.StopBits            = USART_STPB_1;
+	USART_InitStructure.Parity              = USART_PE_NO;
+	USART_InitStructure.HardwareFlowControl = USART_HFCTRL_NONE;
+	USART_InitStructure.Mode                = USART_MODE_RX | USART_MODE_TX;
+
+	USART_Init(USART2, &USART_InitStructure);
+	USART_Enable(USART2, ENABLE);
+}
+
+/**
  * @brief Main application screen loop
  * Handles button input, sleep/wake logic, voltage monitoring, and LCD display updates.
  * Supports short/long/very long button press detection and ultra-low power sleep mode.
@@ -519,16 +585,23 @@ void mainScreen(void){
 	bool isCharging = false;
 	bool buttonPressed = false;
 
+	PageState_t current_page = PAGE_STATS;
+	bool page_changed = true; // Force initial draw
+
+	int uart_y_pos = 20;
+	int uart_x_pos = 0;
+
 	displayPhoto(0x0A000, 0x0BE0);
     displayFullPhotoChunked(0x0);
 	Delay(5000);
 	LCD_fill_screen(COLOR_BLACK);
-	displayPhoto(0x0E740, 0x0BE0);
 
 
 	if (debugSleep)
 	{
-		 SleepWake_SetDebugMode(true);
+		LCD_draw_string(0, 0, "Waking up", COLOR_WHITE, COLOR_BLACK, 2);
+		Delay(1000);
+		LCD_fill_screen(COLOR_BLACK);
 	}
 	
 	
@@ -552,135 +625,200 @@ void mainScreen(void){
 			switch (button_action)
 			{
 				case BUTTON_STATE_SHORT_PRESS:
-					/* Handle short press - example: toggle something */
-					// Your code here
-					break;
+					/* Switch page */
+					if (current_page == PAGE_UART_DEBUG) {
+						disable_uart_debug();
+					}
 					
+					current_page = (PageState_t)((current_page + 1) % PAGE_MAX);
+
+					if (current_page == PAGE_UART_DEBUG) {
+						enable_uart_debug();
+						uart_y_pos = 20; // reset cursor
+					}
+					LCD_fill_screen(COLOR_BLACK);
+					page_changed = true;
+					break;
 				case BUTTON_STATE_LONG_PRESS:
-					/* Handle long press - example: enter menu */
-					// Your code here
+					/* Execute page specific action */
+					if (current_page == PAGE_FLASH) {
+						mainran = 2;
+						return; // exit to flash ops
+					}
 					break;
-					
 				case BUTTON_STATE_VERY_LONG_PRESS:
-					/* Handle very long press - example: factory reset */
-					// Your code here
+					/* Handle very long press - example: sleep toggle */
+					use_ultra_low_power = !use_ultra_low_power;
+					if (debugSleep)
+					{
+						LCD_fill_screen(COLOR_BLACK);
+						LCD_draw_string(0, 80, use_ultra_low_power ? "DEEP SLP ON" : "DEEP SLP OFF",
+									  COLOR_YELLOW, COLOR_BLACK, 2);
+						Delay(2000);
+						LCD_fill_screen(COLOR_BLACK);
+						page_changed = true;
+					}
 					break;
-					
 				default:
 					break;
 			}
-			
-			/* Clear the action after handling */
 			Button_ClearAction();
 		}
 		
-		{																	// sleep-wake logic
-
-		/* Check for external interrupt wake-up (button or mic) */
-		if (SleepWake_IsWakeInterruptTriggered())
+		/* Manage sleep based on activity */
+		if (buttonPressed)
 		{
-			if (SleepWake_IsSleeping()){									// Wake up from sleep via interrupt 
-				SleepWake_WakeUp();
-				
-				/* Check if button is still pressed after wakeup */
-				if (Button_IsPressed())
-				{
-					Button_SetPressedOnWakeup();
-				}
-			}                                                               // end is sleeping
-			/* Reset inactivity timer on interrupt wake */
-			SleepWake_ResetTimer();
-			/* Clear the interrupt flag */
-			SleepWake_ClearWakeInterrupt();
-			
+			activity_timer = 0;  /* Reset timer on activity */
+			SleepWake_WakeUp();
 		}
-
-									
-		if (SleepWake_CheckTimeout()){										// Check if timeout for sleep has expired 
-			if (use_ultra_low_power){										// Enter ultra-low power mode
-				while (1){
-				
-					SleepWake_EnterUltraLowPower();
-					if (SleepWake_HandleUltraLowPowerWake()){				// Handle wake from ultra-low power 
-						/* Stay awake - restore display and continue main loop */
-						displayFullPhotoChunked(0x0);
-						Delay(1000);
-						LCD_fill_screen(COLOR_BLACK);
-						break;  /* Exit ultra-low power loop */
-					}														// end handle wake
-				}															// end ultra-low power loop
-			}else{
-				/* Go to normal sleep */
-				SleepWake_GoToSleep();
-				}
-			}																// end check sleep timeout
-
-		}																	//end sleep-wake logic
+		else if (SleepWake_CheckTimeout())
+		{
+			/* System just woke up */
+			activity_timer = 0;
+			
+			if (debugSleep)
+			{
+				LCD_draw_string(0, 100, "WOKE UP", COLOR_GREEN, COLOR_BLACK, 2);
+				Delay(1000);
+				LCD_fill_screen(COLOR_BLACK);
+				page_changed = true;
+			}
+		}
 
 		uint32_t press_duration = Button_GetPressDuration();
 		
-		VoltageMonitor_UpdateReadings();									// Update voltage readings periodically
-																			// Read inputs
-        micInput = GPIO_ReadInputDataBit(MIC_PIN);
-	    lvInput = GPIO_ReadInputDataBit(LV_CUTOFF_FEEDBACK);
-		isCharging = GPIO_ReadInputDataBit(LP4086_CHRG_PIN);
-		
-		LCD_draw_string(0, 120, micInput ? "MIC IN" : "NO MIC", COLOR_YELLOW, COLOR_BLACK, 2);
-		LCD_draw_string(0, 140, lvInput ? "LV IN" : "NO LV", COLOR_YELLOW, COLOR_BLACK, 2);
-		LCD_draw_string(70, 140, "CHRG" , isCharging ? COLOR_RED : COLOR_GREEN, COLOR_BLACK, 2);
-		LCD_FillRect(126, 0, 2, 160, button_cur_state ? COLOR_BLACK : COLOR_BLUE); // clear voltage area
+		if (current_page == PAGE_STATS) {
+			if (page_changed) {
+				LCD_draw_string(0, 0, "--- STATS ---", COLOR_WHITE, COLOR_BLACK, 1);
+				displayPhoto(0x0E740, 0x0BE0);
+				page_changed = false;
+			}
 
-		//SleepWake_GetTimeRemaining
-		// draw voltage values at x=0, and y =0, y=20, y=40 etc...
-		char voltage_str[20];
-		uint16_t tv1_voltage = g_voltage_readings.pa1_tv1_sense ;
-		uint16_t tv2_voltage = g_voltage_readings.pa2_tv2_sense ;
-		uint16_t pa0_voltage = g_voltage_readings.pa0_analog ;
-		uint16_t temp_celsius = g_voltage_readings.temp_sensor ;
-		uint16_t pb2_voltage = g_voltage_readings.pb2_analog ;
-		uint16_t ch3_voltage = g_voltage_readings.ch3_unused ;
-		
-		snprintf(voltage_str, sizeof(voltage_str), "TV1: %.4i mV", tv1_voltage);
-		LCD_draw_string(0, 0, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		snprintf(voltage_str, sizeof(voltage_str), "TV2: %.4i mV", tv2_voltage);
-		LCD_draw_string(0, 10, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		snprintf(voltage_str, sizeof(voltage_str), "PA0: %.4i mV", pa0_voltage);
-		LCD_draw_string(0, 20, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		snprintf(voltage_str, sizeof(voltage_str), "TMP: %.4i mC", temp_celsius);
-		LCD_draw_string(0, 30, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		snprintf(voltage_str, sizeof(voltage_str), "PB2: %.4i mV", pb2_voltage);
-		LCD_draw_string(0, 40, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		snprintf(voltage_str, sizeof(voltage_str), "CH3: %.4i mV", ch3_voltage);
-		LCD_draw_string(0, 500, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
-		displayPhoto(0x0E740, 0x0BE0);
-		
-		char screen_type_str[20];
-		snprintf(screen_type_str, sizeof(screen_type_str), "Scrn id: %s-%s", spi_rx_data_04, spi_rx_data_d3);
-		LCD_draw_string(0, 50, screen_type_str, COLOR_YELLOW, COLOR_BLACK, 1);
+			VoltageMonitor_UpdateReadings();									// Update voltage readings periodically
+																				// Read inputs
+			micInput = GPIO_ReadInputDataBit(MIC_PIN);
+			lvInput = GPIO_ReadInputDataBit(LV_CUTOFF_FEEDBACK);
+			isCharging = GPIO_ReadInputDataBit(LP4086_CHRG_PIN);
 
+			LCD_draw_string(0, 120, micInput ? "MIC IN" : "NO MIC", COLOR_YELLOW, COLOR_BLACK, 2);
+			LCD_draw_string(0, 140, lvInput ? "LV IN" : "NO LV", COLOR_YELLOW, COLOR_BLACK, 2);
+			LCD_draw_string(70, 140, "CHRG" , isCharging ? COLOR_RED : COLOR_GREEN, COLOR_BLACK, 2);
+			LCD_FillRect(126, 0, 2, 160, button_cur_state ? COLOR_BLACK : COLOR_BLUE); // clear voltage area
 
+			//SleepWake_GetTimeRemaining
+			// draw voltage values at x=0, and y =0, y=20, y=40 etc...
+			char voltage_str[20];
+			uint16_t tv1_voltage = g_voltage_readings.pa1_tv1_sense ;
+			uint16_t tv2_voltage = g_voltage_readings.pa2_tv2_sense ;
+			uint16_t pa0_voltage = g_voltage_readings.pa0_analog ;
+			uint16_t temp_celsius = g_voltage_readings.temp_sensor ;
+			uint16_t pb2_voltage = g_voltage_readings.pb2_analog ;
+			uint16_t ch3_voltage = g_voltage_readings.ch3_unused ;
 
+			snprintf(voltage_str, sizeof(voltage_str), "TV1: %.4i mV", tv1_voltage);
+			LCD_draw_string(0, 10, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+			snprintf(voltage_str, sizeof(voltage_str), "TV2: %.4i mV", tv2_voltage);
+			LCD_draw_string(0, 20, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+			snprintf(voltage_str, sizeof(voltage_str), "PA0: %.4i mV", pa0_voltage);
+			LCD_draw_string(0, 30, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+			snprintf(voltage_str, sizeof(voltage_str), "TMP: %.4i mC", temp_celsius);
+			LCD_draw_string(0, 40, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+			snprintf(voltage_str, sizeof(voltage_str), "PB2: %.4i mV", pb2_voltage);
+			LCD_draw_string(0, 50, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
+			snprintf(voltage_str, sizeof(voltage_str), "CH3: %.4i mV", ch3_voltage);
+			LCD_draw_string(0, 60, voltage_str, COLOR_CYAN, COLOR_BLACK, 1);
 
-		char timeRemainingStr[8];
-		uint32_t timeRemaining = SleepWake_GetTimeRemaining();
-		snprintf(timeRemainingStr, sizeof(timeRemainingStr), "%.2u", timeRemaining);
-		LCD_draw_string(80, 120, timeRemainingStr, COLOR_YELLOW, COLOR_BLACK, 2);
+			char screen_type_str[20];
+			snprintf(screen_type_str, sizeof(screen_type_str), "Scrn id: %s-%s", spi_rx_data_04, spi_rx_data_d3);
+			LCD_draw_string(0, 70, screen_type_str, COLOR_YELLOW, COLOR_BLACK, 1);
 
-		/* Display button timing info */
-		char button_str[20];
-		snprintf(button_str, sizeof(button_str), "BTN: %u ms", (unsigned int)press_duration);
-		LCD_draw_string(0, 60, button_str, COLOR_CYAN, COLOR_BLACK, 1);
-		
-		if (Button_WasPressedOnWakeup())
-		{
-			LCD_draw_string(0, 70, "HELD@WAKE", COLOR_RED, COLOR_BLACK, 1);
+			char timeRemainingStr[8];
+			uint32_t timeRemaining = SleepWake_GetTimeRemaining();
+			snprintf(timeRemainingStr, sizeof(timeRemainingStr), "%.2u", timeRemaining);
+			LCD_draw_string(80, 120, timeRemainingStr, COLOR_YELLOW, COLOR_BLACK, 2);
+
+			/* Display button timing info */
+			char button_str[20];
+			snprintf(button_str, sizeof(button_str), "BTN: %u ms", (unsigned int)press_duration);
+			LCD_draw_string(0, 80, button_str, COLOR_CYAN, COLOR_BLACK, 1);
+
+			if (Button_WasPressedOnWakeup())
+			{
+				LCD_draw_string(0, 90, "HELD@WAKE", COLOR_RED, COLOR_BLACK, 1);
+			}
+
+			Delay(200);  /* 100ms delay in main loop */
+
+		} else if (current_page == PAGE_PHOTO) {
+			if (page_changed) {
+				LCD_draw_string(0, 0, "--- PHOTO ---", COLOR_WHITE, COLOR_BLACK, 1);
+				displayPhoto(0x0E740, 0x0BE0);
+				page_changed = false;
+			}
+			Delay(200);
+		} else if (current_page == PAGE_FLASH) {
+			if (page_changed) {
+				LCD_draw_string(0, 0, "--- FLASH ---", COLOR_WHITE, COLOR_BLACK, 1);
+				LCD_draw_string(0, 20, "Long press to", COLOR_CYAN, COLOR_BLACK, 1);
+				LCD_draw_string(0, 30, "enter flash", COLOR_CYAN, COLOR_BLACK, 1);
+				LCD_draw_string(0, 40, "programming mode.", COLOR_CYAN, COLOR_BLACK, 1);
+				page_changed = false;
+			}
+			Delay(200);
+		} else if (current_page == PAGE_PROGRAMMING) {
+			if (page_changed) {
+				/* explicitly reset PA13/PA14 to SWD to guarantee J-Link readiness */
+				GPIO_InitType GPIO_InitStructure;
+				GPIO_InitStruct(&GPIO_InitStructure);
+				GPIO_InitStructure.Pin            = GPIO_PIN_13 | GPIO_PIN_14;
+				GPIO_InitStructure.GPIO_Mode      = GPIO_MODE_AF_PP;
+				GPIO_InitStructure.GPIO_Alternate = GPIO_AF0_SWD;
+				GPIO_InitPeripheral(GPIOA, &GPIO_InitStructure);
+
+				LCD_draw_string(0, 0, "PROGRAMMING MODE", COLOR_RED, COLOR_BLACK, 1);
+				LCD_draw_string(0, 20, "Waiting for J-Link", COLOR_WHITE, COLOR_BLACK, 1);
+				LCD_draw_string(0, 30, "Connect SWDIO to PA13", COLOR_CYAN, COLOR_BLACK, 1);
+				LCD_draw_string(0, 40, "Connect SWCLK to PA14", COLOR_CYAN, COLOR_BLACK, 1);
+				page_changed = false;
+			}
+			Delay(200);
+		} else if (current_page == PAGE_UART_DEBUG) {
+			if (page_changed) {
+				LCD_draw_string(0, 0, "--- UART DEBUG ---", COLOR_WHITE, COLOR_BLACK, 1);
+				page_changed = false;
+			}
+
+			/* Poll for characters */
+			while (USART_GetFlagStatus(USART2, USART_FLAG_RXDNE) != RESET) {
+				uint16_t data = USART_ReceiveData(USART2);
+				char str[2];
+                str[0] = (char)data;
+				str[1] = '\0';
+
+				if (data == '\r' || data == '\n') {
+					uart_x_pos = 0;
+					uart_y_pos += 12;
+					if (uart_y_pos >= 160) {
+						uart_y_pos = 20;
+						LCD_fill_screen(COLOR_BLACK);
+						LCD_draw_string(0, 0, "--- UART DEBUG ---", COLOR_WHITE, COLOR_BLACK, 1);
+					}
+				} else {
+					LCD_draw_string(uart_x_pos, uart_y_pos, str, COLOR_GREEN, COLOR_BLACK, 1);
+					uart_x_pos += 8;
+					if (uart_x_pos >= 120) {
+						uart_x_pos = 0;
+						uart_y_pos += 12;
+					}
+					if (uart_y_pos >= 160) {
+						uart_y_pos = 20;
+						LCD_fill_screen(COLOR_BLACK);
+						LCD_draw_string(0, 0, "--- UART DEBUG ---", COLOR_WHITE, COLOR_BLACK, 1);
+					}
+				}
+			}
+			Delay(10); /* faster loop for UART */
 		}
-
-		
-
-
-		Delay(200);  /* 100ms delay in main loop */
-
 	}
 }
 
